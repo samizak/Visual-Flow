@@ -69,13 +69,13 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
     let nodeId = 0;
-    // Create root node at the left side
+    // Create root node at the center
     const rootId = `node-${nodeId++}`;
     nodes.push({
       id: rootId,
       type: "default",
       data: { label: "Root" },
-      position: { x: 50, y: 0 },
+      position: { x: 50, y: 200 },
       style: {
         background: nodeTypes.object,
         color: "white",
@@ -86,45 +86,56 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
       sourcePosition: "right" as any,
       targetPosition: "left" as any,
     });
-    // Process JSON recursively with improved layout
-    const totalHeight = processObject(json, rootId, 1, 0);
-    // Helper function to process objects recursively
+    // Calculate the size of the JSON structure to determine spacing
+    const jsonSize = calculateJsonSize(json);
+    const horizontalSpacing = Math.max(250, Math.min(400, 200 + jsonSize * 10));
+    const verticalSpacing = Math.max(60, Math.min(150, 50 + jsonSize * 5));
+    // Process JSON recursively with dynamic layout
+    processObject(json, rootId, 1, 200, horizontalSpacing, verticalSpacing);
+    // Helper function to calculate JSON size (depth and breadth)
+    function calculateJsonSize(data: any): number {
+      if (data === null || typeof data !== 'object') {
+        return 1;
+      }
+      
+      if (Array.isArray(data)) {
+        if (data.length === 0) return 1;
+        return Math.max(...data.map(item => calculateJsonSize(item))) + data.length;
+      }
+      
+      const keys = Object.keys(data);
+      if (keys.length === 0) return 1;
+      
+      return Math.max(...keys.map(key => calculateJsonSize(data[key]))) + keys.length;
+    }
+    // Helper function to process objects recursively with dynamic spacing
     function processObject(
       obj: any,
       parentId: string,
       level: number,
-      yOffset: number
+      baseYOffset: number,
+      hSpacing: number,
+      vSpacing: number
     ) {
-      let xPos = level * 300; // Horizontal spacing
-      let currentYOffset = yOffset;
-      let totalHeight = 0;
-      // First pass - calculate heights
-      const itemHeights: number[] = [];
-      Object.entries(obj).forEach(([key, value], index) => {
+      const xPos = level * hSpacing;
+      let currentYOffset = baseYOffset - (Object.keys(obj).length * vSpacing) / 2;
+      
+      // Pre-calculate node heights and total height needed
+      const nodeInfos = Object.entries(obj).map(([key, value]) => {
         const valueType = getValueType(value);
-        let itemHeight = 50; // Base height for a node
-
-        if (valueType === "object" && value !== null) {
-          // For objects, calculate nested height
-          const objKeys = Object.keys(value as object).length;
-          itemHeight =
-            objKeys > 0 ? processObjectHeight(value as object) : itemHeight;
-        } else if (valueType === "array") {
-          // For arrays, calculate nested height
-          const arrayValue = value as any[];
-          itemHeight =
-            arrayValue.length > 0 ? processArrayHeight(arrayValue) : itemHeight;
-        }
-
-        itemHeights.push(itemHeight);
+        const nodeHeight = estimateNodeHeight(value, valueType);
+        return { key, value, valueType, nodeHeight };
       });
-      // Second pass - create nodes with proper spacing
-      Object.entries(obj).forEach(([key, value], index) => {
+      
+      // Create nodes with proper spacing
+      nodeInfos.forEach((info, index) => {
+        const { key, value, valueType, nodeHeight } = info;
         const currentId = `node-${nodeId++}`;
-        const valueType = getValueType(value);
-        // Calculate position with proper spacing
+        
+        // Adjust vertical position based on previous nodes
         const yPos = currentYOffset;
-        // Create node for key
+        
+        // Create node
         nodes.push({
           id: currentId,
           type: "default",
@@ -140,81 +151,72 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
           sourcePosition: "right" as any,
           targetPosition: "left" as any,
         });
-        // Create edge from parent to this node
+        
+        // Create edge
         edges.push({
           id: `edge-${parentId}-${currentId}`,
           source: parentId,
           target: currentId,
-          type: "smoothstep",
+          type: "default", // Smoother curve
           animated: false,
+          style: { strokeWidth: 1.5 },
           sourceHandle: "right",
           targetHandle: "left",
         });
-        // Process nested structures
+        
+        // Process nested structures with dynamic spacing
         if (valueType === "object" && value !== null) {
-          const nestedHeight = processObject(value, currentId, level + 1, yPos);
-          currentYOffset += Math.max(nestedHeight, 80);
+          const childCount = Object.keys(value as object).length;
+          const childSpacing = childCount > 5 ? vSpacing * 0.8 : vSpacing; // Reduce spacing for large objects
+          processObject(value, currentId, level + 1, yPos, hSpacing, childSpacing);
+          currentYOffset += Math.max(nodeHeight, childCount * childSpacing);
         } else if (valueType === "array") {
-          const nestedHeight = processArray(
-            value as any[],
-            currentId,
-            level + 1,
-            yPos
-          );
-          currentYOffset += Math.max(nestedHeight, 80);
+          const arrayValue = value as any[];
+          const childCount = arrayValue.length;
+          const childSpacing = childCount > 5 ? vSpacing * 0.8 : vSpacing; // Reduce spacing for large arrays
+          processArray(arrayValue, currentId, level + 1, yPos, hSpacing, childSpacing);
+          currentYOffset += Math.max(nodeHeight, childCount * childSpacing);
         } else {
-          currentYOffset += 80; // Standard spacing for simple values
-        }
-        totalHeight = currentYOffset - yOffset;
-      });
-      return totalHeight || 50; // Return at least 50px height
-    }
-    // Helper function to calculate object height
-    function processObjectHeight(obj: any): number {
-      if (Object.keys(obj).length === 0) return 50;
-      let height = 0;
-      Object.entries(obj).forEach(([key, value]) => {
-        const valueType = getValueType(value);
-        if (valueType === "object" && value !== null) {
-          height += processObjectHeight(value);
-        } else if (valueType === "array") {
-          height += processArrayHeight(value as any);
-        } else {
-          height += 80;
+          currentYOffset += vSpacing; // Standard spacing for simple values
         }
       });
-      return Math.max(height, 50);
     }
-    // Helper function to calculate array height
-    function processArrayHeight(arr: any[]): number {
-      if (arr.length === 0) return 50;
-      let height = 0;
-      arr.forEach((item) => {
-        const valueType = getValueType(item);
-        if (valueType === "object" && item !== null) {
-          height += processObjectHeight(item);
-        } else if (valueType === "array") {
-          height += processArrayHeight(item);
-        } else {
-          height += 80;
-        }
-      });
-      return Math.max(height, 50);
+    // Helper function to estimate node height based on content
+    function estimateNodeHeight(value: any, type: string): number {
+      if (type === "object" && value !== null) {
+        const keys = Object.keys(value as object);
+        return Math.max(50, keys.length * 30);
+      } else if (type === "array") {
+        const arr = value as any[];
+        return Math.max(50, arr.length * 30);
+      }
+      return 50; // Default height for simple values
     }
-    // Helper function to process arrays with improved layout
+    // Helper function to process arrays with dynamic spacing
     function processArray(
       arr: any[],
       parentId: string,
       level: number,
-      yOffset: number
+      baseYOffset: number,
+      hSpacing: number,
+      vSpacing: number
     ) {
-      let xPos = level * 300;
-      let currentYOffset = yOffset;
-      let totalHeight = 0;
-      arr.forEach((item, index) => {
-        const currentId = `node-${nodeId++}`;
+      const xPos = level * hSpacing;
+      let currentYOffset = baseYOffset - (arr.length * vSpacing) / 2;
+      
+      // Pre-calculate node heights
+      const nodeInfos = arr.map((item, index) => {
         const valueType = getValueType(item);
+        const nodeHeight = estimateNodeHeight(item, valueType);
+        return { index, item, valueType, nodeHeight };
+      });
+      
+      // Create nodes with proper spacing
+      nodeInfos.forEach((info) => {
+        const { index, item, valueType, nodeHeight } = info;
+        const currentId = `node-${nodeId++}`;
         const yPos = currentYOffset;
+        
         nodes.push({
           id: currentId,
           type: "default",
@@ -230,28 +232,34 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
           sourcePosition: "right" as any,
           targetPosition: "left" as any,
         });
+        
         edges.push({
           id: `edge-${parentId}-${currentId}`,
           source: parentId,
           target: currentId,
-          type: "smoothstep",
+          type: "default", // Smoother curve
           animated: false,
+          style: { strokeWidth: 1.5 },
           sourceHandle: "right",
           targetHandle: "left",
         });
-        // Process nested structures
+        
+        // Process nested structures with dynamic spacing
         if (valueType === "object" && item !== null) {
-          const nestedHeight = processObject(item, currentId, level + 1, yPos);
-          currentYOffset += Math.max(nestedHeight, 80);
+          const childCount = Object.keys(item as object).length;
+          const childSpacing = childCount > 5 ? vSpacing * 0.8 : vSpacing;
+          processObject(item, currentId, level + 1, yPos, hSpacing, childSpacing);
+          currentYOffset += Math.max(nodeHeight, childCount * childSpacing);
         } else if (valueType === "array") {
-          const nestedHeight = processArray(item, currentId, level + 1, yPos);
-          currentYOffset += Math.max(nestedHeight, 80);
+          const arrayItem = item as any[];
+          const childCount = arrayItem.length;
+          const childSpacing = childCount > 5 ? vSpacing * 0.8 : vSpacing;
+          processArray(arrayItem, currentId, level + 1, yPos, hSpacing, childSpacing);
+          currentYOffset += Math.max(nodeHeight, childCount * childSpacing);
         } else {
-          currentYOffset += 80; // Standard spacing for simple values
+          currentYOffset += vSpacing; // Standard spacing for simple values
         }
-        totalHeight = currentYOffset - yOffset;
       });
-      return totalHeight || 50; // Return at least 50px height
     }
     return { nodes, edges };
   };
@@ -283,14 +291,22 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        connectionLineType={ConnectionLineType.SmoothStep}
+        connectionLineType={ConnectionLineType.Bezier}
+        defaultEdgeOptions={{
+          type: 'default',
+          style: { stroke: '#555' },
+        }}
         fitView
+        fitViewOptions={{ padding: 0.2 }}
+        minZoom={0.1}
+        maxZoom={2}
         attributionPosition="bottom-right"
       >
         <Controls />
         <Background color="#aaa" gap={16} />
         <Panel position="top-right">
           <div className="bg-[#1e1e1e] p-2 rounded text-white text-xs">
+            {/* Legend remains the same */}
             <div className="flex items-center mb-1">
               <div
                 className="w-3 h-3 mr-2 rounded-full"
