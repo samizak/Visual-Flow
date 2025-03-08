@@ -106,21 +106,20 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           );
           childY += 200;
         } else if (childType === "array") {
-          const childId = `node-${nodeId++}`;
-          processJsonArray(
-            childValue as any,
-            childId,
+          // Instead of creating an array node, process array items directly
+          processArrayItemsDirectly(
+            childValue as any[],
             currentId,
             childKey,
             childX,
             childY
           );
-          childY += 200;
+          childY += 200 * Math.max(1, (childValue as any[]).length);
         }
       });
     } else if (dataType === "array") {
-      // Process array node
-      processJsonArray(data, currentId, parentId, key, xPos, yPos);
+      // Process array items directly if this is an array node
+      processArrayItemsDirectly(data, parentId, key, xPos, yPos);
     } else {
       // This shouldn't happen for the root, but handle primitive types
       nodes.push({
@@ -136,10 +135,9 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
     }
   }
 
-  // Function to process arrays
-  function processJsonArray(
+  // New function to process array items directly without creating an array node
+  function processArrayItemsDirectly(
     arr: any[],
-    currentId: string,
     parentId: string | null,
     key: string,
     xPos: number,
@@ -149,69 +147,88 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
     if (!Array.isArray(arr)) {
       console.error("Expected array but received:", arr);
       arr = []; // Default to empty array if not an array
+      return;
     }
 
-    // Connect to parent if it exists
-    if (parentId) {
-      edges.push({
-        id: `edge-${parentId}-${currentId}`,
-        source: parentId,
-        target: currentId,
-        type: "default",
+    if (arr.length === 0) {
+      // If array is empty, create a placeholder node
+      const emptyNodeId = `node-${nodeId++}`;
+      nodes.push({
+        id: emptyNodeId,
+        type: "grouped",
+        data: {
+          label: `${key} [0]`,
+          type: "array",
+          properties: [{ key: "", value: "Empty array" }],
+        },
+        position: { x: xPos, y: yPos },
       });
+      
+      if (parentId) {
+        edges.push({
+          id: `edge-${parentId}-${emptyNodeId}`,
+          source: parentId,
+          target: emptyNodeId,
+          type: "default",
+        });
+      }
+      return;
     }
-
-    // Create array node
-    nodes.push({
-      id: currentId,
-      type: "grouped",
-      data: {
-        label: `${key || "Array"} [${arr.length}]`,
-        type: "array",
-        properties: arr.map((item, index) => {
-          const itemType = getValueType(item);
-          if (itemType === "object" || itemType === "array") {
-            return {
-              key: `[${index}]`,
-              value:
-                itemType === "object" ? "{...}" : `[${(item as any[]).length}]`,
-            };
-          } else {
-            return {
-              key: `[${index}]`,
-              value: getDisplayValue(item, itemType),
-            };
-          }
-        }),
-      },
-      position: { x: xPos, y: yPos },
-    });
 
     // Process array items that are objects or arrays
-    let childX = xPos + 300;
     let childY = yPos - (arr.length * 100) / 2;
 
     arr.forEach((item, index) => {
       const itemType = getValueType(item);
+      const childId = `node-${nodeId++}`;
 
       if (itemType === "object" && item !== null) {
-        const childId = `node-${nodeId++}`;
-        processJsonNode(item, childId, currentId, `[${index}]`, childX, childY);
-        childY += 200;
-      } else if (itemType === "array") {
-        const childId = `node-${nodeId++}`;
-        processJsonArray(
+        processJsonNode(
           item,
           childId,
-          currentId,
-          `[${index}]`,
-          childX,
+          parentId, // Connect directly to parent
+          `${key}[${index}]`, // Include array name in label
+          xPos,
           childY
         );
+        childY += 200;
+      } else if (itemType === "array") {
+        processArrayItemsDirectly(
+          item,
+          parentId, // Connect directly to parent
+          `${key}[${index}]`, // Include array name in label
+          xPos,
+          childY
+        );
+        childY += 200;
+      } else {
+        // Handle primitive values in arrays
+        nodes.push({
+          id: childId,
+          type: "grouped",
+          data: {
+            label: `${key}[${index}]`,
+            type: itemType,
+            properties: [{ key: "", value: getDisplayValue(item, itemType) }],
+          },
+          position: { x: xPos, y: childY },
+        });
+        
+        if (parentId) {
+          edges.push({
+            id: `edge-${parentId}-${childId}`,
+            source: parentId,
+            target: childId,
+            type: "default",
+          });
+        }
+        
         childY += 200;
       }
     });
   }
+
+  // Remove the original processJsonArray function as it's no longer needed
 
   return { nodes, edges };
 };
