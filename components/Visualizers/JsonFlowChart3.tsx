@@ -97,7 +97,7 @@ export default function JsonFlowChart3({ jsonData }: JsonFlowChartProps) {
           style={{ opacity: 0.1 }}
         />
         {/* Legend panel */}
-        <Panel position="top-left">
+        {/* <Panel position="top-left">
           <div className="bg-white p-3 rounded-md shadow-md">
             <h3 className="text-sm font-semibold mb-2">Node Types</h3>
             <div className="flex flex-col gap-1">
@@ -119,7 +119,7 @@ export default function JsonFlowChart3({ jsonData }: JsonFlowChartProps) {
               ))}
             </div>
           </div>
-        </Panel>
+        </Panel> */}
       </ReactFlow>
     </div>
   );

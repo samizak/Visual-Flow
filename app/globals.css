@@ -58,7 +58,7 @@ body {
   min-width: 200px;
   max-width: 300px;
   background-color: #1e1e1e;
-  border: 2px solid;
+  border: 2px solid #3a506b; /* Updated border color to a nice blue-gray */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -67,6 +67,7 @@ body {
   font-weight: 600;
   color: white;
   font-size: 14px;
+  background-color: #3a506b; /* Updated header color to match border */
 }
 
 .grouped-node-content {
@@ -74,7 +75,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background-color: #2a2a2a;
+  background-color: #2a2a2a; /* Keeping this color as you like it */
   color: #e0e0e0;
 }
 

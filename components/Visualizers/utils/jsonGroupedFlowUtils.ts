@@ -80,7 +80,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         id: currentId,
         type: "grouped",
         data: {
-          label: key || "Root Object",
+          label: key || "Root",
           type: "object",
           properties,
         },
@@ -163,7 +163,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         },
         position: { x: xPos, y: yPos },
       });
-      
+
       if (parentId) {
         edges.push({
           id: `edge-${parentId}-${emptyNodeId}`,
@@ -187,7 +187,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           item,
           childId,
           parentId, // Connect directly to parent
-          `${key}[${index}]`, // Include array name in label
+          `${key} ${index}`, // Include array name in label
           xPos,
           childY
         );
@@ -213,7 +213,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           },
           position: { x: xPos, y: childY },
         });
-        
+
         if (parentId) {
           edges.push({
             id: `edge-${parentId}-${childId}`,
@@ -222,7 +222,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
             type: "default",
           });
         }
-        
+
         childY += 200;
       }
     });

@@ -32,7 +32,7 @@ export default function Home() {
                 value="tree"
                 className="data-[state=active]:bg-[#0e639c] data-[state=active]:text-white rounded-none"
               >
-                Flow View
+                Diagram View
               </TabsTrigger>
               <TabsTrigger
                 value="3d"
@@ -70,7 +70,7 @@ export default function Home() {
                   </div>
                 )}
               </TabsContent>
-              
+
               {/* Keep the other tab contents as they were */}
             </div>
           </Tabs>

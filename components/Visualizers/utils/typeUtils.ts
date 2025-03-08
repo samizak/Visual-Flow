@@ -25,7 +25,9 @@ export const getDisplayValue = (value: any, type: string): string => {
     const identifiers = ["name", "id", "title", "key"];
     for (const id of identifiers) {
       if (value[id] !== undefined) {
-        return `{${id}: ${typeof value[id] === "string" ? `"${value[id]}"` : value[id]}, ...}`;
+        return `{${id}: ${
+          typeof value[id] === "string" ? `"${value[id]}"` : value[id]
+        }, ...}`;
       }
     }
     return "{...}";
@@ -37,11 +39,15 @@ export const getDisplayValue = (value: any, type: string): string => {
 };
 
 // Add new function to create split labels
-export const createSplitLabel = (key: string, value: any, type: string): { top: string, bottom: string } => {
+export const createSplitLabel = (
+  key: string,
+  value: any,
+  type: string
+): { top: string; bottom: string } => {
   const displayValue = getDisplayValue(value, type);
   return {
     top: key ? `${key}: ${displayValue}` : displayValue,
-    bottom: type.charAt(0).toUpperCase() + type.slice(1) // Capitalize type
+    bottom: type.charAt(0).toUpperCase() + type.slice(1), // Capitalize type
   };
 };
 

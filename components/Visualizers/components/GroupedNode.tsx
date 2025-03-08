@@ -11,18 +11,18 @@ const GroupedNode = memo(({ data }: NodeProps) => {
   // Use type assertion with unknown first to avoid direct conversion error
   const nodeData = data as unknown as GroupedNodeData;
   const { label, type, properties } = nodeData;
-
+  
   // Get color based on type
   const getTypeColor = (type: string) => {
     const colors = {
       string: "#4caf50", // Green
       number: "#2196f3", // Blue
       boolean: "#ff9800", // Orange
-      object: "#9c27b0", // Purple
+      object: "#3a506b", // Blue-gray (updated from purple)
       array: "#e91e63", // Pink
       null: "#607d8b", // Gray
     };
-
+    
     return colors[type as keyof typeof colors] || "#607d8b";
   };
 
@@ -41,12 +41,14 @@ const GroupedNode = memo(({ data }: NodeProps) => {
         <div className="grouped-node-content">
           {properties.map((prop, index) => (
             <div key={index} className="grouped-node-property">
-              <span className="grouped-node-key">{prop.key}</span>
+              {prop.key && (
+                <span className="grouped-node-key">{prop.key}</span>
+              )}
+              {prop.key && prop.value && (
+                <span className="grouped-node-separator">: </span>
+              )}
               {prop.value && (
-                <>
-                  <span className="grouped-node-separator">: </span>
-                  <span className="grouped-node-value">{prop.value}</span>
-                </>
+                <span className="grouped-node-value">{prop.value}</span>
               )}
             </div>
           ))}
