@@ -75,7 +75,6 @@ export default function LeftPanel({
       <div className="bg-[#1e1e1e] p-3 border-b border-gray-700 flex justify-between items-center">
         <h1 className="text-xl font-semibold text-white">JSON Vue</h1>
       </div>
-
       {/* Editor container */}
       <div className="flex-grow relative">
         <Editor
@@ -87,6 +86,26 @@ export default function LeftPanel({
           onChange={(e) => setJsonInput(e)}
           options={editorOptions as any}
         />
+
+        {/* Placeholder overlay - only shown when jsonInput is empty */}
+        {!jsonInput && (
+          <div className="absolute top-0 left-12 right-0 bottom-0 pointer-events-none flex items-center justify-center z-10">
+            <div className="text-gray-400 max-w-md bg-[#1e1e1e] bg-opacity-80 p-6 rounded-md">
+              <h3 className="text-lg font-medium mb-2">Paste your JSON here</h3>
+              <pre className="text-sm opacity-70 font-mono">
+                {`{
+  "example": "value",
+  "numbers": 123,
+  "boolean": true,
+  "array": [1, 2, 3],
+  "nested": {
+    "key": "value"
+  }
+}`}
+              </pre>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Resize handle */}
