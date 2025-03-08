@@ -8,7 +8,7 @@ export default function LeftPanel({
   jsonInput: any;
   setJsonInput: any;
 }) {
-  const [width, setWidth] = useState(40); // Initial width in percentage
+  const [width, setWidth] = useState(30); // Initial width in percentage
   const resizingRef = useRef(false);
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
