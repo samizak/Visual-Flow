@@ -8,6 +8,7 @@ import ReactFlow, {
   useEdgesState,
   ConnectionLineType,
   Panel,
+  BackgroundVariant,
 } from "reactflow";
 import "reactflow/dist/style.css";
 
@@ -94,19 +95,24 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
     processObject(json, rootId, 1, 200, horizontalSpacing, verticalSpacing);
     // Helper function to calculate JSON size (depth and breadth)
     function calculateJsonSize(data: any): number {
-      if (data === null || typeof data !== 'object') {
+      if (data === null || typeof data !== "object") {
         return 1;
       }
-      
+
       if (Array.isArray(data)) {
         if (data.length === 0) return 1;
-        return Math.max(...data.map(item => calculateJsonSize(item))) + data.length;
+        return (
+          Math.max(...data.map((item) => calculateJsonSize(item))) + data.length
+        );
       }
-      
+
       const keys = Object.keys(data);
       if (keys.length === 0) return 1;
-      
-      return Math.max(...keys.map(key => calculateJsonSize(data[key]))) + keys.length;
+
+      return (
+        Math.max(...keys.map((key) => calculateJsonSize(data[key]))) +
+        keys.length
+      );
     }
     // Helper function to process objects recursively with dynamic spacing
     function processObject(
@@ -118,23 +124,24 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
       vSpacing: number
     ) {
       const xPos = level * hSpacing;
-      let currentYOffset = baseYOffset - (Object.keys(obj).length * vSpacing) / 2;
-      
+      let currentYOffset =
+        baseYOffset - (Object.keys(obj).length * vSpacing) / 2;
+
       // Pre-calculate node heights and total height needed
       const nodeInfos = Object.entries(obj).map(([key, value]) => {
         const valueType = getValueType(value);
         const nodeHeight = estimateNodeHeight(value, valueType);
         return { key, value, valueType, nodeHeight };
       });
-      
+
       // Create nodes with proper spacing
       nodeInfos.forEach((info, index) => {
         const { key, value, valueType, nodeHeight } = info;
         const currentId = `node-${nodeId++}`;
-        
+
         // Adjust vertical position based on previous nodes
         const yPos = currentYOffset;
-        
+
         // Create node
         nodes.push({
           id: currentId,
@@ -151,7 +158,7 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
           sourcePosition: "right" as any,
           targetPosition: "left" as any,
         });
-        
+
         // Create edge
         edges.push({
           id: `edge-${parentId}-${currentId}`,
@@ -163,18 +170,32 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
           sourceHandle: "right",
           targetHandle: "left",
         });
-        
+
         // Process nested structures with dynamic spacing
         if (valueType === "object" && value !== null) {
           const childCount = Object.keys(value as object).length;
           const childSpacing = childCount > 5 ? vSpacing * 0.8 : vSpacing; // Reduce spacing for large objects
-          processObject(value, currentId, level + 1, yPos, hSpacing, childSpacing);
+          processObject(
+            value,
+            currentId,
+            level + 1,
+            yPos,
+            hSpacing,
+            childSpacing
+          );
           currentYOffset += Math.max(nodeHeight, childCount * childSpacing);
         } else if (valueType === "array") {
           const arrayValue = value as any[];
           const childCount = arrayValue.length;
           const childSpacing = childCount > 5 ? vSpacing * 0.8 : vSpacing; // Reduce spacing for large arrays
-          processArray(arrayValue, currentId, level + 1, yPos, hSpacing, childSpacing);
+          processArray(
+            arrayValue,
+            currentId,
+            level + 1,
+            yPos,
+            hSpacing,
+            childSpacing
+          );
           currentYOffset += Math.max(nodeHeight, childCount * childSpacing);
         } else {
           currentYOffset += vSpacing; // Standard spacing for simple values
@@ -203,20 +224,20 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
     ) {
       const xPos = level * hSpacing;
       let currentYOffset = baseYOffset - (arr.length * vSpacing) / 2;
-      
+
       // Pre-calculate node heights
       const nodeInfos = arr.map((item, index) => {
         const valueType = getValueType(item);
         const nodeHeight = estimateNodeHeight(item, valueType);
         return { index, item, valueType, nodeHeight };
       });
-      
+
       // Create nodes with proper spacing
       nodeInfos.forEach((info) => {
         const { index, item, valueType, nodeHeight } = info;
         const currentId = `node-${nodeId++}`;
         const yPos = currentYOffset;
-        
+
         nodes.push({
           id: currentId,
           type: "default",
@@ -232,7 +253,7 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
           sourcePosition: "right" as any,
           targetPosition: "left" as any,
         });
-        
+
         edges.push({
           id: `edge-${parentId}-${currentId}`,
           source: parentId,
@@ -243,18 +264,32 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
           sourceHandle: "right",
           targetHandle: "left",
         });
-        
+
         // Process nested structures with dynamic spacing
         if (valueType === "object" && item !== null) {
           const childCount = Object.keys(item as object).length;
           const childSpacing = childCount > 5 ? vSpacing * 0.8 : vSpacing;
-          processObject(item, currentId, level + 1, yPos, hSpacing, childSpacing);
+          processObject(
+            item,
+            currentId,
+            level + 1,
+            yPos,
+            hSpacing,
+            childSpacing
+          );
           currentYOffset += Math.max(nodeHeight, childCount * childSpacing);
         } else if (valueType === "array") {
           const arrayItem = item as any[];
           const childCount = arrayItem.length;
           const childSpacing = childCount > 5 ? vSpacing * 0.8 : vSpacing;
-          processArray(arrayItem, currentId, level + 1, yPos, hSpacing, childSpacing);
+          processArray(
+            arrayItem,
+            currentId,
+            level + 1,
+            yPos,
+            hSpacing,
+            childSpacing
+          );
           currentYOffset += Math.max(nodeHeight, childCount * childSpacing);
         } else {
           currentYOffset += vSpacing; // Standard spacing for simple values
@@ -293,8 +328,8 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
         onEdgesChange={onEdgesChange}
         connectionLineType={ConnectionLineType.Bezier}
         defaultEdgeOptions={{
-          type: 'default',
-          style: { stroke: '#555' },
+          type: "default",
+          style: { stroke: "#555" },
         }}
         fitView
         fitViewOptions={{ padding: 0.2 }}
@@ -303,7 +338,12 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
         attributionPosition="bottom-right"
       >
         <Controls />
-        <Background color="#aaa" gap={16} />
+        <Background
+          color="#aaa"
+          gap={25}
+          variant={BackgroundVariant.Lines}
+          style={{ opacity: 0.1 }}
+        />
         <Panel position="top-right">
           <div className="bg-[#1e1e1e] p-2 rounded text-white text-xs">
             {/* Legend remains the same */}
