@@ -196,7 +196,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         processArrayItemsDirectly(
           item,
           parentId, // Connect directly to parent
-          `${key}[${index}]`, // Include array name in label
+          `${key} ${index}`, // Include array name in label
           xPos,
           childY
         );
@@ -207,7 +207,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           id: childId,
           type: "grouped",
           data: {
-            label: `${key}[${index}]`,
+            label: `${key} ${index}`,
             type: itemType,
             properties: [{ key: "", value: getDisplayValue(item, itemType) }],
           },
