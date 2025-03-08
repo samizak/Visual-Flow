@@ -112,6 +112,7 @@ export default function LeftPanel({
 
           {/* Editor Area with Indent Guides */}
           <div className="relative flex-1">
+            {/* Indent Guides */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -122,24 +123,33 @@ export default function LeftPanel({
                 opacity: 0.2,
               }}
             />
-            <div
-              className="min-h-[500px] w-full font-mono p-2 leading-6 bg-transparent relative"
-              dangerouslySetInnerHTML={{
-                __html:
-                  formatJsonWithSyntax(jsonInput) ||
-                  `<span class="text-[#6a9955]">// Paste your JSON here</span>`,
-              }}
-            />
+
+            {/* Placeholder instructions text - only shown when no input */}
+            {!jsonInput && (
+              <div className="min-h-[500px] w-full font-mono p-2 leading-6 bg-transparent relative pointer-events-none">
+                <span className="text-[#6a9955]">// Paste your JSON here</span>
+              </div>
+            )}
+
+            {/* Syntax highlighted content - only shown when there is input */}
+            {jsonInput && (
+              <div 
+                className="absolute inset-0 font-mono p-2 leading-6 pointer-events-none whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{
+                  __html: formatJsonWithSyntax(jsonInput)
+                }}
+              />
+            )}
+
+            {/* Invisible textarea for input */}
             <Textarea
               value={jsonInput}
               onChange={(e) => {
                 setJsonInput(e.target.value);
                 setError(null);
               }}
-              className="absolute inset-0 font-mono resize-none border-0 rounded-none bg-transparent text-[#d4d4d4] focus-visible:ring-0 focus-visible:ring-offset-0 p-2 leading-6 caret-white"
-              placeholder={`{
-  "key": "value"
-}`}
+              className="absolute inset-0 font-mono resize-none border-0 rounded-none bg-transparent text-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-2 leading-6 caret-white"
+              placeholder=""
               spellCheck={false}
             />
           </div>
