@@ -9,6 +9,7 @@ export default function LeftPanel({
   setJsonInput: any;
 }) {
   const [width, setWidth] = useState(30); // Initial width in percentage
+  const [isEditorLoaded, setIsEditorLoaded] = useState(false);
   const resizingRef = useRef(false);
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
@@ -23,6 +24,11 @@ export default function LeftPanel({
     lineNumbers: "on",
     renderIndentGuides: true,
     tabSize: 2,
+  };
+
+  // Handle editor load complete
+  const handleEditorDidMount = () => {
+    setIsEditorLoaded(true);
   };
 
   // Handle mouse down to start resizing
@@ -77,6 +83,15 @@ export default function LeftPanel({
       </div>
       {/* Editor container */}
       <div className="flex-grow relative">
+        {!isEditorLoaded && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#1e1e1e]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+              <p className="text-gray-400">Loading editor...</p>
+            </div>
+          </div>
+        )}
+        
         <Editor
           height="100%"
           width="100%"
@@ -85,10 +100,11 @@ export default function LeftPanel({
           value={jsonInput}
           onChange={(e) => setJsonInput(e)}
           options={editorOptions as any}
+          onMount={handleEditorDidMount}
         />
 
-        {/* Placeholder overlay - only shown when jsonInput is empty */}
-        {!jsonInput && (
+        {/* Placeholder overlay - only shown when jsonInput is empty AND editor is loaded */}
+        {!jsonInput && isEditorLoaded && (
           <div className="absolute top-0 left-12 right-0 bottom-0 pointer-events-none flex items-center justify-center z-10">
             <div className="text-gray-400 max-w-md bg-[#1e1e1e] bg-opacity-80 p-6 rounded-md">
               <h3 className="text-lg font-medium mb-2">Paste your JSON here</h3>
