@@ -12,21 +12,9 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 
-// Custom node types will be defined here later
-
-// Define node types and their colors
-const nodeTypes = {
-  string: "#4caf50", // Green
-  number: "#2196f3", // Blue
-  boolean: "#ff9800", // Orange
-  object: "#9c27b0", // Purple
-  array: "#e91e63", // Pink
-  null: "#607d8b", // Gray
-};
-
-interface JsonFlowChartProps {
-  jsonData: string;
-}
+import { JsonFlowChartProps } from "./types/jsonFlowTypes";
+import { convertJsonToFlow, nodeTypes } from "./utils/jsonFlowUtils";
+import FlowChartLegend from "./components/FlowChartLegend";
 
 export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -82,15 +70,18 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
         color: "white",
         border: "1px solid #222",
         borderRadius: "5px",
+        fontSize: "20px",
         padding: "10px",
+        fontWeight: 500,
       },
       sourcePosition: "right" as any,
       targetPosition: "left" as any,
     });
     // Calculate the size of the JSON structure to determine spacing
     const jsonSize = calculateJsonSize(json);
-    const horizontalSpacing = Math.max(250, Math.min(400, 200 + jsonSize * 10));
-    const verticalSpacing = Math.max(60, Math.min(150, 50 + jsonSize * 5));
+    const horizontalSpacing = Math.max(300, Math.min(500, 250 + jsonSize * 12));
+    const verticalSpacing = Math.max(80, Math.min(180, 70 + jsonSize * 6));
+
     // Process JSON recursively with dynamic layout
     processObject(json, rootId, 1, 200, horizontalSpacing, verticalSpacing);
     // Helper function to calculate JSON size (depth and breadth)
@@ -153,7 +144,9 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
             color: "white",
             border: "1px solid #222",
             borderRadius: "5px",
+            fontSize: "20px",
             padding: "10px",
+            fontWeight: 500,
           },
           sourcePosition: "right" as any,
           targetPosition: "left" as any,
@@ -206,12 +199,12 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
     function estimateNodeHeight(value: any, type: string): number {
       if (type === "object" && value !== null) {
         const keys = Object.keys(value as object);
-        return Math.max(50, keys.length * 30);
+        return Math.max(60, keys.length * 30);
       } else if (type === "array") {
         const arr = value as any[];
-        return Math.max(50, arr.length * 30);
+        return Math.max(60, arr.length * 30);
       }
-      return 50; // Default height for simple values
+      return 60; // Default height for simple values
     }
     // Helper function to process arrays with dynamic spacing
     function processArray(
@@ -248,7 +241,9 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
             color: "white",
             border: "1px solid #222",
             borderRadius: "5px",
+            fontSize: "20px",
             padding: "10px",
+            fontWeight: 500,
           },
           sourcePosition: "right" as any,
           targetPosition: "left" as any,
@@ -332,10 +327,13 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
           style: { stroke: "#555" },
         }}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
+        fitViewOptions={{ padding: 0.1 }}
         minZoom={0.1}
         maxZoom={2}
         attributionPosition="bottom-right"
+        nodesConnectable={false}
+        nodesDraggable={true}
+        elementsSelectable={false}
       >
         <Controls />
         <Background
@@ -344,53 +342,7 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
           variant={BackgroundVariant.Lines}
           style={{ opacity: 0.1 }}
         />
-        <Panel position="top-right">
-          <div className="bg-[#1e1e1e] p-2 rounded text-white text-xs">
-            {/* Legend remains the same */}
-            <div className="flex items-center mb-1">
-              <div
-                className="w-3 h-3 mr-2 rounded-full"
-                style={{ backgroundColor: nodeTypes.string }}
-              ></div>
-              <span>String</span>
-            </div>
-            <div className="flex items-center mb-1">
-              <div
-                className="w-3 h-3 mr-2 rounded-full"
-                style={{ backgroundColor: nodeTypes.number }}
-              ></div>
-              <span>Number</span>
-            </div>
-            <div className="flex items-center mb-1">
-              <div
-                className="w-3 h-3 mr-2 rounded-full"
-                style={{ backgroundColor: nodeTypes.boolean }}
-              ></div>
-              <span>Boolean</span>
-            </div>
-            <div className="flex items-center mb-1">
-              <div
-                className="w-3 h-3 mr-2 rounded-full"
-                style={{ backgroundColor: nodeTypes.object }}
-              ></div>
-              <span>Object</span>
-            </div>
-            <div className="flex items-center mb-1">
-              <div
-                className="w-3 h-3 mr-2 rounded-full"
-                style={{ backgroundColor: nodeTypes.array }}
-              ></div>
-              <span>Array</span>
-            </div>
-            <div className="flex items-center">
-              <div
-                className="w-3 h-3 mr-2 rounded-full"
-                style={{ backgroundColor: nodeTypes.null }}
-              ></div>
-              <span>Null</span>
-            </div>
-          </div>
-        </Panel>
+        <FlowChartLegend nodeTypes={nodeTypes} />
       </ReactFlow>
     </div>
   );

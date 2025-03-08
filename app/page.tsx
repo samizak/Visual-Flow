@@ -26,19 +26,19 @@ export default function Home() {
         </div>
         <div className="flex-grow relative">
           <Tabs defaultValue="tree" className="w-full h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-3 bg-[#252525] mb-4">
+            <TabsList className="grid w-full grid-cols-2 bg-[#252525] mb-4">
               <TabsTrigger
                 value="tree"
                 className="data-[state=active]:bg-[#0e639c] data-[state=active]:text-white rounded-none"
               >
-                Tree View
+                Flow View
               </TabsTrigger>
-              <TabsTrigger
+              {/* <TabsTrigger
                 value="graph"
                 className="data-[state=active]:bg-[#0e639c] data-[state=active]:text-white rounded-none"
               >
                 Graph View
-              </TabsTrigger>
+              </TabsTrigger> */}
               <TabsTrigger
                 value="3d"
                 className="data-[state=active]:bg-[#0e639c] data-[state=active]:text-white rounded-none"
@@ -46,7 +46,7 @@ export default function Home() {
                 3D Node View
               </TabsTrigger>
             </TabsList>
-            <div className="flex-1 bg-[#1e1e1e] overflow-hidden">
+            <div className="flex-1 bg-[#141414] overflow-hidden">
               <TabsContent value="tree" className="h-full">
                 {jsonInput ? (
                   <JsonFlowChart jsonData={jsonInput} />
@@ -68,13 +68,14 @@ export default function Home() {
                       </svg>
                       <p className="text-lg">Enter JSON in the editor</p>
                       <p className="text-sm mt-2 max-w-md">
-                        Visualize your JSON data in a hierarchical tree structure
+                        Visualize your JSON data in a hierarchical tree
+                        structure
                       </p>
                     </div>
                   </div>
                 )}
               </TabsContent>
-              
+
               {/* Keep the other tab contents as they were */}
             </div>
           </Tabs>
