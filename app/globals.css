@@ -44,3 +44,57 @@ body {
   opacity: 0.8;
   background-color: rgba(0, 0, 0, 0.1);
 }
+
+/* Add these styles at the end of your file */
+
+/* Grouped node styles */
+.grouped-node {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.grouped-node-container {
+  border-radius: 6px;
+  overflow: hidden;
+  min-width: 200px;
+  max-width: 300px;
+  background-color: #1e1e1e;
+  border: 2px solid;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.grouped-node-header {
+  padding: 8px 12px;
+  font-weight: 600;
+  color: white;
+  font-size: 14px;
+}
+
+.grouped-node-content {
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+}
+
+.grouped-node-property {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.grouped-node-key {
+  font-weight: 500;
+  color: #9cdcfe;
+}
+
+.grouped-node-separator {
+  margin: 0 4px;
+  color: #cccccc;
+}
+
+.grouped-node-value {
+  color: #ce9178;
+}

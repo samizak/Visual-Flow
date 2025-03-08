@@ -10,6 +10,7 @@ import {
 import { Card } from "../components/ui/card";
 import LeftPanel from "../components/Panel/LeftPanel";
 import JsonFlowChart from "../components/Visualizers/JsonFlowChart";
+import JsonFlowChart3 from "../components/Visualizers/JsonFlowChart3";
 
 export default function Home() {
   const [jsonInput, setJsonInput] = useState("");
@@ -33,12 +34,6 @@ export default function Home() {
               >
                 Flow View
               </TabsTrigger>
-              {/* <TabsTrigger
-                value="graph"
-                className="data-[state=active]:bg-[#0e639c] data-[state=active]:text-white rounded-none"
-              >
-                Graph View
-              </TabsTrigger> */}
               <TabsTrigger
                 value="3d"
                 className="data-[state=active]:bg-[#0e639c] data-[state=active]:text-white rounded-none"
@@ -49,7 +44,7 @@ export default function Home() {
             <div className="flex-1 bg-[#141414] overflow-hidden">
               <TabsContent value="tree" className="h-full">
                 {jsonInput ? (
-                  <JsonFlowChart jsonData={jsonInput} />
+                  <JsonFlowChart3 jsonData={jsonInput} />
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-400">
                     <div className="text-center">
@@ -75,7 +70,7 @@ export default function Home() {
                   </div>
                 )}
               </TabsContent>
-
+              
               {/* Keep the other tab contents as they were */}
             </div>
           </Tabs>
