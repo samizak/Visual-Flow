@@ -1,7 +1,5 @@
-import { Button } from "../ui/button";
-import { Card } from "../ui/card";
-import { Textarea } from "../ui/textarea";
-import { useState } from "react";
+import Editor from "@monaco-editor/react";
+import { useState, useRef, useEffect } from "react";
 
 export default function LeftPanel({
   jsonInput,
@@ -10,175 +8,92 @@ export default function LeftPanel({
   jsonInput: any;
   setJsonInput: any;
 }) {
-  const [error, setError] = useState<string | null>(null);
-  const [isCopied, setIsCopied] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [width, setWidth] = useState(40); // Initial width in percentage
+  const resizingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startWidthRef = useRef(0);
+  const panelRef = useRef<HTMLDivElement>(null);
 
-  const validateAndParseJson = (input: string) => {
-    if (!input.trim()) {
-      throw new Error("Please enter some JSON data");
-    }
-    if (input.length > 10000000) {
-      // 10MB limit
-      throw new Error("JSON is too large to process");
-    }
-    return JSON.parse(input);
-  };
-  const formatJsonWithSyntax = (text: string) => {
-    if (!text) return text;
-    try {
-      const lines = text.split("\n");
-      return lines
-        .map((line) => {
-          return line
-            .replace(/"([^"]+)":/g, '<span class="text-[#9cdcfe]">"$1"</span>:')
-            .replace(
-              /: ?"([^"]+)"/g,
-              ': <span class="text-[#ce9178]">"$1"</span>'
-            )
-            .replace(/: ?(\d+)/g, ': <span class="text-[#b5cea8]">$1</span>')
-            .replace(
-              /: ?(true|false|null)/g,
-              ': <span class="text-[#569cd6]">$1</span>'
-            );
-        })
-        .join("\n");
-    } catch {
-      return text;
-    }
+  // Editor options to disable minimap and customize other settings
+  const editorOptions = {
+    minimap: { enabled: false },
+    scrollBeyondLastLine: false,
+    automaticLayout: true,
+    fontSize: 14,
+    lineNumbers: "on",
+    renderIndentGuides: true,
+    tabSize: 2,
   };
 
-  const handleFormatJson = () => {
-    setIsProcessing(true);
-    try {
-      const parsed = validateAndParseJson(jsonInput);
-      setJsonInput(JSON.stringify(parsed, null, 2));
-      setError(null);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Invalid JSON: Please check your syntax."
-      );
-    } finally {
-      setIsProcessing(false);
-    }
+  // Handle mouse down to start resizing
+  const handleMouseDown = (e: React.MouseEvent) => {
+    resizingRef.current = true;
+    startXRef.current = e.clientX;
+    startWidthRef.current = width;
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
-  const handleMinifyJson = () => {
-    setIsProcessing(true);
-    try {
-      const parsed = validateAndParseJson(jsonInput);
-      setJsonInput(JSON.stringify(parsed));
-      setError(null);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Invalid JSON: Please check your syntax."
-      );
-    } finally {
-      setIsProcessing(false);
-    }
+  // Handle mouse move to resize
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!resizingRef.current) return;
+
+    const containerWidth = document.body.clientWidth;
+    const deltaX = e.clientX - startXRef.current;
+    const deltaPercentage = (deltaX / containerWidth) * 100;
+
+    // Calculate new width with constraints (min 20%, max 80%)
+    const newWidth = Math.min(
+      Math.max(startWidthRef.current + deltaPercentage, 20),
+      40
+    );
+    setWidth(newWidth);
   };
 
-  const handleCopyJson = async () => {
-    try {
-      await navigator.clipboard.writeText(jsonInput);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000); // Reset copy status after 2 seconds
-    } catch (err) {
-      console.error("Failed to copy JSON:", err);
-      setError("Failed to copy to clipboard");
-    }
+  // Handle mouse up to stop resizing
+  const handleMouseUp = () => {
+    resizingRef.current = false;
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
   };
+
+  // Clean up event listeners
+  useEffect(() => {
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
 
   return (
-    <div className="w-1/2 flex flex-col gap-4">
-      <Card className="flex-grow p-4 bg-[#1e1e1e] border-[#333333] shadow-md">
-        <h2 className="text-lg font-semibold mb-2 text-[#d4d4d4]">
-          JSON Editor
-        </h2>
-        <div className="relative flex min-h-[500px] border border-[#3e3e42] rounded-md overflow-hidden">
-          {/* Line Numbers */}
-          <div className="py-2 px-2 bg-[#252526] text-[#858585] text-right select-none font-mono text-sm w-12 border-r border-[#3e3e42]">
-            {jsonInput.split("\n").map((_: any, i: number) => (
-              <div key={i} className="leading-6">
-                {i + 1}
-              </div>
-            ))}
-            {!jsonInput && <div className="leading-6">1</div>}
-          </div>
+    <div
+      ref={panelRef}
+      className="relative h-screen flex flex-col border-r border-gray-700"
+      style={{ width: `${width}vw` }}
+    >
+      {/* Header with project name */}
+      <div className="bg-[#1e1e1e] p-3 border-b border-gray-700 flex justify-between items-center">
+        <h1 className="text-xl font-semibold text-white">JSON Vue</h1>
+      </div>
 
-          {/* Editor Area with Indent Guides */}
-          <div className="relative flex-1">
-            {/* Indent Guides */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                backgroundImage:
-                  "linear-gradient(to right, #333333 1px, transparent 1px)",
-                backgroundSize: "2ch",
-                backgroundPosition: "calc(2ch + 2px) 0",
-                opacity: 0.2,
-              }}
-            />
+      {/* Editor container */}
+      <div className="flex-grow relative">
+        <Editor
+          height="100%"
+          width="100%"
+          theme="vs-dark"
+          defaultLanguage="json"
+          value={jsonInput}
+          onChange={(e) => setJsonInput(e)}
+          options={editorOptions as any}
+        />
+      </div>
 
-            {/* Placeholder instructions text - only shown when no input */}
-            {!jsonInput && (
-              <div className="min-h-[500px] w-full font-mono p-2 leading-6 bg-transparent relative pointer-events-none">
-                <span className="text-[#6a9955]">// Paste your JSON here</span>
-              </div>
-            )}
-
-            {/* Syntax highlighted content - only shown when there is input */}
-            {jsonInput && (
-              <div 
-                className="absolute inset-0 font-mono p-2 leading-6 pointer-events-none whitespace-pre-wrap"
-                dangerouslySetInnerHTML={{
-                  __html: formatJsonWithSyntax(jsonInput)
-                }}
-              />
-            )}
-
-            {/* Invisible textarea for input */}
-            <Textarea
-              value={jsonInput}
-              onChange={(e) => {
-                setJsonInput(e.target.value);
-                setError(null);
-              }}
-              className="absolute inset-0 font-mono resize-none border-0 rounded-none bg-transparent text-transparent focus-visible:ring-0 focus-visible:ring-offset-0 p-2 leading-6 caret-white"
-              placeholder=""
-              spellCheck={false}
-            />
-          </div>
-        </div>
-        {error && <p className="text-[#f14c4c] mt-2 text-sm">{error}</p>}
-        <div className="flex gap-2 mt-4">
-          <Button
-            onClick={handleFormatJson}
-            disabled={isProcessing}
-            className="bg-[#0e639c] hover:bg-[#1177bb] text-white border-0"
-          >
-            {isProcessing ? "Processing..." : "Format JSON"}
-          </Button>
-          <Button
-            onClick={handleMinifyJson}
-            disabled={isProcessing}
-            className="bg-[#0e639c] hover:bg-[#1177bb] text-white border-0"
-          >
-            {isProcessing ? "Processing..." : "Minify JSON"}
-          </Button>
-          <Button
-            onClick={handleCopyJson}
-            disabled={!jsonInput}
-            className="bg-[#0e639c] hover:bg-[#1177bb] text-white border-0"
-          >
-            {isCopied ? "Copied!" : "Copy JSON"}
-          </Button>
-        </div>
-      </Card>
+      {/* Resize handle */}
+      <div
+        className="absolute top-0 right-0 w-1 h-full bg-gray-700 cursor-col-resize hover:bg-blue-500 z-10"
+        onMouseDown={handleMouseDown}
+      />
     </div>
   );
 }
