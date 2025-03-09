@@ -31,8 +31,11 @@ function createAndConnectNode(
   });
 
   if (parentId) {
+    // Create a unique edge ID by adding a timestamp or random number
+    const uniqueEdgeId = `edge-${parentId}-${id}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    
     edges.push({
-      id: `edge-${parentId}-${id}`,
+      id: uniqueEdgeId,
       source: parentId,
       target: id,
       type: "default",

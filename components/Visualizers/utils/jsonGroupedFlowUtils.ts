@@ -55,8 +55,11 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
 
     // Connect to parent if it exists
     if (parentId) {
+      // Create a unique edge ID by adding a timestamp or random number
+      const uniqueEdgeId = `edge-${parentId}-${currentId}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      
       edges.push({
-        id: `edge-${parentId}-${currentId}`,
+        id: uniqueEdgeId,
         source: parentId,
         target: currentId,
         type: "default",
