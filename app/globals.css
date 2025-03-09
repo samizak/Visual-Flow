@@ -99,3 +99,35 @@ body {
 .grouped-node-value {
   color: #ce9178;
 }
+
+/* Dark theme for React Flow controls */
+.react-flow__controls {
+  background: #1e1e1e !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid #333 !important;
+}
+
+/* Dark theme for React Flow controls */
+.react-flow__controls-button {
+  background: #2a2a2a !important;
+  border-bottom: 1px solid #333 !important;
+  color: #e0e0e0 !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #3a3a3a !important;
+}
+
+.react-flow__controls-button svg {
+  fill: #e0e0e0 !important;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none !important;
+}
+
+/* Hide React Flow attribution */
+.react-flow__attribution {
+  display: none !important;
+}

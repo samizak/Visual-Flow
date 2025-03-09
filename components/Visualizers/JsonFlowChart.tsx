@@ -20,10 +20,25 @@ const nodeTypes = {
   grouped: GroupedNode,
 };
 
-export default function JsonFlowChart({ 
-  jsonData, 
-  onNodeCountChange 
-}: JsonFlowChartProps & { onNodeCountChange?: (count: number) => void }) {
+// Define custom styles for controls
+const controlsStyle = {
+  background: "#1e1e1e",
+  borderRadius: "6px",
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3)",
+  border: "1px solid #333",
+};
+
+const proOptions = {
+  hideAttribution: true,
+};
+
+export default function JsonFlowChart({
+  jsonData,
+  onNodeCountChange,
+  isValidJson = true, // Make isValidJson optional with default value
+}: JsonFlowChartProps & { onNodeCountChange?: (count: number) => void } & {
+  isValidJson?: boolean; // Changed to optional
+}) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -122,8 +137,9 @@ export default function JsonFlowChart({
         nodesConnectable={false}
         nodesDraggable={true}
         elementsSelectable={false}
+        proOptions={proOptions}
       >
-        <Controls />
+        <Controls style={controlsStyle} />
         <Background
           color="#aaa"
           gap={25}
