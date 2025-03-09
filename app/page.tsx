@@ -7,10 +7,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "../components/ui/tabs";
-import { Card } from "../components/ui/card";
 import LeftPanel from "../components/Panel/LeftPanel";
-import JsonFlowChart from "../components/Visualizers/JsonFlowChart";
-import JsonFlowChart3 from "../components/Visualizers/JsonFlowChart3";
+import JsonFlowChart from "../components/Visualizers/jsonflowchart";
 
 export default function Home() {
   const [jsonInput, setJsonInput] = useState("");
@@ -44,7 +42,7 @@ export default function Home() {
             <div className="flex-1 bg-[#141414] overflow-hidden">
               <TabsContent value="tree" className="h-full">
                 {jsonInput ? (
-                  <JsonFlowChart3 jsonData={jsonInput} />
+                  <JsonFlowChart jsonData={jsonInput} />
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-400">
                     <div className="text-center">
