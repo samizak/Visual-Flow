@@ -1,12 +1,18 @@
 /* Typography styles */
 .grouped-node {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    sans-serif;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.grouped-node-header {
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .grouped-node-key {
   font-weight: 500;
   color: #9cdcfe;
+  font-family: var(--font-geist-mono), monospace;
 }
 
 .grouped-node-separator {
@@ -17,6 +23,7 @@
 /* Data type colors */
 .grouped-node-value {
   color: #ce9178; /* Default color for strings */
+  font-family: var(--font-geist-mono), monospace;
 }
 
 .grouped-node-value-number {
@@ -37,4 +44,13 @@
 
 .grouped-node-value-object {
   color: #4ec9b0; /* Teal for objects */
+}
+
+/* Add font utility classes */
+.font-geist-sans {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.font-geist-mono {
+  font-family: var(--font-geist-mono), monospace;
 }
