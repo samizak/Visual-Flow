@@ -166,3 +166,43 @@ body {
 .react-tabs__tab-panel {
   padding-top: 0 !important;
 }
+
+/* Add modern hover effects for nodes */
+.grouped-node-container {
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+}
+
+.grouped-node:hover .grouped-node-container {
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 2px #0e639c, 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.grouped-node:hover .grouped-node-header {
+  background-color: #4a6d8c; /* Slightly lighter on hover */
+}
+
+.grouped-node:hover .grouped-node-content {
+  background-color: #333333; /* Slightly lighter on hover */
+}
+
+/* Add subtle glow effect */
+.grouped-node:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  border-radius: 8px;
+  filter: blur(15px);
+  background-color: rgba(14, 99, 156, 0.2); /* Subtle blue glow */
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
