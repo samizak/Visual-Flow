@@ -67,7 +67,8 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
   // Find all ancestor nodes when hovering
   const highlightNodesAndEdges = useCallback(() => {
     // Skip highlighting during drag to improve performance
-    if (isDragging) return;
+    if (isDragging || document.querySelector(".react-flow__node--dragging"))
+      return;
 
     const nodes = getNodes();
     const edges = getEdges();
@@ -131,7 +132,8 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
   // Reset highlighting when mouse leaves
   const resetHighlight = useCallback(() => {
     // Skip reset during drag to improve performance
-    if (isDragging) return;
+    if (isDragging || document.querySelector(".react-flow__node--dragging"))
+      return;
 
     // Use requestAnimationFrame for smoother updates
     requestAnimationFrame(() => {
@@ -167,6 +169,12 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
 
     // Remove any highlighting during drag
     resetHighlight();
+
+    // Remove dimmed class from flow container
+    const flowElement = document.querySelector(".react-flow");
+    if (flowElement) {
+      flowElement.classList.remove("dimmed");
+    }
 
     // Add a class to the node to indicate dragging
     const nodeElement = document.querySelector(`[data-id="${id}"]`);
@@ -367,11 +375,13 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
         <div className="grouped-node-content">
           {properties.map((prop, index) => (
             <div key={index} className="grouped-node-property">
-              {prop.key && <span className="grouped-node-key">{prop.key}</span>}
-              {prop.key && prop.value && (
-                <span className="grouped-node-separator">: </span>
-              )}
-              <div className="property-value-container">
+              <div className="property-content">
+                {prop.key && (
+                  <span className="grouped-node-key">{prop.key}</span>
+                )}
+                {prop.key && prop.value && (
+                  <span className="grouped-node-separator">: </span>
+                )}
                 {prop.value && (
                   <span
                     className={`grouped-node-value ${getValueClass(
@@ -381,7 +391,9 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
                     {prop.value}
                   </span>
                 )}
-                {(prop.value?.includes(" keys}") || 
+              </div>
+              <div className="property-actions">
+                {(prop.value?.includes(" keys}") ||
                   prop.value?.includes(" key}") ||
                   prop.value?.includes(" items]") ||
                   prop.value?.includes(" item]")) && (

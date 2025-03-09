@@ -80,11 +80,59 @@ body {
   color: #e0e0e0;
 }
 
+/* Update these styles for the property layout */
 .grouped-node-property {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
   font-size: 13px;
   line-height: 1.4;
+  width: 100%;
+}
+
+.property-content {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.property-actions {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+}
+
+/* Keep your existing button styles */
+.collapse-toggle-button-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  font-weight: 500;
+}
+
+.collapse-toggle-button-inline:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.collapse-toggle-button-inline:active {
+  transform: scale(0.95);
+}
+
+/* Remove the old container styles if you're not using them */
+.property-value-container {
+  display: none;
 }
 
 .grouped-node-key {
@@ -290,14 +338,19 @@ body {
   transition: none !important;
   animation: none !important;
   transform: translate3d(0, 0, 0); /* Force GPU acceleration */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important; /* Fixed shadow during drag */
+  box-shadow: none !important; /* Remove forced shadow */
 }
 
 /* Prevent hover effects during dragging */
 .react-flow__node.dragging:hover .grouped-node-container,
 .react-flow__node.dragging .grouped-node-container {
   transform: none !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important; /* Use the original shadow from .grouped-node-container */
+}
+
+/* Keep the original shadow for the container during drag */
+.react-flow__node.dragging .grouped-node-container {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
 }
 
 .react-flow__node.dragging:hover .grouped-node-header,
@@ -314,10 +367,33 @@ body {
   display: none !important; /* Disable glow effect during drag */
 }
 
-/* Ensure dragged node stays on top */
-.react-flow__node.dragging {
-  z-index: 1000 !important;
-  cursor: grabbing !important;
+/* Disable highlighting effects during dragging */
+.react-flow__node.dragging .grouped-node {
+  pointer-events: none !important; /* Prevent hover events during drag */
+}
+
+/* Prevent dimming effect during dragging */
+.react-flow.dimmed .react-flow__node {
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* Reset all nodes to normal state during any drag operation */
+.react-flow__node--dragging ~ .react-flow__node,
+.react-flow__node--dragging {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* Remove highlight classes during drag */
+.react-flow__node.dragging.highlight {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* Ensure the flow container doesn't stay dimmed during drag */
+.react-flow__node--dragging ~ .react-flow.dimmed,
+.react-flow__node.dragging ~ .react-flow.dimmed {
+  background-color: transparent !important;
 }
 
 /* Optimize edge rendering during drag */
