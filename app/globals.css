@@ -49,7 +49,8 @@ body {
 
 /* Grouped node styles */
 .grouped-node {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
 }
 
 .grouped-node-container {
@@ -126,8 +127,42 @@ body {
 .react-flow__controls-button:last-child {
   border-bottom: none !important;
 }
+/* Add this to the end of your globals.css file */
+
+/* Modern tabs styling */
+.react-tabs__tab-list {
+  border-bottom: none !important;
+}
+
+.react-tabs__tab {
+  position: relative;
+  overflow: hidden;
+}
+
+.react-tabs__tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #0e639c;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.react-tabs__tab--selected::after {
+  transform: translateX(0);
+}
 
 /* Hide React Flow attribution */
 .react-flow__attribution {
   display: none !important;
+}
+.react-tabs__tab-list {
+  margin-bottom: 0 !important;
+}
+
+.react-tabs__tab-panel {
+  padding-top: 0 !important;
 }

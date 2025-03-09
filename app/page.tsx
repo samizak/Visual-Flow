@@ -41,25 +41,24 @@ export default function Home() {
 
         {/* Right Panel */}
         <div className="flex-1 flex flex-col border-l border-gray-700">
-          <div className="bg-[#1e1e1e] p-3 border-b border-gray-700 flex justify-between items-center">
-            <h1 className="text-xl font-semibold text-white">Visualization</h1>
-          </div>
           <div className="flex-grow relative">
             <Tabs defaultValue="tree" className="w-full h-full flex flex-col">
-              <TabsList className="grid w-full grid-cols-2 bg-[#252525] mb-4">
-                <TabsTrigger
-                  value="tree"
-                  className="data-[state=active]:bg-[#0e639c] data-[state=active]:text-white rounded-none"
-                >
-                  Diagram View
-                </TabsTrigger>
-                <TabsTrigger
-                  value="3d"
-                  className="data-[state=active]:bg-[#0e639c] data-[state=active]:text-white rounded-none"
-                >
-                  3D Node View
-                </TabsTrigger>
-              </TabsList>
+              <div className="bg-[#1e1e1e] border-b border-gray-700">
+                <TabsList className="relative flex w-full bg-transparent p-0 mx-auto max-w-3xl">
+                  <TabsTrigger
+                    value="tree"
+                    className="flex-1 py-3 px-4 text-sm font-medium text-gray-400 transition-all duration-200 data-[state=active]:text-white data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:h-0.5 data-[state=active]:after:w-full data-[state=active]:after:bg-[#0e639c] rounded-none relative"
+                  >
+                    Diagram View
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="3d"
+                    className="flex-1 py-3 px-4 text-sm font-medium text-gray-400 transition-all duration-200 data-[state=active]:text-white data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:h-0.5 data-[state=active]:after:w-full data-[state=active]:after:bg-[#0e639c] rounded-none relative"
+                  >
+                    3D Node View
+                  </TabsTrigger>
+                </TabsList>
+              </div>
               <div className="flex-1 bg-[#141414] overflow-hidden">
                 <TabsContent value="tree" className="h-full relative">
                   {jsonInput ? (
