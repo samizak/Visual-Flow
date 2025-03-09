@@ -61,12 +61,31 @@ export default function Home() {
                 </TabsTrigger>
               </TabsList>
               <div className="flex-1 bg-[#141414] overflow-hidden">
-                <TabsContent value="tree" className="h-full">
+                <TabsContent value="tree" className="h-full relative">
                   {jsonInput ? (
-                    <JsonFlowChart
-                      jsonData={jsonInput}
-                      onNodeCountChange={setNodeCount}
-                    />
+                    <>
+                      <JsonFlowChart
+                        jsonData={jsonInput}
+                        onNodeCountChange={setNodeCount}
+                      />
+                      {/* Legend overlay */}
+                      <div className="absolute top-4 left-4 bg-[#1e1e1e] bg-opacity-80 p-2 rounded-md shadow-md">
+                        <div className="flex flex-col space-y-2">
+                          <div className="flex items-center">
+                            <div className="w-3 h-3 bg-[#3a506b] mr-1.5 rounded-sm"></div>
+                            <span className="text-gray-300 text-xs">
+                              Objects
+                            </span>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="w-3 h-3 bg-[#b87333] mr-1.5 rounded-sm"></div>
+                            <span className="text-gray-300 text-xs">
+                              Arrays
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-400">
                       <div className="text-center">
@@ -92,8 +111,18 @@ export default function Home() {
                     </div>
                   )}
                 </TabsContent>
-
-                {/* Keep the other tab contents as they were */}
+                {/* Legend */}
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-[#3a506b] mr-1.5 rounded-sm"></div>
+                    <span className="text-gray-300">Objects</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 bg-[#b87333] mr-1.5 rounded-sm"></div>
+                    <span className="text-gray-300">Arrays</span>
+                  </div>
+                  <div className="text-gray-300">Total Nodes: {nodeCount}</div>
+                </div>
               </div>
             </Tabs>
           </div>
@@ -140,7 +169,6 @@ export default function Home() {
             </>
           )}
         </div>
-        <div className="text-gray-300">Total Nodes: {nodeCount}</div>
       </div>
     </main>
   );
