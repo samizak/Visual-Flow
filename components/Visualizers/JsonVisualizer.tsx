@@ -9,11 +9,18 @@ import {
   Controls,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css"; // Import the styles
+import { useMemo } from "react";
+import GroupedNode from "./components/GroupedNode";
 
 interface JsonVisualizerProps {
   jsonData: string;
   testName?: string;
 }
+
+// Define node types
+const nodeTypes = {
+  grouped: GroupedNode,
+};
 
 function JsonVisualizer({
   jsonData,
@@ -86,19 +93,30 @@ function JsonVisualizer({
     }
   }, [jsonData, testName, skipUpdate]);
 
-  // Return the ReactFlow component
+  // Memoize the ReactFlow component to prevent unnecessary re-renders
+  const flowComponent = useMemo(() => (
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      nodeTypes={nodeTypes}
+      fitView
+      fitViewOptions={{ padding: 0.2 }}
+      minZoom={0.1}
+      maxZoom={1.5}
+      defaultViewport={{ x: 0, y: 0, zoom: 0.5 }}
+      proOptions={{ hideAttribution: true }}
+    >
+      <Background />
+      <Controls />
+    </ReactFlow>
+  ), [nodes, edges, onNodesChange, onEdgesChange]);
+  
+  // Return the memoized component
   return (
     <div style={{ width: "100%", height: "500px" }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        fitView
-      >
-        <Background />
-        <Controls />
-      </ReactFlow>
+      {flowComponent}
     </div>
   );
 }

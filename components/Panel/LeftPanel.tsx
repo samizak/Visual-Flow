@@ -11,7 +11,7 @@ export default function LeftPanel({
   setJsonInput: any;
   setIsFormatting?: (isFormatting: boolean) => void; // Optional prop
 }) {
-  const [width, setWidth] = useState(30); // Initial width in percentage
+  const [width, setWidth] = useState(20);
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
   const resizingRef = useRef(false);
   const startXRef = useRef(0);

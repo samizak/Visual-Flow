@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useState, useMemo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { getTypeColor, getValueClass, isCollapsible } from "../utils/nodeUtils";
 import {
@@ -24,8 +24,8 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
     Record<string, boolean>
   >({});
 
-  // Get the background color for the node
-  const backgroundColor = getTypeColor(type);
+  // Memoize the background color to prevent recalculation
+  const backgroundColor = useMemo(() => getTypeColor(type), [type]);
 
   // Use the custom hook for node interactions
   const {
@@ -46,6 +46,57 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
     setCollapsedProperties,
     hasChildren
   );
+
+  // Memoize the node content to prevent unnecessary re-renders
+  const nodeContent = useMemo(() => (
+    <div className="grouped-node-content">
+      {properties.map((prop, index) => (
+        <div
+          key={index}
+          className="property-wrapper"
+        >
+          <div
+            className={`grouped-node-property ${isCollapsible(prop.value) ? "collapsible" : ""}`}
+          >
+            <div className="property-content">
+              {prop.key && (
+                <span className="grouped-node-key">{prop.key}</span>
+              )}
+              {prop.key && prop.value && (
+                <span className="grouped-node-separator">: </span>
+              )}
+              {prop.value && (
+                <span
+                  className={`grouped-node-value ${getValueClass(
+                    prop.value
+                  )}`}
+                >
+                  {prop.value}
+                </span>
+              )}
+            </div>
+            <div className="property-actions">
+              {isCollapsible(prop.value) && (
+                <PropertyCollapseButton
+                  isCollapsed={
+                    collapsedProperties[prop.key || `prop-${index}`] ||
+                    false
+                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    togglePropertyCollapse(e, prop.key || `prop-${index}`);
+                  }}
+                />
+              )}
+            </div>
+          </div>
+          {index < properties.length - 1 && (
+            <div className="property-separator" />
+          )}
+        </div>
+      ))}
+    </div>
+  ), [properties, collapsedProperties, togglePropertyCollapse]);
 
   return (
     <div
@@ -80,53 +131,7 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
             </div>
           )}
         </div>
-        <div className="grouped-node-content">
-          {properties.map((prop, index) => (
-            <div
-              key={index}
-              className="property-wrapper"
-            >
-              <div
-                className={`grouped-node-property ${isCollapsible(prop.value) ? "collapsible" : ""}`}
-              >
-                <div className="property-content">
-                  {prop.key && (
-                    <span className="grouped-node-key">{prop.key}</span>
-                  )}
-                  {prop.key && prop.value && (
-                    <span className="grouped-node-separator">: </span>
-                  )}
-                  {prop.value && (
-                    <span
-                      className={`grouped-node-value ${getValueClass(
-                        prop.value
-                      )}`}
-                    >
-                      {prop.value}
-                    </span>
-                  )}
-                </div>
-                <div className="property-actions">
-                  {isCollapsible(prop.value) && (
-                    <PropertyCollapseButton
-                      isCollapsed={
-                        collapsedProperties[prop.key || `prop-${index}`] ||
-                        false
-                      }
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        togglePropertyCollapse(e, prop.key || `prop-${index}`);
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-              {index < properties.length - 1 && (
-                <div className="property-separator" />
-              )}
-            </div>
-          ))}
-        </div>
+        {nodeContent}
       </div>
       <Handle type="source" position={Position.Right} />
     </div>
