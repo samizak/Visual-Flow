@@ -40,7 +40,7 @@ export default function LeftPanel({
       guides: { bracketPairs: false, indentation: false },
       renderLineHighlight: "none",
       occurrencesHighlight: false,
-      folding: false,
+      folding: true,
       matchBrackets: "never",
       renderIndentGuides: false,
     });
@@ -97,10 +97,10 @@ export default function LeftPanel({
   const updateJsonWithoutDiagramRegeneration = (newJson: string) => {
     // Signal to parent that we're just formatting (if the prop exists)
     if (setIsFormatting) setIsFormatting(true);
-    
+
     // Update the JSON
     setJsonInput(newJson);
-    
+
     // Reset the formatting flag after a short delay
     if (setIsFormatting) {
       setTimeout(() => {

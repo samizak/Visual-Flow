@@ -72,11 +72,12 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "8px 12px",
+            padding: "4px 12px", // Reduced from 8px to 4px vertical padding
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
             fontWeight: 500,
             letterSpacing: "0.3px",
             transition: "background-color 0.2s ease",
+            fontSize: "13px", // Slightly smaller font size
           }}
         >
           <span>{label}</span>
@@ -85,6 +86,7 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
               className="node-action-button cursor-pointer"
               onClick={toggleNodeCollapse}
               title={isNodeCollapsed ? "Expand All" : "Collapse All"}
+              style={{ padding: "2px 6px" }} // Smaller padding for the button
             >
               <LinkIcon />
             </div>

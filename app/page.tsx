@@ -12,7 +12,6 @@ import JsonFlowChart from "../components/Visualizers/JsonFlowChart";
 
 export default function Home() {
   const [jsonData, setJsonData] = useState<string>("");
-  const [isFormatting, setIsFormatting] = useState(false);
   const [isValidJson, setIsValidJson] = useState(true);
   const [nodeCount, setNodeCount] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
