@@ -11,6 +11,26 @@ interface NodeInteractionHooks {
   hasOutgoingEdges: () => boolean;
 }
 
+// Helper function to find direct children of a node
+const findDirectChildren = (
+  nodeId: string,
+  edges: Edge[]
+): { directChildren: Set<string>; directEdges: Set<string> } => {
+  const directChildren = new Set<string>();
+  const directEdges = new Set<string>();
+  
+  // Find direct children edges
+  const childEdges = edges.filter(edge => edge.source === nodeId);
+  
+  // Add direct children to the set
+  childEdges.forEach(edge => {
+    directChildren.add(edge.target);
+    directEdges.add(edge.id);
+  });
+
+  return { directChildren, directEdges };
+};
+
 export const useNodeInteractions = (
   id: string,
   isDragging: boolean,
@@ -18,41 +38,42 @@ export const useNodeInteractions = (
   isNodeCollapsed: boolean,
   setIsNodeCollapsed: (isCollapsed: boolean) => void,
   collapsedProperties: Record<string, boolean>,
-  setCollapsedProperties: (
-    callback: (prev: Record<string, boolean>) => Record<string, boolean>
-  ) => void,
+  setCollapsedProperties: (callback: (prev: Record<string, boolean>) => Record<string, boolean>) => void,
   hasChildren?: boolean
 ): NodeInteractionHooks => {
   const { getNodes, getEdges, setNodes, setEdges } = useReactFlow();
 
   // Helper function to find all descendants of a node (not just direct children)
   const findAllDescendants = useCallback(
-    (
-      nodeId: string,
-      edges: Edge[]
-    ): { descendantNodes: Set<string>; descendantEdges: Set<string> } => {
+    (nodeId: string, edges: Edge[], visited = new Set<string>()): { descendantNodes: Set<string>; descendantEdges: Set<string> } => {
+      // Add this node to visited set to prevent infinite recursion
+      visited.add(nodeId);
+      
       const descendantNodes = new Set<string>();
       const descendantEdges = new Set<string>();
-
+      
       // Find direct children first
-      const childEdges = edges.filter((edge) => edge.source === nodeId);
-
+      const childEdges = edges.filter(edge => edge.source === nodeId);
+      
       // Process each direct child
-      childEdges.forEach((edge) => {
+      childEdges.forEach(edge => {
         // Add this edge
         descendantEdges.add(edge.id);
-
+        
         // Add the direct child
         descendantNodes.add(edge.target);
-
-        // Recursively find all descendants of this child
-        const childResults = findAllDescendants(edge.target, edges);
-
-        // Add all descendants from the recursive call
-        childResults.descendantNodes.forEach((id) => descendantNodes.add(id));
-        childResults.descendantEdges.forEach((id) => descendantEdges.add(id));
+        
+        // Only recurse if we haven't visited this node before
+        if (!visited.has(edge.target)) {
+          // Recursively find all descendants of this child
+          const childResults = findAllDescendants(edge.target, edges, new Set([...visited]));
+          
+          // Add all descendants from the recursive call
+          childResults.descendantNodes.forEach(id => descendantNodes.add(id));
+          childResults.descendantEdges.forEach(id => descendantEdges.add(id));
+        }
       });
-
+      
       return { descendantNodes, descendantEdges };
     },
     []
