@@ -1,0 +1,117 @@
+/* Node highlighting system */
+.react-flow.dimmed .react-flow__node {
+  opacity: 0.35;
+  filter: grayscale(50%);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* Highlighted state for the hovered node and its ancestors */
+.react-flow.dimmed .react-flow__node.highlight {
+  opacity: 1;
+  filter: none;
+  z-index: 10;
+}
+
+/* Enhanced hover effect for highlighted nodes */
+.react-flow.dimmed .react-flow__node.highlight .grouped-node-container {
+  box-shadow: 0 0 0 2px #0e639c, 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Dragging optimizations */
+.react-flow__node.dragging,
+.react-flow__node.dragging * {
+  transition: none !important;
+  animation: none !important;
+  transform: translate3d(0, 0, 0);
+  box-shadow: none !important;
+}
+
+.react-flow__node.dragging:hover .grouped-node-container,
+.react-flow__node.dragging .grouped-node-container {
+  transform: none !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+}
+
+.react-flow__node.dragging .grouped-node-container {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+}
+
+.react-flow__node.dragging:hover .grouped-node-header,
+.react-flow__node.dragging .grouped-node-header {
+  background-color: #3a506b !important;
+}
+
+.react-flow__node.dragging:hover .grouped-node-content,
+.react-flow__node.dragging .grouped-node-content {
+  background-color: #2a2a2a !important;
+}
+
+.react-flow__node.dragging:hover::after {
+  display: none !important;
+}
+
+.react-flow__node.dragging .grouped-node {
+  pointer-events: none !important;
+}
+
+/* Reset all nodes to normal state during any drag operation */
+.react-flow__node--dragging ~ .react-flow__node,
+.react-flow__node--dragging {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.react-flow__node.dragging.highlight {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* Ensure the flow container doesn't stay dimmed during drag */
+.react-flow__node--dragging ~ .react-flow.dimmed,
+.react-flow__node.dragging ~ .react-flow.dimmed {
+  background-color: transparent !important;
+}
+
+/* Ensure dragged node stays on top */
+.react-flow__node.dragging {
+  z-index: 1000 !important;
+  cursor: grabbing !important;
+}
+
+/* Monaco editor optimizations */
+.monaco-editor-container {
+  overflow: hidden !important;
+}
+
+.monaco-editor-container .monaco-editor {
+  padding-bottom: 20px !important;
+}
+
+.monaco-editor .overflow-guard {
+  position: relative !important;
+}
+
+/* Hide Monaco editor overlays */
+.monaco-editor .bracket-match-guide,
+.monaco-editor .monaco-hover,
+.monaco-editor .parameter-hints-widget {
+  display: none !important;
+}
+
+div.hover-row.status-bar {
+  display: none !important;
+}
+
+/* Prevent text selection during dragging */
+.no-select,
+.no-select * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+/* Ensure cursor shows dragging state */
+.no-select {
+  cursor: grabbing !important;
+}

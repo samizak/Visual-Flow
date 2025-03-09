@@ -1,0 +1,22 @@
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Transitions */
+.react-flow__node {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  will-change: transform;
+  transform: translate3d(0, 0, 0); /* Force GPU acceleration */
+}
+
+.react-flow__node[hidden="true"],
+.react-flow__edge[hidden="true"] {
+  opacity: 0;
+  pointer-events: none;
+}

@@ -1,0 +1,30 @@
+/* Edge styles */
+.react-flow__edge {
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.react-flow__edge-path {
+  transition: none !important;
+}
+
+/* Edge highlighting */
+.react-flow.dimmed .react-flow__edge {
+  opacity: 0.2;
+}
+
+.react-flow.dimmed .react-flow__edge.highlight {
+  opacity: 1;
+  stroke-width: 2;
+  z-index: 10;
+}
+
+.react-flow.dimmed .react-flow__edge.highlight path {
+  stroke: #0e639c;
+  stroke-width: 2;
+}
+
+/* Handle styles */
+.react-flow__handle {
+  z-index: 3;
+}

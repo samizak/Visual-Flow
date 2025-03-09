@@ -1,0 +1,15 @@
+/* Import base styles */
+@import './base/reset.css';
+@import './base/typography.css';
+
+/* Import component styles */
+@import './components/nodes.css';
+@import './components/edges.css';
+@import './components/controls.css';
+@import './components/buttons.css';
+
+/* Import utility styles */
+@import './utils/animations.css';
+@import './utils/effects.css';
+
+/* Any additional global styles can be added here */
