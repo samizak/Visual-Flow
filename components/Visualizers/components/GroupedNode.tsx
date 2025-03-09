@@ -63,7 +63,11 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
       <Handle type="target" position={Position.Left} />
       <div
         className="grouped-node-container my-4"
-        style={{ borderColor: backgroundColor }}
+        style={{
+          borderColor: backgroundColor,
+          width: "100%",
+          height: "100%",
+        }}
       >
         <div
           className="grouped-node-header"
@@ -72,12 +76,13 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "4px 12px", // Reduced from 8px to 4px vertical padding
+            padding: "4px 12px",
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
             fontWeight: 500,
             letterSpacing: "0.3px",
             transition: "background-color 0.2s ease",
-            fontSize: "13px", // Slightly smaller font size
+            fontSize: "13px",
+            width: "100%",
           }}
         >
           <span>{label}</span>
@@ -86,58 +91,87 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
               className="node-action-button cursor-pointer"
               onClick={toggleNodeCollapse}
               title={isNodeCollapsed ? "Expand All" : "Collapse All"}
-              style={{ padding: "2px 6px" }} // Smaller padding for the button
+              style={{ padding: "2px 6px" }}
             >
               <LinkIcon />
             </div>
           )}
         </div>
-        <div className="grouped-node-content">
+        <div
+          className="grouped-node-content"
+          style={{ padding: 0, width: "100%", height: "100%" }}
+        >
           {properties.map((prop, index) => (
-            <div key={index} className="grouped-node-property">
-              <div className="property-content">
-                {prop.key && (
-                  <span className="grouped-node-key">{prop.key}</span>
-                )}
-                {prop.key && prop.value && (
-                  <span className="grouped-node-separator">: </span>
-                )}
-                {prop.value && (
-                  <span
-                    className={`grouped-node-value ${getValueClass(
-                      prop.value
-                    )}`}
-                  >
-                    {prop.value}
-                  </span>
-                )}
+            <div
+              key={index}
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                flex: "1 1 auto",
+              }}
+            >
+              <div
+                className="grouped-node-property"
+                style={{
+                  backgroundColor: isCollapsible(prop.value)
+                    ? "rgba(255, 255, 255, 0.03)"
+                    : "transparent",
+                  padding: "8px 12px",
+                  width: "100%",
+                  flex: 1,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  boxSizing: "border-box",
+                }}
+              >
+                <div className="property-content" style={{ flex: 1 }}>
+                  {prop.key && (
+                    <span className="grouped-node-key">{prop.key}</span>
+                  )}
+                  {prop.key && prop.value && (
+                    <span className="grouped-node-separator">: </span>
+                  )}
+                  {prop.value && (
+                    <span
+                      className={`grouped-node-value ${getValueClass(
+                        prop.value
+                      )}`}
+                    >
+                      {prop.value}
+                    </span>
+                  )}
+                </div>
+                <div className="property-actions">
+                  {isCollapsible(prop.value) && (
+                    <PropertyCollapseButton
+                      isCollapsed={
+                        collapsedProperties[prop.key || `prop-${index}`] ||
+                        false
+                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        togglePropertyCollapse(e, prop.key || `prop-${index}`);
+                      }}
+                    />
+                  )}
+                </div>
               </div>
-              <div className="property-actions">
-                {isCollapsible(prop.value) && (
-                  <PropertyCollapseButton
-                    isCollapsed={
-                      collapsedProperties[prop.key || `prop-${index}`] || false
-                    }
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      togglePropertyCollapse(e, prop.key || `prop-${index}`);
-                    }}
-                  />
-                )}
-              </div>
+              {index < properties.length - 1 && (
+                <div
+                  className="property-separator"
+                  style={{
+                    height: "1px",
+                    backgroundColor: "rgba(255, 255, 255, 0.06)",
+                    width: "100%",
+                  }}
+                />
+              )}
             </div>
           ))}
         </div>
       </div>
-
-      {/* Remove the external collapse button */}
-      {/* {(type === "array" || type === "object") && hasOutgoingEdges() && (
-        <CollapseButton
-          isCollapsed={isNodeCollapsed}
-          onClick={toggleNodeCollapse}
-        />
-      )} */}
-
       <Handle type="source" position={Position.Right} />
     </div>
   );
