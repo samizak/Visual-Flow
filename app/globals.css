@@ -128,7 +128,21 @@ body {
   border-bottom: none !important;
 }
 /* Add this to the end of your globals.css file */
+/* Add this to the end of your globals.css file */
 
+/* Prevent text selection during dragging */
+.no-select,
+.no-select * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+/* Ensure cursor shows dragging state */
+.no-select {
+  cursor: grabbing !important;
+}
 /* Modern tabs styling */
 .react-tabs__tab-list {
   border-bottom: none !important;
