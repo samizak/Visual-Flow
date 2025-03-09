@@ -8,7 +8,7 @@ import {
   TabsTrigger,
 } from "../components/ui/tabs";
 import LeftPanel from "../components/Panel/LeftPanel";
-import JsonFlowChart from "../components/Visualizers/jsonflowchart";
+import JsonFlowChart from "../components/Visualizers/JsonFlowChart";
 
 export default function Home() {
   const [jsonInput, setJsonInput] = useState("");
@@ -139,7 +139,7 @@ export default function Home() {
                     </div>
                   )}
                 </TabsContent>
-                
+
                 {/* Adding 3D View Tab Content with template message */}
                 <TabsContent value="3d" className="h-full relative">
                   {jsonInput ? (
@@ -172,7 +172,7 @@ export default function Home() {
                     </div>
                   )}
                 </TabsContent>
-                
+
                 {/* Legend */}
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center">
