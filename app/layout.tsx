@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JSON Vue - JSON Visualizer",
-  description: "A modern JSON visualization tool",
+  title: "Visual Flow - Data Visualizer",
+  description: "A modern data visualization tool",
 };
 
 export default function RootLayout({

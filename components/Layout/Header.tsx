@@ -28,6 +28,8 @@ interface HeaderProps {
   onMinimize?: () => void;
   onCopy?: () => void;
   onTogglePanel?: () => void;
+  onSave?: () => void;
+  onCollapseLeftPanel?: () => void;
 }
 
 export default function Header({
@@ -35,11 +37,16 @@ export default function Header({
   onMinimize,
   onCopy,
   onTogglePanel,
+  onSave,
+  onCollapseLeftPanel,
 }: HeaderProps) {
   return (
     <header className="bg-[#1e1e1e] border-b border-gray-700 py-1 px-2">
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
+        <div
+          className="flex items-center space-x-2"
+          onClick={onCollapseLeftPanel}
+        >
           <Button
             variant="ghost"
             size="icon"
@@ -64,8 +71,37 @@ export default function Header({
                   File
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
+              <DropdownMenuContent className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50">
                 <DropdownMenuLabel>File Options</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={onSave}>
+                  <Save className="mr-2 h-4 w-4" />
+                  <span>Save</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Upload className="mr-2 h-4 w-4" />
+                  <span>Import</span>
+                </DropdownMenuItem>
+                {/* <DropdownMenuItem>
+                  <Download className="mr-2 h-4 w-4" />
+                  <span>Export</span>
+                </DropdownMenuItem> */}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
+                >
+                  <FileCode className="mr-1 h-4 w-4" />
+                  Edit
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50">
+                <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={onFormat}>
                   <FileCode className="mr-2 h-4 w-4" />
@@ -79,19 +115,6 @@ export default function Header({
                   <Copy className="mr-2 h-4 w-4" />
                   <span>Copy JSON</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Save className="mr-2 h-4 w-4" />
-                  <span>Save</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Upload className="mr-2 h-4 w-4" />
-                  <span>Import</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Download className="mr-2 h-4 w-4" />
-                  <span>Export</span>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -100,13 +123,13 @@ export default function Header({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-300 hover:text-white"
+                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
                 >
                   <Eye className="mr-1 h-4 w-4" />
                   View
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
+              <DropdownMenuContent className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50">
                 <DropdownMenuLabel>View Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
