@@ -17,10 +17,61 @@ export const getDisplayValue = (value: any, type: string): string => {
   if (type === "array") return `[${value.length}]`;
   if (type === "string") return `"${value}"`;
   if (type === "boolean") return String(value); // Ensure booleans are preserved as-is
-  if (type === "number") return String(value);  // Ensure numbers are preserved as-is
+  if (type === "number") return String(value); // Ensure numbers are preserved as-is
   if (type === "null") return "null";
   return String(value);
 };
+
+// Constants for node dimensions and spacing
+const NODE_WIDTH = 250;  // Reduced from 300
+const NODE_HEIGHT = 150; // Reduced from 200
+const NODE_MARGIN = 30;  // Reduced from 50
+
+// Helper function to check if two nodes overlap
+function doNodesOverlap(
+  node1Pos: { x: number; y: number },
+  node2Pos: { x: number; y: number }
+): boolean {
+  return (
+    Math.abs(node1Pos.x - node2Pos.x) < NODE_WIDTH + NODE_MARGIN &&
+    Math.abs(node1Pos.y - node2Pos.y) < NODE_HEIGHT + NODE_MARGIN
+  );
+}
+
+// Helper function to find a position where a node doesn't overlap with existing nodes
+function findNonOverlappingPosition(
+  newPos: { x: number; y: number },
+  existingNodes: Node[]
+): { x: number; y: number } {
+  let position = { ...newPos };
+  let attempts = 0;
+  const maxAttempts = 100; // Prevent infinite loops
+
+  while (attempts < maxAttempts) {
+    let hasOverlap = false;
+
+    for (const node of existingNodes) {
+      if (doNodesOverlap(position, node.position)) {
+        hasOverlap = true;
+        // Try moving the node down
+        position.y += NODE_HEIGHT + NODE_MARGIN;
+        break;
+      }
+    }
+
+    if (!hasOverlap) {
+      return position;
+    }
+
+    attempts++;
+  }
+
+  // If we couldn't find a non-overlapping position, offset it diagonally
+  return {
+    x: newPos.x + attempts * 50,
+    y: newPos.y + attempts * 50,
+  };
+}
 
 // Convert JSON to nodes and edges with grouped properties
 export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
@@ -77,7 +128,13 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         }
       });
 
-      // Create the node
+      // Find non-overlapping position before creating the node
+      const nonOverlappingPos = findNonOverlappingPosition(
+        { x: xPos, y: yPos },
+        nodes
+      );
+
+      // Create the node with the non-overlapping position
       nodes.push({
         id: currentId,
         type: "grouped",
@@ -86,12 +143,12 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           type: "object",
           properties,
         },
-        position: { x: xPos, y: yPos },
+        position: nonOverlappingPos,
       });
 
-      // Process child objects and arrays
-      let childX = xPos + 300;
-      let childY = yPos - (Object.keys(data).length * 100) / 2;
+      // Update the child positioning logic
+      let childX = nonOverlappingPos.x + NODE_WIDTH + NODE_MARGIN;
+      let childY = nonOverlappingPos.y;
 
       Object.entries(data).forEach(([childKey, childValue]) => {
         const childType = getValueType(childValue);
@@ -106,7 +163,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
             childX,
             childY
           );
-          childY += 200;
+          childY += NODE_HEIGHT + NODE_MARGIN;
         } else if (childType === "array") {
           // Instead of creating an array node, process array items directly
           processArrayItemsDirectly(
@@ -116,7 +173,9 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
             childX,
             childY
           );
-          childY += 200 * Math.max(1, (childValue as any[]).length);
+          childY +=
+            NODE_HEIGHT +
+            NODE_MARGIN * Math.max(1, (childValue as any[]).length);
         }
       });
     } else if (dataType === "array") {
@@ -124,6 +183,11 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       processArrayItemsDirectly(data, parentId, key, xPos, yPos);
     } else {
       // This shouldn't happen for the root, but handle primitive types
+      const nonOverlappingPos = findNonOverlappingPosition(
+        { x: xPos, y: yPos },
+        nodes
+      );
+
       nodes.push({
         id: currentId,
         type: "grouped",
@@ -132,11 +196,12 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           type: dataType,
           properties: [{ key: "", value: getDisplayValue(data, dataType) }],
         },
-        position: { x: xPos, y: yPos },
+        position: nonOverlappingPos,
       });
     }
   }
-  // New function to process array items directly without creating an array node
+
+  // Function to process array items directly
   function processArrayItemsDirectly(
     arr: any[],
     parentId: string | null,
@@ -150,9 +215,15 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       arr = []; // Default to empty array if not an array
       return;
     }
+
     if (arr.length === 0) {
       // If array is empty, create a placeholder node
       const emptyNodeId = `node-${nodeId++}`;
+      const nonOverlappingPos = findNonOverlappingPosition(
+        { x: xPos, y: yPos },
+        nodes
+      );
+
       nodes.push({
         id: emptyNodeId,
         type: "grouped",
@@ -161,8 +232,9 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           type: "array", // Already correct
           properties: [{ key: "", value: "Empty array" }],
         },
-        position: { x: xPos, y: yPos },
+        position: nonOverlappingPos,
       });
+
       if (parentId) {
         edges.push({
           id: `edge-${parentId}-${emptyNodeId}`,
@@ -173,11 +245,17 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       }
       return;
     }
+
     // Process array items that are objects or arrays
     let childY = yPos - (arr.length * 100) / 2;
+
     arr.forEach((item, index) => {
       const itemType = getValueType(item);
       const childId = `node-${nodeId++}`;
+      const nonOverlappingPos = findNonOverlappingPosition(
+        { x: xPos, y: childY },
+        nodes
+      );
 
       if (itemType === "object" && item !== null) {
         // Create the node first with array type
@@ -205,7 +283,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
               }
             }),
           },
-          position: { x: xPos, y: childY },
+          position: nonOverlappingPos,
         });
 
         // Connect to parent
@@ -219,8 +297,8 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         }
 
         // Process children
-        let subChildX = xPos + 300;
-        let subChildY = childY - (Object.keys(item).length * 100) / 2;
+        let subChildX = nonOverlappingPos.x + NODE_WIDTH + NODE_MARGIN;
+        let subChildY = nonOverlappingPos.y;
 
         Object.entries(item).forEach(([subChildKey, subChildValue]) => {
           const subChildType = getValueType(subChildValue);
@@ -235,7 +313,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
               subChildX,
               subChildY
             );
-            subChildY += 200;
+            subChildY += NODE_HEIGHT + NODE_MARGIN;
           } else if (subChildType === "array") {
             processArrayItemsDirectly(
               subChildValue as any[],
@@ -244,11 +322,13 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
               subChildX,
               subChildY
             );
-            subChildY += 200 * Math.max(1, (subChildValue as any[]).length);
+            subChildY +=
+              NODE_HEIGHT +
+              NODE_MARGIN * Math.max(1, (subChildValue as any[]).length);
           }
         });
 
-        childY += 200;
+        childY += NODE_HEIGHT + NODE_MARGIN;
       } else if (itemType === "array") {
         processArrayItemsDirectly(
           item,
@@ -257,7 +337,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           xPos,
           childY
         );
-        childY += 200;
+        childY += NODE_HEIGHT + NODE_MARGIN;
       } else {
         // Handle primitive values in arrays
         nodes.push({
@@ -268,7 +348,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
             type: "array", // Set type to array for all array elements
             properties: [{ key: "", value: getDisplayValue(item, itemType) }],
           },
-          position: { x: xPos, y: childY },
+          position: nonOverlappingPos,
         });
 
         if (parentId) {
@@ -280,9 +360,10 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           });
         }
 
-        childY += 200;
+        childY += NODE_HEIGHT + NODE_MARGIN;
       }
     });
   }
+
   return { nodes, edges };
 };
