@@ -12,11 +12,15 @@ import JsonFlowChart from "../components/Visualizers/jsonflowchart";
 
 export default function Home() {
   const [jsonInput, setJsonInput] = useState("");
-  const [isValidJson, setIsValidJson] = useState(false);
+  const [isValidJson, setIsValidJson] = useState(true);
   const [nodeCount, setNodeCount] = useState(0);
 
   // Validate JSON whenever input changes
   useEffect(() => {
+    if (jsonInput.trim() === "") {
+      setIsValidJson(true);
+      return;
+    }
     try {
       if (jsonInput.trim()) {
         JSON.parse(jsonInput);

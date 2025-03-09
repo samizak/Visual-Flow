@@ -18,8 +18,6 @@ const GroupedNode = memo(({ data }: NodeProps) => {
       array: "#b87333", // Orange
     };
 
-    console.log(type, properties);
-
     return colors[type as keyof typeof colors] || "#607d8b";
   };
 
