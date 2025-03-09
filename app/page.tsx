@@ -231,6 +231,12 @@ export default function Home() {
             </>
           )}
         </div>
+        
+        {/* Add node count to the footer */}
+        <div className="flex items-center">
+          <span className="text-gray-400">Total Nodes: </span>
+          <span className="text-white ml-1">{nodeCount}</span>
+        </div>
       </div>
     </main>
   );
