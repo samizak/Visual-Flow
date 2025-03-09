@@ -9,6 +9,7 @@ import {
 } from "../components/ui/tabs";
 import LeftPanel from "../components/Panel/LeftPanel";
 import JsonFlowChart from "../components/Visualizers/JsonFlowChart";
+import Footer from "../components/Layout/Footer";
 
 export default function Home() {
   const [jsonData, setJsonData] = useState<string>("");
@@ -191,53 +192,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Status Footer */}
-      <div className="h-8 bg-[#1e1e1e] border-t border-gray-700 flex items-center justify-between px-4 text-sm">
-        <div className="flex items-center">
-          <span className="mr-2">JSON Status:</span>
-          {isValidJson ? (
-            <>
-              <svg
-                className="w-4 h-4 text-green-500 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-              <span className="text-green-500">Valid</span>
-            </>
-          ) : (
-            <>
-              <svg
-                className="w-4 h-4 text-red-500 mr-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-              <span className="text-red-500">Invalid</span>
-            </>
-          )}
-        </div>
-        
-        {/* Add node count to the footer */}
-        <div className="flex items-center">
-          <span className="text-gray-400">Total Nodes: </span>
-          <span className="text-white ml-1">{nodeCount}</span>
-        </div>
-      </div>
+      <Footer isValidJson={isValidJson} nodeCount={nodeCount} />
     </main>
   );
 }
