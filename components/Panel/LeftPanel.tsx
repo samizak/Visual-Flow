@@ -116,11 +116,10 @@ export default function LeftPanel({
       style={{ width: `${width}vw` }}
     >
       {/* Header with project name */}
-      <div className="bg-[#1e1e1e] p-3 border-b border-gray-700 flex justify-between items-center flex-shrink-0">
+      {/* <div className="bg-[#1e1e1e] p-3 border-b border-gray-700 flex justify-between items-center flex-shrink-0">
         <h1 className="text-xl font-semibold text-white">JSON Vue</h1>
 
         <div className="flex space-x-2">
-          {/* Format button */}
           <button
             onClick={() => {
               try {
@@ -154,7 +153,6 @@ export default function LeftPanel({
             Format
           </button>
 
-          {/* Minify button */}
           <button
             onClick={() => {
               try {
@@ -183,7 +181,6 @@ export default function LeftPanel({
             </svg>
             Minify
           </button>
-          {/* Copy button */}
           <button
             onClick={() => {
               try {
@@ -221,7 +218,7 @@ export default function LeftPanel({
             Copy
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Rest of your component remains unchanged */}
       {/* Editor container with padding bottom to prevent overflow */}
