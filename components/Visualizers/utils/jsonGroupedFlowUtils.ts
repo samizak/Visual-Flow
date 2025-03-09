@@ -23,9 +23,9 @@ export const getDisplayValue = (value: any, type: string): string => {
 };
 
 // Constants for node dimensions and spacing
-const NODE_WIDTH = 250;  // Reduced from 300
+const NODE_WIDTH = 250; // Reduced from 300
 const NODE_HEIGHT = 150; // Reduced from 200
-const NODE_MARGIN = 30;  // Reduced from 50
+const NODE_MARGIN = 30; // Reduced from 50
 
 // Helper function to check if two nodes overlap
 function doNodesOverlap(
@@ -82,7 +82,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
   // Create root node at the center
   const rootId = `node-${nodeId++}`;
 
-  // Process the root object
+  // Process the root object - place at (0,0) as the center point
   processJsonNode(json, rootId, null, "", 0, 0);
 
   // Main function to process JSON nodes recursively
@@ -146,9 +146,15 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         position: nonOverlappingPos,
       });
 
-      // Update the child positioning logic
+      // Update the child positioning logic - always branch to the right
       let childX = nonOverlappingPos.x + NODE_WIDTH + NODE_MARGIN;
-      let childY = nonOverlappingPos.y;
+
+      // Calculate total children to distribute vertically
+      const childrenCount = Object.keys(data).length;
+      const totalHeight = childrenCount * (NODE_HEIGHT + NODE_MARGIN);
+
+      // Start from the top of the distribution area
+      let childY = nonOverlappingPos.y - totalHeight / 2 + NODE_HEIGHT / 2;
 
       Object.entries(data).forEach(([childKey, childValue]) => {
         const childType = getValueType(childValue);
@@ -173,9 +179,10 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
             childX,
             childY
           );
-          childY +=
-            NODE_HEIGHT +
-            NODE_MARGIN * Math.max(1, (childValue as any[]).length);
+
+          // Adjust the vertical position based on array length
+          const arrayLength = Array.isArray(childValue) ? childValue.length : 1;
+          childY += NODE_HEIGHT + NODE_MARGIN * Math.max(1, arrayLength);
         }
       });
     } else if (dataType === "array") {
@@ -246,8 +253,11 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       return;
     }
 
-    // Process array items that are objects or arrays
-    let childY = yPos - (arr.length * 100) / 2;
+    // Calculate total height needed for array items
+    const totalHeight = arr.length * (NODE_HEIGHT + NODE_MARGIN);
+
+    // Start from the top of the distribution area
+    let childY = yPos - totalHeight / 2 + NODE_HEIGHT / 2;
 
     arr.forEach((item, index) => {
       const itemType = getValueType(item);
@@ -296,9 +306,16 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           });
         }
 
-        // Process children
+        // Process children - always branch to the right
         let subChildX = nonOverlappingPos.x + NODE_WIDTH + NODE_MARGIN;
-        let subChildY = nonOverlappingPos.y;
+
+        // Calculate total height for sub-children
+        const subChildrenCount = Object.keys(item).length;
+        const subTotalHeight = subChildrenCount * (NODE_HEIGHT + NODE_MARGIN);
+
+        // Start from the top of the distribution area
+        let subChildY =
+          nonOverlappingPos.y - subTotalHeight / 2 + NODE_HEIGHT / 2;
 
         Object.entries(item).forEach(([subChildKey, subChildValue]) => {
           const subChildType = getValueType(subChildValue);
@@ -322,9 +339,12 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
               subChildX,
               subChildY
             );
-            subChildY +=
-              NODE_HEIGHT +
-              NODE_MARGIN * Math.max(1, (subChildValue as any[]).length);
+
+            // Adjust the vertical position based on array length
+            const arrayLength = Array.isArray(subChildValue)
+              ? subChildValue.length
+              : 1;
+            subChildY += NODE_HEIGHT + NODE_MARGIN * Math.max(1, arrayLength);
           }
         });
 
