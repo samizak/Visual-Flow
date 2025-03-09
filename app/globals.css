@@ -338,3 +338,14 @@ body {
 .react-flow__handle {
   z-index: 3;
 }
+
+/* Hide Monaco editor overlays */
+.monaco-editor .bracket-match-guide,
+.monaco-editor .monaco-hover,
+.monaco-editor .parameter-hints-widget {
+  display: none !important;
+}
+
+div.hover-row.status-bar {
+  display: none !important;
+}

@@ -25,11 +25,30 @@ export default function LeftPanel({
     lineNumbers: "on",
     renderIndentGuides: true,
     tabSize: 2,
+    stickyScroll: { enabled: false },
   };
 
   // Handle editor load complete
-  const handleEditorDidMount = () => {
+  const handleEditorDidMount = (editor: any) => {
     setIsEditorLoaded(true);
+
+    // Disable bracket pair guides and other overlays directly on the editor instance
+    editor.updateOptions({
+      bracketPairColorization: { enabled: false },
+      guides: { bracketPairs: false, indentation: false },
+      renderLineHighlight: "none",
+      occurrencesHighlight: false,
+      folding: false,
+      matchBrackets: "never",
+      renderIndentGuides: false,
+    });
+
+    // Access the internal editor model and disable bracket pair guides
+    const model = editor.getModel();
+    if (model) {
+      // This is a more direct way to disable bracket pair guides
+      model._bracketPairColorizer?.dispose();
+    }
   };
 
   // Handle mouse down to start resizing
@@ -215,6 +234,7 @@ export default function LeftPanel({
             } as any
           }
           onMount={handleEditorDidMount}
+          loading={null}
           className="monaco-editor-container"
         />
 
