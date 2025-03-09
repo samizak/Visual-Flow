@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import {
   ReactFlow,
   Controls,
@@ -20,10 +20,15 @@ const nodeTypes = {
   grouped: GroupedNode,
 };
 
-export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
+export default function JsonFlowChart({ 
+  jsonData, 
+  onNodeCountChange 
+}: JsonFlowChartProps & { onNodeCountChange?: (count: number) => void }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [lastValidJson, setLastValidJson] = useState("");
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Convert JSON to nodes and edges
   const processJsonData = useCallback(
@@ -32,6 +37,7 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
         setNodes([]);
         setEdges([]);
         setIsLoading(false);
+        onNodeCountChange?.(0);
         return;
       }
 
@@ -41,22 +47,51 @@ export default function JsonFlowChart({ jsonData }: JsonFlowChartProps) {
           convertJsonToGroupedFlow(parsedJson);
         setNodes(flowNodes as any);
         setEdges(flowEdges as any);
+        setLastValidJson(jsonString);
         setIsLoading(false);
+        onNodeCountChange?.(flowNodes.length);
       } catch (error) {
-        console.error("Error processing JSON:", error);
-        setNodes([]);
-        setEdges([]);
-        setIsLoading(false);
+        // If parsing fails, keep the last valid visualization
+        console.log("JSON parsing error (not displayed to user):", error);
+        if (lastValidJson) {
+          // Don't update the visualization if we have a previous valid state
+          setIsLoading(false);
+        } else {
+          // If there's no previous valid state, show empty diagram
+          setNodes([]);
+          setEdges([]);
+          setIsLoading(false);
+          onNodeCountChange?.(0);
+        }
       }
     },
-    [setNodes, setEdges]
+    [setNodes, setEdges, lastValidJson, onNodeCountChange]
   );
 
-  // Process JSON data when it changes
+  // Process JSON data with debounce
   useEffect(() => {
-    setIsLoading(true);
-    processJsonData(jsonData);
-  }, [jsonData, processJsonData]);
+    // Clear any existing timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Only show loading state if we're going from valid to new state
+    if (lastValidJson !== jsonData && !isLoading) {
+      setIsLoading(true);
+    }
+
+    // Set a new timer to process the JSON after a delay
+    debounceTimerRef.current = setTimeout(() => {
+      processJsonData(jsonData);
+    }, 800); // 800ms debounce time
+
+    // Cleanup function to clear the timer if the component unmounts
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [jsonData, processJsonData, lastValidJson, isLoading]);
 
   if (isLoading) {
     return (
