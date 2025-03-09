@@ -32,7 +32,7 @@
 }
 
 .grouped-node-header {
-  padding: 8px 12px;
+  padding: 6px 12px;  /* Reduced from 8px to 6px */
   font-weight: 600;
   color: white;
   font-size: 14px;
@@ -40,13 +40,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.5px;
+  transition: background-color 0.2s;
 }
 
 .grouped-node-content {
-  padding: 8px 12px;
+  padding: 6px 12px;  /* Reduced from 8px to 6px */
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;  /* Reduced from 4px to 3px */
   background-color: #2a2a2a;
   color: #e0e0e0;
 }
@@ -56,59 +61,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: 12px;  /* Reduced from 13px to 12px */
+  line-height: 1.3;  /* Reduced from 1.4 to 1.3 */
   width: 100%;
 }
 
-.property-content {
-  display: flex;
-  flex-wrap: wrap;
-  flex: 1;
-}
-
-.property-actions {
+/* Node action button hover effect */
+.node-action-button {
   display: flex;
   align-items: center;
-  margin-left: 8px;
+  padding: 3px 6px;  /* Reduced from 4px to 3px */
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
-/* Node hover effects */
-.grouped-node:hover .grouped-node-container {
-  transform: translateY(-4px);
-  box-shadow: 0 0 0 2px #0e639c, 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-.grouped-node:hover .grouped-node-header {
-  background-color: #4a6d8c; /* Slightly lighter on hover */
-}
-
-.grouped-node:hover .grouped-node-content {
-  background-color: #333333; /* Slightly lighter on hover */
-}
-
-/* Glow effect */
-.grouped-node:hover::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-  border-radius: 8px;
-  filter: blur(15px);
-  background-color: rgba(14, 99, 156, 0.2);
-  opacity: 0;
-  animation: fadeIn 0.3s ease forwards;
-}
-
-/* Link icon */
-.link-icon {
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-}
-
-.grouped-node-header:hover .link-icon {
-  opacity: 1;
+.node-action-button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
 }

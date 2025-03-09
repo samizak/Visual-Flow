@@ -19,7 +19,10 @@
 }
 
 /* Orange for array nodes */
-.react-flow.dimmed .react-flow__node.highlight .grouped-node[data-type="array"] .grouped-node-container {
+.react-flow.dimmed
+  .react-flow__node.highlight
+  .grouped-node[data-type="array"]
+  .grouped-node-container {
   box-shadow: 0 0 0 2px #b87333, 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
@@ -40,13 +43,6 @@
 
 .react-flow__node.dragging .grouped-node-container {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* Remove the forced background color for headers during drag */
-/* This was causing the orange headers to turn blue */
-.react-flow__node.dragging:hover .grouped-node-header,
-.react-flow__node.dragging .grouped-node-header {
-  /* background-color: #3a506b !important; */ /* Removed this line */
 }
 
 .react-flow__node.dragging:hover .grouped-node-content,

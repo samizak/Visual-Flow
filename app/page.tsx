@@ -11,7 +11,8 @@ import LeftPanel from "../components/Panel/LeftPanel";
 import JsonFlowChart from "../components/Visualizers/JsonFlowChart";
 
 export default function Home() {
-  const [jsonInput, setJsonInput] = useState("");
+  const [jsonData, setJsonData] = useState<string>("");
+  const [isFormatting, setIsFormatting] = useState(false);
   const [isValidJson, setIsValidJson] = useState(true);
   const [nodeCount, setNodeCount] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -19,13 +20,13 @@ export default function Home() {
 
   // Validate JSON whenever input changes
   useEffect(() => {
-    if (jsonInput.trim() === "") {
+    if (jsonData.trim() === "") {
       setIsValidJson(true);
       return;
     }
     try {
-      if (jsonInput.trim()) {
-        JSON.parse(jsonInput);
+      if (jsonData.trim()) {
+        JSON.parse(jsonData);
         setIsValidJson(true);
       } else {
         setIsValidJson(false);
@@ -33,7 +34,7 @@ export default function Home() {
     } catch (e) {
       setIsValidJson(false);
     }
-  }, [jsonInput]);
+  }, [jsonData]);
 
   // Handle mouse events to prevent text selection during dragging
   const handleMouseDown = () => {
@@ -66,7 +67,7 @@ export default function Home() {
     >
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel */}
-        <LeftPanel jsonInput={jsonInput} setJsonInput={setJsonInput} />
+        <LeftPanel jsonInput={jsonData} setJsonInput={setJsonData} />
 
         {/* Right Panel */}
         <div className="flex-1 flex flex-col border-l border-gray-700">
@@ -90,10 +91,10 @@ export default function Home() {
               </div>
               <div className="flex-1 bg-[#141414] overflow-hidden">
                 <TabsContent value="tree" className="h-full relative">
-                  {jsonInput ? (
+                  {jsonData ? (
                     <>
                       <JsonFlowChart
-                        jsonData={jsonInput}
+                        jsonData={jsonData}
                         onNodeCountChange={setNodeCount}
                       />
                       {/* Legend overlay */}
@@ -142,7 +143,7 @@ export default function Home() {
 
                 {/* Adding 3D View Tab Content with template message */}
                 <TabsContent value="3d" className="h-full relative">
-                  {jsonInput ? (
+                  {jsonData ? (
                     <div className="h-full w-full flex items-center justify-center">
                       <div className="text-gray-400">
                         <p>3D visualization coming soon</p>

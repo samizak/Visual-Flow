@@ -16,7 +16,7 @@ interface JsonVisualizerProps {
   testName?: string;
 }
 
-function JsonVisualizer({ jsonData, testName }: JsonVisualizerProps) {
+function JsonVisualizer({ jsonData, testName, skipUpdate = false }: JsonVisualizerProps & { skipUpdate?: boolean }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const renderCompleteRef = useRef(false);
@@ -70,7 +70,7 @@ function JsonVisualizer({ jsonData, testName }: JsonVisualizerProps) {
   }, []);
 
   useEffect(() => {
-    if (!jsonData || !workerRef.current) return;
+    if (!jsonData || !workerRef.current || skipUpdate) return;
 
     try {
       // Reset render complete flag
@@ -81,7 +81,7 @@ function JsonVisualizer({ jsonData, testName }: JsonVisualizerProps) {
     } catch (error) {
       console.error("Error sending data to worker:", error);
     }
-  }, [jsonData, testName]);
+  }, [jsonData, testName, skipUpdate]);
 
   // Return the ReactFlow component
   return (

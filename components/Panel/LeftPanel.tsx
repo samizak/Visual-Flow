@@ -5,9 +5,11 @@ import { toast } from "sonner";
 export default function LeftPanel({
   jsonInput,
   setJsonInput,
+  setIsFormatting, // Add this new prop
 }: {
   jsonInput: any;
   setJsonInput: any;
+  setIsFormatting?: (isFormatting: boolean) => void; // Optional prop
 }) {
   const [width, setWidth] = useState(30); // Initial width in percentage
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
@@ -91,6 +93,22 @@ export default function LeftPanel({
     };
   }, []);
 
+  // Helper function for formatting operations
+  const updateJsonWithoutDiagramRegeneration = (newJson: string) => {
+    // Signal to parent that we're just formatting (if the prop exists)
+    if (setIsFormatting) setIsFormatting(true);
+    
+    // Update the JSON
+    setJsonInput(newJson);
+    
+    // Reset the formatting flag after a short delay
+    if (setIsFormatting) {
+      setTimeout(() => {
+        setIsFormatting(false);
+      }, 50);
+    }
+  };
+
   return (
     <div
       ref={panelRef}
@@ -112,7 +130,7 @@ export default function LeftPanel({
                   null,
                   2
                 );
-                setJsonInput(formatted);
+                updateJsonWithoutDiagramRegeneration(formatted);
               } catch (e) {
                 // Handle invalid JSON
                 console.error("Invalid JSON");
@@ -142,7 +160,7 @@ export default function LeftPanel({
               try {
                 // Minify JSON by removing all whitespace
                 const minified = JSON.stringify(JSON.parse(jsonInput));
-                setJsonInput(minified);
+                updateJsonWithoutDiagramRegeneration(minified);
               } catch (e) {
                 // Handle invalid JSON
                 console.error("Invalid JSON");

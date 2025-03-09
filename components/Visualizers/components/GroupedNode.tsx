@@ -73,23 +73,19 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
             justifyContent: "space-between",
             alignItems: "center",
             padding: "8px 12px",
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+            fontWeight: 500,
+            letterSpacing: "0.3px",
+            transition: "background-color 0.2s ease",
           }}
         >
           <span>{label}</span>
           {hasOutgoingEdges() && (
-            <div 
-              style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+            <div
+              className="node-action-button cursor-pointer"
               onClick={toggleNodeCollapse}
-              title={isNodeCollapsed ? "Expand" : "Collapse"}
+              title={isNodeCollapsed ? "Expand All" : "Collapse All"}
             >
-              <div
-                style={{
-                  width: "1px",
-                  height: "16px",
-                  backgroundColor: "rgba(255, 255, 255, 0.3)",
-                  marginRight: "8px",
-                }}
-              />
               <LinkIcon />
             </div>
           )}

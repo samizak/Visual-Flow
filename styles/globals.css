@@ -2,8 +2,9 @@
 .link-icon {
   opacity: 0.7;
   transition: opacity 0.2s ease;
+  stroke-width: 1.75;
 }
 
-.grouped-node-header:hover .link-icon {
-  opacity: 1;
+.node-action-button {
+  cursor: pointer;
 }
