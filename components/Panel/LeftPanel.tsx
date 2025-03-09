@@ -80,7 +80,101 @@ export default function LeftPanel({
       {/* Header with project name */}
       <div className="bg-[#1e1e1e] p-3 border-b border-gray-700 flex justify-between items-center">
         <h1 className="text-xl font-semibold text-white">JSON Vue</h1>
+
+        <div className="flex space-x-2">
+          {/* Format button */}
+          <button
+            onClick={() => {
+              try {
+                // Format JSON with 2 spaces indentation
+                const formatted = JSON.stringify(
+                  JSON.parse(jsonInput),
+                  null,
+                  4
+                );
+                setJsonInput(formatted);
+              } catch (e) {
+                // Handle invalid JSON
+                console.error("Invalid JSON");
+              }
+            }}
+            className="px-3 py-1 text-xs bg-[#2d2d2d] hover:bg-[#3a3a3a] text-gray-300 rounded flex items-center transition-colors duration-200"
+            title="Format JSON"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-3.5 w-3.5 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Format
+          </button>
+
+          {/* Minify button */}
+          <button
+            onClick={() => {
+              try {
+                // Minify JSON by removing all whitespace
+                const minified = JSON.stringify(JSON.parse(jsonInput));
+                setJsonInput(minified);
+              } catch (e) {
+                // Handle invalid JSON
+                console.error("Invalid JSON");
+              }
+            }}
+            className="px-3 py-1 text-xs bg-[#2d2d2d] hover:bg-[#3a3a3a] text-gray-300 rounded flex items-center transition-colors duration-200"
+            title="Minify JSON"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-3.5 w-3.5 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                clipRule="evenodd"
+              />
+            </svg>
+            Minify
+          </button>
+
+          {/* Copy button */}
+          <button
+            onClick={() => {
+              try {
+                // Copy JSON to clipboard
+                navigator.clipboard.writeText(jsonInput);
+              } catch (e) {
+                // Handle clipboard error
+                console.error("Failed to copy");
+              }
+            }}
+            className="px-3 py-1 text-xs bg-[#2d2d2d] hover:bg-[#3a3a3a] text-gray-300 rounded flex items-center transition-colors duration-200"
+            title="Copy to clipboard"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-3.5 w-3.5 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+            </svg>
+            Copy
+          </button>
+        </div>
       </div>
+
+      {/* Rest of your component remains unchanged */}
       {/* Editor container */}
       <div className="flex-grow relative">
         {!isEditorLoaded && (
