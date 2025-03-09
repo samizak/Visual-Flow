@@ -9,14 +9,17 @@ import {
   Controls,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css"; // Import the styles
-import { convertJsonToGroupedFlow } from "./utils/jsonGroupedFlowUtils";
 
 interface JsonVisualizerProps {
   jsonData: string;
   testName?: string;
 }
 
-function JsonVisualizer({ jsonData, testName, skipUpdate = false }: JsonVisualizerProps & { skipUpdate?: boolean }) {
+function JsonVisualizer({
+  jsonData,
+  testName,
+  skipUpdate = false,
+}: JsonVisualizerProps & { skipUpdate?: boolean }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const renderCompleteRef = useRef(false);
