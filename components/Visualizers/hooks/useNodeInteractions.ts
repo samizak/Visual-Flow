@@ -11,26 +11,6 @@ interface NodeInteractionHooks {
   hasOutgoingEdges: () => boolean;
 }
 
-// Helper function to find direct children of a node
-const findDirectChildren = (
-  nodeId: string,
-  edges: Edge[]
-): { directChildren: Set<string>; directEdges: Set<string> } => {
-  const directChildren = new Set<string>();
-  const directEdges = new Set<string>();
-  
-  // Find direct children edges
-  const childEdges = edges.filter(edge => edge.source === nodeId);
-  
-  // Add direct children to the set
-  childEdges.forEach(edge => {
-    directChildren.add(edge.target);
-    directEdges.add(edge.id);
-  });
-
-  return { directChildren, directEdges };
-};
-
 export const useNodeInteractions = (
   id: string,
   isDragging: boolean,
@@ -38,36 +18,41 @@ export const useNodeInteractions = (
   isNodeCollapsed: boolean,
   setIsNodeCollapsed: (isCollapsed: boolean) => void,
   collapsedProperties: Record<string, boolean>,
-  setCollapsedProperties: (callback: (prev: Record<string, boolean>) => Record<string, boolean>) => void,
+  setCollapsedProperties: (
+    callback: (prev: Record<string, boolean>) => Record<string, boolean>
+  ) => void,
   hasChildren?: boolean
 ): NodeInteractionHooks => {
   const { getNodes, getEdges, setNodes, setEdges } = useReactFlow();
 
   // Helper function to find all descendants of a node (not just direct children)
   const findAllDescendants = useCallback(
-    (nodeId: string, edges: Edge[]): { descendantNodes: Set<string>; descendantEdges: Set<string> } => {
+    (
+      nodeId: string,
+      edges: Edge[]
+    ): { descendantNodes: Set<string>; descendantEdges: Set<string> } => {
       const descendantNodes = new Set<string>();
       const descendantEdges = new Set<string>();
-      
+
       // Find direct children first
-      const childEdges = edges.filter(edge => edge.source === nodeId);
-      
+      const childEdges = edges.filter((edge) => edge.source === nodeId);
+
       // Process each direct child
-      childEdges.forEach(edge => {
+      childEdges.forEach((edge) => {
         // Add this edge
         descendantEdges.add(edge.id);
-        
+
         // Add the direct child
         descendantNodes.add(edge.target);
-        
+
         // Recursively find all descendants of this child
         const childResults = findAllDescendants(edge.target, edges);
-        
+
         // Add all descendants from the recursive call
-        childResults.descendantNodes.forEach(id => descendantNodes.add(id));
-        childResults.descendantEdges.forEach(id => descendantEdges.add(id));
+        childResults.descendantNodes.forEach((id) => descendantNodes.add(id));
+        childResults.descendantEdges.forEach((id) => descendantEdges.add(id));
       });
-      
+
       return { descendantNodes, descendantEdges };
     },
     []
@@ -90,10 +75,13 @@ export const useNodeInteractions = (
     // Find all ancestors by traversing edges backwards
     let currentNodes = [id];
     let foundNewNodes = true;
-    
+
     // Track the path from root to the hovered node
-    const nodeToParentMap = new Map<string, { nodeId: string, edgeId: string }>();
-    
+    const nodeToParentMap = new Map<
+      string,
+      { nodeId: string; edgeId: string }
+    >();
+
     // Keep finding ancestors until we can't find any more
     while (foundNewNodes) {
       foundNewNodes = false;
@@ -111,17 +99,17 @@ export const useNodeInteractions = (
             nodesToHighlight.add(edge.source);
             currentNodes.push(edge.source);
             foundNewNodes = true;
-            
+
             // Track the parent relationship for path construction
-            nodeToParentMap.set(nodeId, { 
-              nodeId: edge.source, 
-              edgeId: edge.id 
+            nodeToParentMap.set(nodeId, {
+              nodeId: edge.source,
+              edgeId: edge.id,
             });
           }
         }
       }
     }
-    
+
     // Construct the path from root to hovered node
     let currentNodeId = id;
     while (nodeToParentMap.has(currentNodeId)) {
@@ -144,10 +132,10 @@ export const useNodeInteractions = (
       setEdges(
         edges.map((edge) => ({
           ...edge,
-          className: edgesToHighlight.has(edge.id) 
-            ? pathEdges.has(edge.id) 
-              ? "highlight animated-path" 
-              : "highlight" 
+          className: edgesToHighlight.has(edge.id)
+            ? pathEdges.has(edge.id)
+              ? "highlight animated-path"
+              : "highlight"
             : "",
         }))
       );
@@ -242,12 +230,17 @@ export const useNodeInteractions = (
 
       const nodes = getNodes();
       const edges = getEdges();
-      
+
       // Use the helper function to find ALL descendants
-      const { descendantNodes, descendantEdges } = findAllDescendants(id, edges);
-      
-      console.log(`Node ${id} has ${descendantNodes.size} descendant nodes and ${descendantEdges.size} descendant edges`);
-      
+      const { descendantNodes, descendantEdges } = findAllDescendants(
+        id,
+        edges
+      );
+
+      console.log(
+        `Node ${id} has ${descendantNodes.size} descendant nodes and ${descendantEdges.size} descendant edges`
+      );
+
       // Toggle visibility of ALL descendant nodes and their edges
       setNodes(
         nodes.map((node) => {
@@ -279,7 +272,15 @@ export const useNodeInteractions = (
 
       setIsNodeCollapsed(!isNodeCollapsed);
     },
-    [id, getNodes, getEdges, setNodes, setEdges, isNodeCollapsed, findAllDescendants]
+    [
+      id,
+      getNodes,
+      getEdges,
+      setNodes,
+      setEdges,
+      isNodeCollapsed,
+      findAllDescendants,
+    ]
   );
 
   // Toggle collapse/expand function for a specific property
@@ -289,72 +290,82 @@ export const useNodeInteractions = (
 
       const nodes = getNodes();
       const edges = getEdges();
-      
+
       // Find edges that connect this node to the property node
-      const propertyEdges = edges.filter(edge => 
-        edge.source === id && 
-        (edge.sourceHandle === propKey || edge.data?.key === propKey)
+      const propertyEdges = edges.filter(
+        (edge) =>
+          edge.source === id &&
+          (edge.sourceHandle === propKey || edge.data?.key === propKey)
       );
-      
+
       let targetIds = new Set<string>();
       let edgeIds = new Set<string>();
-      
+
       // If we can't find edges by sourceHandle, try to find by target node label
       if (propertyEdges.length === 0) {
-        const allChildEdges = edges.filter(edge => edge.source === id);
-        
+        const allChildEdges = edges.filter((edge) => edge.source === id);
+
         // Get all target nodes
-        const targetNodeIds = allChildEdges.map(edge => edge.target);
-        const targetNodes = nodes.filter(node => targetNodeIds.includes(node.id));
-        
-        // Find nodes that match the property key in their label
-        const matchingNodes = targetNodes.filter(node => 
-          node.data?.label === propKey || 
-          (typeof node.data?.label === 'string' && node.data?.label.startsWith(propKey + ' '))
+        const targetNodeIds = allChildEdges.map((edge) => edge.target);
+        const targetNodes = nodes.filter((node) =>
+          targetNodeIds.includes(node.id)
         );
-        
+
+        // Find nodes that match the property key in their label
+        const matchingNodes = targetNodes.filter(
+          (node) =>
+            node.data?.label === propKey ||
+            (typeof node.data?.label === "string" &&
+              node.data?.label.startsWith(propKey + " "))
+        );
+
         if (matchingNodes.length > 0) {
-          targetIds = new Set(matchingNodes.map(node => node.id));
-          
+          targetIds = new Set(matchingNodes.map((node) => node.id));
+
           // Find edges that connect to these nodes
-          const matchingEdges = edges.filter(edge => 
-            edge.source === id && targetIds.has(edge.target)
+          const matchingEdges = edges.filter(
+            (edge) => edge.source === id && targetIds.has(edge.target)
           );
-          
-          edgeIds = new Set(matchingEdges.map(edge => edge.id));
+
+          edgeIds = new Set(matchingEdges.map((edge) => edge.id));
         }
       } else {
         // We found edges by sourceHandle
-        targetIds = new Set(propertyEdges.map(edge => edge.target));
-        edgeIds = new Set(propertyEdges.map(edge => edge.id));
+        targetIds = new Set(propertyEdges.map((edge) => edge.target));
+        edgeIds = new Set(propertyEdges.map((edge) => edge.id));
       }
-      
+
       // If we found target nodes, process them and their descendants
       if (targetIds.size > 0) {
         // Get the current collapse state for this property
         const isPropertyCollapsed = collapsedProperties[propKey] || false;
-        
+
         // For each target node, find all its descendants
         const allDescendantNodes = new Set<string>();
         const allDescendantEdges = new Set<string>();
-        
+
         // Add the direct property nodes first
-        targetIds.forEach(targetId => {
+        targetIds.forEach((targetId) => {
           allDescendantNodes.add(targetId);
-          
+
           // Then find all descendants of each property node
-          const { descendantNodes, descendantEdges } = findAllDescendants(targetId, edges);
-          
+          const { descendantNodes, descendantEdges } = findAllDescendants(
+            targetId,
+            edges
+          );
+
           // Add all descendants
-          descendantNodes.forEach(id => allDescendantNodes.add(id));
-          descendantEdges.forEach(id => allDescendantEdges.add(id));
+          descendantNodes.forEach((id) => allDescendantNodes.add(id));
+          descendantEdges.forEach((id) => allDescendantEdges.add(id));
         });
-        
+
         // Add the direct edges
-        edgeIds.forEach(id => allDescendantEdges.add(id));
-        
-        console.log(`Property ${propKey} has ${allDescendantNodes.size} descendant nodes and ${allDescendantEdges.size} descendant edges`);
-        
+        edgeIds.forEach((id) => allDescendantEdges.add(id));
+
+        console.log(
+          `Property ${propKey} has ${allDescendantNodes.size} descendant nodes and ${allDescendantEdges.size} descendant edges`
+        );
+
         // Toggle visibility of all descendant nodes
         setNodes(
           nodes.map((node) => {
@@ -381,13 +392,22 @@ export const useNodeInteractions = (
         );
 
         // Update the collapsed state for this specific property
-        setCollapsedProperties(prev => ({
+        setCollapsedProperties((prev) => ({
           ...prev,
-          [propKey]: !isPropertyCollapsed
+          [propKey]: !isPropertyCollapsed,
         }));
       }
     },
-    [id, getNodes, getEdges, setNodes, setEdges, collapsedProperties, setCollapsedProperties, findAllDescendants]
+    [
+      id,
+      getNodes,
+      getEdges,
+      setNodes,
+      setEdges,
+      collapsedProperties,
+      setCollapsedProperties,
+      findAllDescendants,
+    ]
   );
 
   return {
@@ -397,6 +417,6 @@ export const useNodeInteractions = (
     togglePropertyCollapse,
     handleDragStart,
     handleDragStop,
-    hasOutgoingEdges
+    hasOutgoingEdges,
   };
 };

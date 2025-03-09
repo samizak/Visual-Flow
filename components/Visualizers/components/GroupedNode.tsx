@@ -1,5 +1,5 @@
-import { memo, useState, useMemo } from "react";
-import { Handle, Position, NodeProps } from "@xyflow/react";
+import { memo, useState, useMemo, useEffect } from "react";
+import { Handle, Position, NodeProps, useReactFlow } from "@xyflow/react";
 import { getTypeColor, getValueClass, isCollapsible } from "../utils/nodeUtils";
 import {
   LinkIcon,
@@ -15,7 +15,7 @@ interface GroupedNodeData {
   hasChildren?: boolean;
 }
 
-const GroupedNode = memo(({ data, id }: NodeProps) => {
+const GroupedNode = memo(({ data, id, isVisible = true }: NodeProps & { isVisible?: boolean }) => {
   const nodeData = data as unknown as GroupedNodeData;
   const { label, type, properties, hasChildren } = nodeData;
   const [isDragging, setIsDragging] = useState(false);
@@ -47,56 +47,61 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
     hasChildren
   );
 
-  // Memoize the node content to prevent unnecessary re-renders
-  const nodeContent = useMemo(() => (
-    <div className="grouped-node-content">
-      {properties.map((prop, index) => (
-        <div
-          key={index}
-          className="property-wrapper"
-        >
+  // Only memoize the node content if the node is visible
+  const nodeContent = useMemo(() => {
+    // Skip rendering complex content if not visible
+    if (!isVisible) return <div className="grouped-node-content-placeholder"></div>;
+    
+    return (
+      <div className="grouped-node-content">
+        {properties.map((prop, index) => (
           <div
-            className={`grouped-node-property ${isCollapsible(prop.value) ? "collapsible" : ""}`}
+            key={index}
+            className="property-wrapper"
           >
-            <div className="property-content">
-              {prop.key && (
-                <span className="grouped-node-key">{prop.key}</span>
-              )}
-              {prop.key && prop.value && (
-                <span className="grouped-node-separator">: </span>
-              )}
-              {prop.value && (
-                <span
-                  className={`grouped-node-value ${getValueClass(
-                    prop.value
-                  )}`}
-                >
-                  {prop.value}
-                </span>
-              )}
+            <div
+              className={`grouped-node-property ${isCollapsible(prop.value) ? "collapsible" : ""}`}
+            >
+              <div className="property-content">
+                {prop.key && (
+                  <span className="grouped-node-key">{prop.key}</span>
+                )}
+                {prop.key && prop.value && (
+                  <span className="grouped-node-separator">: </span>
+                )}
+                {prop.value && (
+                  <span
+                    className={`grouped-node-value ${getValueClass(
+                      prop.value
+                    )}`}
+                  >
+                    {prop.value}
+                  </span>
+                )}
+              </div>
+              <div className="property-actions">
+                {isCollapsible(prop.value) && (
+                  <PropertyCollapseButton
+                    isCollapsed={
+                      collapsedProperties[prop.key || `prop-${index}`] ||
+                      false
+                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      togglePropertyCollapse(e, prop.key || `prop-${index}`);
+                    }}
+                  />
+                )}
+              </div>
             </div>
-            <div className="property-actions">
-              {isCollapsible(prop.value) && (
-                <PropertyCollapseButton
-                  isCollapsed={
-                    collapsedProperties[prop.key || `prop-${index}`] ||
-                    false
-                  }
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    togglePropertyCollapse(e, prop.key || `prop-${index}`);
-                  }}
-                />
-              )}
-            </div>
+            {index < properties.length - 1 && (
+              <div className="property-separator" />
+            )}
           </div>
-          {index < properties.length - 1 && (
-            <div className="property-separator" />
-          )}
-        </div>
-      ))}
-    </div>
-  ), [properties, collapsedProperties, togglePropertyCollapse]);
+        ))}
+      </div>
+    );
+  }, [properties, collapsedProperties, togglePropertyCollapse, isVisible]);
 
   return (
     <div

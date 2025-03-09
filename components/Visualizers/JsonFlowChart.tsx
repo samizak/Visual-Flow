@@ -138,6 +138,7 @@ export default function JsonFlowChart({
         nodesDraggable={true}
         elementsSelectable={false}
         proOptions={proOptions}
+        onlyRenderVisibleElements={true}
       >
         <Controls style={controlsStyle} />
         <Background
