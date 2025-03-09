@@ -6,18 +6,25 @@ export const getValueType = (value: any): string => {
 };
 
 // Helper function to get display value with improved representation
-export const getDisplayValue = (value: any, type: string): string => {
-  if (type === "object") {
-    if (value === null) return "null";
-    return "{...}";
+export function getDisplayValue(value: any, type: string): string {
+  switch (type) {
+    case "string":
+      return `"${value}"`;
+    case "number":
+    case "boolean":
+      return String(value);
+    case "null":
+      return "null";
+    case "array":
+      return `[${(value as any[]).length}]`;
+    case "object":
+      // Count the number of keys in the object
+      const keyCount = Object.keys(value).length;
+      return `{${keyCount} ${keyCount === 1 ? "key" : "keys"}}`;
+    default:
+      return String(value);
   }
-  if (type === "array") return `[${value.length}]`;
-  if (type === "string") return `"${value}"`;
-  if (type === "boolean") return String(value); // Ensure booleans are preserved as-is
-  if (type === "number") return String(value); // Ensure numbers are preserved as-is
-  if (type === "null") return "null";
-  return String(value);
-};
+}
 
 // Constants for node dimensions and spacing
 export const NODE_WIDTH = 250;

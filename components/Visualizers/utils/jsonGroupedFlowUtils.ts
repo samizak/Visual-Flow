@@ -63,19 +63,37 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       });
     }
 
+    // console.log(Object.entries(data));
+
     if (dataType === "object" && data !== null) {
       // Map properties for display
+      // When processing properties in an object
       const properties = Object.entries(data).map(([propKey, propValue]) => {
         const propType = getValueType(propValue);
-        return {
-          key: propKey,
-          value:
-            propType === "object" || propType === "array"
-              ? propType === "object"
-                ? "{...}"
-                : `[${(propValue as any[]).length}]`
-              : getDisplayValue(propValue, propType),
-        };
+
+        // For objects, show the number of keys instead of {...}
+        if (propType === "object" && propValue !== null) {
+          const keyCount = Object.keys(propValue as any).length;
+          return {
+            key: propKey,
+            value: `{${keyCount} ${keyCount === 1 ? "key" : "keys"}}`,
+          };
+        }
+        // For arrays, show the length and item text
+        else if (propType === "array") {
+          const arrayLength = (propValue as any[]).length;
+          return {
+            key: propKey,
+            value: `[${arrayLength} ${arrayLength === 1 ? 'item' : 'items'}]`,
+          };
+        }
+        // For primitive types, show the value
+        else {
+          return {
+            key: propKey,
+            value: getDisplayValue(propValue, propType),
+          };
+        }
       });
 
       // Find non-overlapping position
@@ -143,17 +161,22 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       // Handle primitive types
       const position = findNonOverlappingPosition({ x: xPos, y: yPos }, nodes);
 
-      nodes.push(
-        createNode(
-          currentId,
-          dataType,
-          key || "Value",
-          [{ key: "", value: getDisplayValue(data, dataType) }],
-          position
-        )
-      );
+      // Create the node with the non-overlapping position
+      nodes.push({
+        id: currentId,
+        type: "grouped",
+        data: {
+          label: key || "Value", // Changed from "Root" to "Value" for primitives
+          type: dataType,
+          properties: [{ key: "", value: getDisplayValue(data, dataType) }], // Fixed properties
+          hasChildren: false, // Primitive types don't have children
+        },
+        position: position, // Fixed variable name
+      });
     }
   }
+
+  // console.log(Object.entries(nodes));
 
   return { nodes, edges };
 };

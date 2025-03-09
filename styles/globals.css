@@ -1,0 +1,9 @@
+/* Add this to your CSS */
+.link-icon {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.grouped-node-header:hover .link-icon {
+  opacity: 1;
+}

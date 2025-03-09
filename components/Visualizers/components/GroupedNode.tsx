@@ -5,11 +5,12 @@ interface GroupedNodeData {
   label: string;
   type: string;
   properties: Array<{ key: string; value: string }>;
+  hasChildren?: boolean; // Add this property to indicate if the node has children
 }
 
 const GroupedNode = memo(({ data, id }: NodeProps) => {
   const nodeData = data as unknown as GroupedNodeData;
-  const { label, type, properties } = nodeData;
+  const { label, type, properties, hasChildren } = nodeData;
   const { getNodes, getEdges, setNodes, setEdges } = useReactFlow();
   const [isDragging, setIsDragging] = useState(false);
 
@@ -41,7 +42,11 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
     else if (value.startsWith("[") && value.endsWith("]")) {
       return "grouped-node-value-array";
     }
-    // Check if it's an object
+    // Check if it's an object with key count (both singular and plural forms)
+    else if (value.startsWith("{") && (value.includes(" keys}") || value.includes(" key}"))) {
+      return "grouped-node-value-object";
+    }
+    // Check if it's an object (old format)
     else if (value === "{...}") {
       return "grouped-node-value-object";
     }
@@ -53,66 +58,36 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
     return "grouped-node-value";
   };
 
-  // New function to get value text color based on data type
-  const getValueTextColor = (value: string): string => {
-    // Check if it's a number
-    if (/^-?\d+(\.\d+)?$/.test(value)) {
-      return "#b5cea8"; // Light green for numbers
-    }
-    // Check if it's a string (has quotes)
-    else if (value.startsWith('"') && value.endsWith('"')) {
-      return "#ce9178"; // Keep current orange-ish for strings
-    }
-    // Check if it's a boolean
-    else if (value === "true" || value === "false") {
-      return "#569cd6"; // Blue for booleans
-    }
-    // Check if it's null
-    else if (value === "null") {
-      return "#d7ba7d"; // Gold/yellow for null
-    }
-    // Check if it's an array
-    else if (value.startsWith("[") && value.endsWith("]")) {
-      return "#d7ba7d"; // Gold/yellow for arrays
-    }
-    // Check if it's an object
-    else if (value === "{...}") {
-      return "#4ec9b0"; // Teal for objects
-    }
-    // Default color
-    return "#e0e0e0"; // Light gray default
-  };
-
   const backgroundColor = getTypeColor(type);
 
   // Find all ancestor nodes when hovering
   const highlightNodesAndEdges = useCallback(() => {
     // Skip highlighting during drag to improve performance
     if (isDragging) return;
-    
+
     const nodes = getNodes();
     const edges = getEdges();
-    
+
     // Start with the current node
     const nodesToHighlight = new Set([id]);
     const edgesToHighlight = new Set<string>();
-    
+
     // Find all ancestors by traversing edges backwards
     let currentNodes = [id];
     let foundNewNodes = true;
-    
+
     // Keep finding ancestors until we can't find any more
     while (foundNewNodes) {
       foundNewNodes = false;
-      
+
       // For each current node, find its incoming edges and their source nodes
       for (const nodeId of currentNodes) {
-        const incomingEdges = edges.filter(edge => edge.target === nodeId);
-        
+        const incomingEdges = edges.filter((edge) => edge.target === nodeId);
+
         for (const edge of incomingEdges) {
           // Add the edge to highlighted edges
           edgesToHighlight.add(edge.id);
-          
+
           // If we haven't already processed this source node, add it
           if (!nodesToHighlight.has(edge.source)) {
             nodesToHighlight.add(edge.source);
@@ -122,54 +97,62 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
         }
       }
     }
-    
+
     // Use requestAnimationFrame for smoother updates
     requestAnimationFrame(() => {
       // Update nodes with highlight class
-      setNodes(nodes.map(node => ({
-        ...node,
-        className: nodesToHighlight.has(node.id) ? 'highlight' : ''
-      })));
-      
+      setNodes(
+        nodes.map((node) => ({
+          ...node,
+          className: nodesToHighlight.has(node.id) ? "highlight" : "",
+        }))
+      );
+
       // Update edges with highlight class
-      setEdges(edges.map(edge => ({
-        ...edge,
-        className: edgesToHighlight.has(edge.id) ? 'highlight' : ''
-      })));
-      
+      setEdges(
+        edges.map((edge) => ({
+          ...edge,
+          className: edgesToHighlight.has(edge.id) ? "highlight" : "",
+        }))
+      );
+
       // Add dimmed class to the flow container
-      const flowElement = document.querySelector('.react-flow');
+      const flowElement = document.querySelector(".react-flow");
       if (flowElement) {
-        flowElement.classList.add('dimmed');
+        flowElement.classList.add("dimmed");
       }
     });
   }, [id, getNodes, getEdges, setNodes, setEdges, isDragging]);
-  
+
   // Reset highlighting when mouse leaves
   const resetHighlight = useCallback(() => {
     // Skip reset during drag to improve performance
     if (isDragging) return;
-    
+
     // Use requestAnimationFrame for smoother updates
     requestAnimationFrame(() => {
       const nodes = getNodes();
       const edges = getEdges();
-      
+
       // Remove all highlight classes
-      setNodes(nodes.map(node => ({
-        ...node,
-        className: ''
-      })));
-      
-      setEdges(edges.map(edge => ({
-        ...edge,
-        className: ''
-      })));
-      
+      setNodes(
+        nodes.map((node) => ({
+          ...node,
+          className: "",
+        }))
+      );
+
+      setEdges(
+        edges.map((edge) => ({
+          ...edge,
+          className: "",
+        }))
+      );
+
       // Remove dimmed class from flow container
-      const flowElement = document.querySelector('.react-flow');
+      const flowElement = document.querySelector(".react-flow");
       if (flowElement) {
-        flowElement.classList.remove('dimmed');
+        flowElement.classList.remove("dimmed");
       }
     });
   }, [getNodes, getEdges, setNodes, setEdges, isDragging]);
@@ -177,38 +160,68 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
   // Handle drag start
   const handleDragStart = useCallback(() => {
     setIsDragging(true);
-    
+
     // Remove any highlighting during drag
     resetHighlight();
-    
+
     // Add a class to the node to indicate dragging
     const nodeElement = document.querySelector(`[data-id="${id}"]`);
     if (nodeElement) {
-      nodeElement.classList.add('dragging');
+      nodeElement.classList.add("dragging");
     }
   }, [id, resetHighlight]);
 
   // Handle drag stop
   const handleDragStop = useCallback(() => {
     setIsDragging(false);
-    
+
     // Remove dragging class
     const nodeElement = document.querySelector(`[data-id="${id}"]`);
     if (nodeElement) {
-      nodeElement.classList.remove('dragging');
+      nodeElement.classList.remove("dragging");
     }
   }, [id]);
 
+  // Link SVG icon component
+  const LinkIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="link-icon"
+      style={{ marginLeft: "6px", verticalAlign: "middle" }}
+    >
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+    </svg>
+  );
+
+  // Check if this node has outgoing edges (children)
+  const hasOutgoingEdges = useCallback(() => {
+    // If we already know from the data
+    if (hasChildren !== undefined) return hasChildren;
+
+    // Otherwise check the edges
+    const edges = getEdges();
+    return edges.some((edge) => edge.source === id);
+  }, [id, getEdges, hasChildren]);
+
   return (
-    <div 
+    <div
       className="grouped-node"
       onMouseEnter={highlightNodesAndEdges}
       onMouseLeave={resetHighlight}
       onMouseDown={handleDragStart}
       onMouseUp={handleDragStop}
-      style={{ 
-        willChange: 'transform',
-        transform: 'translate3d(0,0,0)' // Force GPU acceleration
+      style={{
+        willChange: "transform",
+        transform: "translate3d(0,0,0)", // Force GPU acceleration
       }}
     >
       <Handle type="target" position={Position.Left} />
@@ -216,8 +229,30 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
         className="grouped-node-container my-4"
         style={{ borderColor: backgroundColor }}
       >
-        <div className="grouped-node-header" style={{ backgroundColor }}>
-          {label}
+        <div
+          className="grouped-node-header"
+          style={{
+            backgroundColor,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "8px 12px",
+          }}
+        >
+          <span>{label}</span>
+          {hasOutgoingEdges() && (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  width: "1px",
+                  height: "16px",
+                  backgroundColor: "rgba(255, 255, 255, 0.3)",
+                  marginRight: "8px",
+                }}
+              />
+              <LinkIcon />
+            </div>
+          )}
         </div>
         <div className="grouped-node-content">
           {properties.map((prop, index) => (
@@ -227,7 +262,9 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
                 <span className="grouped-node-separator">: </span>
               )}
               {prop.value && (
-                <span className={`grouped-node-value ${getValueClass(prop.value)}`}>
+                <span
+                  className={`grouped-node-value ${getValueClass(prop.value)}`}
+                >
                   {prop.value}
                 </span>
               )}

@@ -94,18 +94,24 @@ export function processArrayItems(
 
     if (itemType === "object" && item !== null) {
       // Map object properties for display
-      const properties = Object.entries(item).map(([propKey, propValue]) => {
-        const propType = getValueType(propValue);
-        return {
-          key: propKey,
-          value:
-            propType === "object" || propType === "array"
-              ? propType === "object"
-                ? "{...}"
-                : `[${(propValue as any[]).length}]`
-              : getDisplayValue(propValue, propType),
-        };
-      });
+      const properties = Object.entries(item).map(
+        ([propKey, propValue]: any) => {
+          const propType = getValueType(propValue);
+          return {
+            key: propKey,
+            value:
+              propType === "object" || propType === "array"
+                ? propType === "object"
+                  ? propValue === null
+                    ? "null"
+                    : `{${Object.keys(propValue).length} ${
+                        Object.keys(propValue).length === 1 ? "key" : "keys"
+                      }}`
+                  : `[${(propValue as any[]).length}]`
+                : getDisplayValue(propValue, propType),
+          };
+        }
+      );
 
       createAndConnectNode(
         childId,
@@ -151,6 +157,53 @@ export function processArrayItems(
             processJsonNode
           );
 
+          // Create the node first with array type
+          nodes.push({
+            id: childId,
+            type: "grouped",
+            data: {
+              label: `${key} ${index}`,
+              type: "array", // Set type to array for all array elements
+              properties: Object.entries(item).map(
+                ([propKey, propValue]: any) => {
+                  const propType = getValueType(propValue);
+                  // When displaying array values in the properties
+                  if (propType === "object" || propType === "array") {
+                    if (propType === "object") {
+                      return {
+                        key: propKey,
+                        value:
+                          propValue === null
+                            ? "null"
+                            : `{${Object.keys(propValue).length} ${
+                                Object.keys(propValue).length === 1
+                                  ? "key"
+                                  : "keys"
+                              }}`,
+                      };
+                    } else {
+                      // array
+                      const arrayLength = (propValue as any[]).length;
+                      return {
+                        key: propKey,
+                        value: `[${arrayLength} ${
+                          arrayLength === 1 ? "item" : "items"
+                        }]`,
+                      };
+                    }
+                  }
+                }
+              ),
+              hasChildren: Object.entries(item).some(([_, childValue]) => {
+                const childType = getValueType(childValue);
+                return (
+                  (childType === "object" && childValue !== null) ||
+                  childType === "array"
+                );
+              }),
+            },
+            position: position, // Fixed: changed nonOverlappingPos to position
+          });
           const arrayLength = Math.max(
             1,
             Array.isArray(subChildValue) ? subChildValue.length : 1
