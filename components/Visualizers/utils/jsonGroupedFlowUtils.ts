@@ -134,7 +134,6 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       });
     }
   }
-
   // New function to process array items directly without creating an array node
   function processArrayItemsDirectly(
     arr: any[],
@@ -149,7 +148,6 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       arr = []; // Default to empty array if not an array
       return;
     }
-
     if (arr.length === 0) {
       // If array is empty, create a placeholder node
       const emptyNodeId = `node-${nodeId++}`;
@@ -158,12 +156,11 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         type: "grouped",
         data: {
           label: `${key} [0]`,
-          type: "array",
+          type: "array", // Already correct
           properties: [{ key: "", value: "Empty array" }],
         },
         position: { x: xPos, y: yPos },
       });
-
       if (parentId) {
         edges.push({
           id: `edge-${parentId}-${emptyNodeId}`,
@@ -174,29 +171,87 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       }
       return;
     }
-
     // Process array items that are objects or arrays
     let childY = yPos - (arr.length * 100) / 2;
-
     arr.forEach((item, index) => {
       const itemType = getValueType(item);
       const childId = `node-${nodeId++}`;
 
       if (itemType === "object" && item !== null) {
-        processJsonNode(
-          item,
-          childId,
-          parentId, // Connect directly to parent
-          `${key} ${index}`, // Include array name in label
-          xPos,
-          childY
-        );
+        // Create the node first with array type
+        nodes.push({
+          id: childId,
+          type: "grouped",
+          data: {
+            label: `${key} ${index}`,
+            type: "array", // Set type to array for all array elements
+            properties: Object.entries(item).map(([propKey, propValue]) => {
+              const propType = getValueType(propValue);
+              if (propType === "object" || propType === "array") {
+                return {
+                  key: propKey,
+                  value:
+                    propType === "object"
+                      ? "{...}"
+                      : `[${(propValue as any[]).length}]`,
+                };
+              } else {
+                return {
+                  key: propKey,
+                  value: getDisplayValue(propValue, propType),
+                };
+              }
+            }),
+          },
+          position: { x: xPos, y: childY },
+        });
+
+        // Connect to parent
+        if (parentId) {
+          edges.push({
+            id: `edge-${parentId}-${childId}`,
+            source: parentId,
+            target: childId,
+            type: "default",
+          });
+        }
+
+        // Process children
+        let subChildX = xPos + 300;
+        let subChildY = childY - (Object.keys(item).length * 100) / 2;
+
+        Object.entries(item).forEach(([subChildKey, subChildValue]) => {
+          const subChildType = getValueType(subChildValue);
+
+          if (subChildType === "object" && subChildValue !== null) {
+            const subChildId = `node-${nodeId++}`;
+            processJsonNode(
+              subChildValue,
+              subChildId,
+              childId,
+              subChildKey,
+              subChildX,
+              subChildY
+            );
+            subChildY += 200;
+          } else if (subChildType === "array") {
+            processArrayItemsDirectly(
+              subChildValue as any[],
+              childId,
+              subChildKey,
+              subChildX,
+              subChildY
+            );
+            subChildY += 200 * Math.max(1, (subChildValue as any[]).length);
+          }
+        });
+
         childY += 200;
       } else if (itemType === "array") {
         processArrayItemsDirectly(
           item,
-          parentId, // Connect directly to parent
-          `${key} ${index}`, // Include array name in label
+          parentId,
+          `${key} ${index}`,
           xPos,
           childY
         );
@@ -208,7 +263,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           type: "grouped",
           data: {
             label: `${key} ${index}`,
-            type: itemType,
+            type: "array", // Set type to array for all array elements
             properties: [{ key: "", value: getDisplayValue(item, itemType) }],
           },
           position: { x: xPos, y: childY },
@@ -227,8 +282,5 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       }
     });
   }
-
-  // Remove the original processJsonArray function as it's no longer needed
-
   return { nodes, edges };
 };

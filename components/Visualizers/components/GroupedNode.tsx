@@ -15,8 +15,7 @@ const GroupedNode = memo(({ data }: NodeProps) => {
   const getTypeColor = (type: string) => {
     const colors = {
       object: "#3a506b", // Blue-gray
-      array: "#ff9800", // Changed to Orange (was Pink)
-      null: "#607d8b", // Gray
+      array: "#b87333", // Orange
     };
 
     console.log(type, properties);
