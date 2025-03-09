@@ -91,7 +91,7 @@ export default function LeftPanel({
             </div>
           </div>
         )}
-        
+
         <Editor
           height="100%"
           width="100%"

@@ -43,7 +43,7 @@ export default function Home() {
         <div className="flex-1 flex flex-col border-l border-gray-700">
           <div className="flex-grow relative">
             <Tabs defaultValue="tree" className="w-full h-full flex flex-col">
-              <div className="bg-[#1e1e1e] border-b border-gray-700">
+              <div className="bg-[#1e1e1e] border-b border-gray-700 py-2 ">
                 <TabsList className="relative flex w-full bg-transparent p-0 mx-auto max-w-3xl">
                   <TabsTrigger
                     value="tree"
