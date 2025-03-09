@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { Handle, Position, NodeProps } from "@xyflow/react";
+import { memo, useCallback, useState } from "react";
+import { Handle, Position, NodeProps, useReactFlow } from "@xyflow/react";
 
 interface GroupedNodeData {
   label: string;
@@ -7,9 +7,11 @@ interface GroupedNodeData {
   properties: Array<{ key: string; value: string }>;
 }
 
-const GroupedNode = memo(({ data }: NodeProps) => {
+const GroupedNode = memo(({ data, id }: NodeProps) => {
   const nodeData = data as unknown as GroupedNodeData;
   const { label, type, properties } = nodeData;
+  const { getNodes, getEdges, setNodes, setEdges } = useReactFlow();
+  const [isDragging, setIsDragging] = useState(false);
 
   // Get color based on type
   const getTypeColor = (type: string) => {
@@ -23,8 +25,132 @@ const GroupedNode = memo(({ data }: NodeProps) => {
 
   const backgroundColor = getTypeColor(type);
 
+  // Find all ancestor nodes when hovering
+  const highlightNodesAndEdges = useCallback(() => {
+    // Skip highlighting during drag to improve performance
+    if (isDragging) return;
+    
+    const nodes = getNodes();
+    const edges = getEdges();
+    
+    // Start with the current node
+    const nodesToHighlight = new Set([id]);
+    const edgesToHighlight = new Set<string>();
+    
+    // Find all ancestors by traversing edges backwards
+    let currentNodes = [id];
+    let foundNewNodes = true;
+    
+    // Keep finding ancestors until we can't find any more
+    while (foundNewNodes) {
+      foundNewNodes = false;
+      
+      // For each current node, find its incoming edges and their source nodes
+      for (const nodeId of currentNodes) {
+        const incomingEdges = edges.filter(edge => edge.target === nodeId);
+        
+        for (const edge of incomingEdges) {
+          // Add the edge to highlighted edges
+          edgesToHighlight.add(edge.id);
+          
+          // If we haven't already processed this source node, add it
+          if (!nodesToHighlight.has(edge.source)) {
+            nodesToHighlight.add(edge.source);
+            currentNodes.push(edge.source);
+            foundNewNodes = true;
+          }
+        }
+      }
+    }
+    
+    // Use requestAnimationFrame for smoother updates
+    requestAnimationFrame(() => {
+      // Update nodes with highlight class
+      setNodes(nodes.map(node => ({
+        ...node,
+        className: nodesToHighlight.has(node.id) ? 'highlight' : ''
+      })));
+      
+      // Update edges with highlight class
+      setEdges(edges.map(edge => ({
+        ...edge,
+        className: edgesToHighlight.has(edge.id) ? 'highlight' : ''
+      })));
+      
+      // Add dimmed class to the flow container
+      const flowElement = document.querySelector('.react-flow');
+      if (flowElement) {
+        flowElement.classList.add('dimmed');
+      }
+    });
+  }, [id, getNodes, getEdges, setNodes, setEdges, isDragging]);
+  
+  // Reset highlighting when mouse leaves
+  const resetHighlight = useCallback(() => {
+    // Skip reset during drag to improve performance
+    if (isDragging) return;
+    
+    // Use requestAnimationFrame for smoother updates
+    requestAnimationFrame(() => {
+      const nodes = getNodes();
+      const edges = getEdges();
+      
+      // Remove all highlight classes
+      setNodes(nodes.map(node => ({
+        ...node,
+        className: ''
+      })));
+      
+      setEdges(edges.map(edge => ({
+        ...edge,
+        className: ''
+      })));
+      
+      // Remove dimmed class from flow container
+      const flowElement = document.querySelector('.react-flow');
+      if (flowElement) {
+        flowElement.classList.remove('dimmed');
+      }
+    });
+  }, [getNodes, getEdges, setNodes, setEdges, isDragging]);
+
+  // Handle drag start
+  const handleDragStart = useCallback(() => {
+    setIsDragging(true);
+    
+    // Remove any highlighting during drag
+    resetHighlight();
+    
+    // Add a class to the node to indicate dragging
+    const nodeElement = document.querySelector(`[data-id="${id}"]`);
+    if (nodeElement) {
+      nodeElement.classList.add('dragging');
+    }
+  }, [id, resetHighlight]);
+
+  // Handle drag stop
+  const handleDragStop = useCallback(() => {
+    setIsDragging(false);
+    
+    // Remove dragging class
+    const nodeElement = document.querySelector(`[data-id="${id}"]`);
+    if (nodeElement) {
+      nodeElement.classList.remove('dragging');
+    }
+  }, [id]);
+
   return (
-    <div className="grouped-node">
+    <div 
+      className="grouped-node"
+      onMouseEnter={highlightNodesAndEdges}
+      onMouseLeave={resetHighlight}
+      onMouseDown={handleDragStart}
+      onMouseUp={handleDragStop}
+      style={{ 
+        willChange: 'transform',
+        transform: 'translate3d(0,0,0)' // Force GPU acceleration
+      }}
+    >
       <Handle type="target" position={Position.Left} />
       <div
         className="grouped-node-container my-4"
