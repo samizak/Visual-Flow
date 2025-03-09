@@ -1,5 +1,6 @@
 import Editor from "@monaco-editor/react";
 import { useState, useRef, useEffect } from "react";
+import { toast } from "sonner";
 
 export default function LeftPanel({
   jsonInput,
@@ -74,11 +75,11 @@ export default function LeftPanel({
   return (
     <div
       ref={panelRef}
-      className="relative h-screen flex flex-col border-r border-gray-700"
+      className="relative h-screen flex flex-col border-r border-gray-700 overflow-hidden"
       style={{ width: `${width}vw` }}
     >
       {/* Header with project name */}
-      <div className="bg-[#1e1e1e] p-3 border-b border-gray-700 flex justify-between items-center">
+      <div className="bg-[#1e1e1e] p-3 border-b border-gray-700 flex justify-between items-center flex-shrink-0">
         <h1 className="text-xl font-semibold text-white">JSON Vue</h1>
 
         <div className="flex space-x-2">
@@ -90,7 +91,7 @@ export default function LeftPanel({
                 const formatted = JSON.stringify(
                   JSON.parse(jsonInput),
                   null,
-                  4
+                  2
                 );
                 setJsonInput(formatted);
               } catch (e) {
@@ -145,16 +146,27 @@ export default function LeftPanel({
             </svg>
             Minify
           </button>
-
           {/* Copy button */}
           <button
             onClick={() => {
               try {
                 // Copy JSON to clipboard
                 navigator.clipboard.writeText(jsonInput);
+                toast.success("JSON copied to clipboard", {
+                  position: "bottom-center",
+                  duration: 2000,
+                  icon: "📋",
+                  description: "The content has been copied to your clipboard",
+                });
               } catch (e) {
                 // Handle clipboard error
                 console.error("Failed to copy");
+                toast.error("Failed to copy to clipboard", {
+                  position: "bottom-center",
+                  duration: 2000,
+                  icon: "❌",
+                  description: "Please try again",
+                });
               }
             }}
             className="px-3 py-1 text-xs bg-[#2d2d2d] hover:bg-[#3a3a3a] text-gray-300 rounded flex items-center transition-colors duration-200"
@@ -175,8 +187,11 @@ export default function LeftPanel({
       </div>
 
       {/* Rest of your component remains unchanged */}
-      {/* Editor container */}
-      <div className="flex-grow relative">
+      {/* Editor container with padding bottom to prevent overflow */}
+      <div
+        className="flex-grow relative overflow-hidden pb-4"
+        style={{ height: "calc(100vh - 56px)" }}
+      >
         {!isEditorLoaded && (
           <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#1e1e1e]">
             <div className="text-center">
@@ -193,8 +208,14 @@ export default function LeftPanel({
           defaultLanguage="json"
           value={jsonInput}
           onChange={(e) => setJsonInput(e)}
-          options={editorOptions as any}
+          options={
+            {
+              ...editorOptions,
+              padding: { top: 16, bottom: 16 },
+            } as any
+          }
           onMount={handleEditorDidMount}
+          className="monaco-editor-container"
         />
 
         {/* Placeholder overlay - only shown when jsonInput is empty AND editor is loaded */}
