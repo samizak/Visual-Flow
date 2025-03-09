@@ -151,113 +151,88 @@ body {
 /* Add this to the end of your globals.css file */
 /* Add this to the end of your globals.css file */
 
-/* Monaco editor container styles */
-.monaco-editor-container {
-  overflow: hidden !important;
+/* Add this to your globals.css file */
+/* Update the collapse button styles */
+.collapse-toggle-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-.monaco-editor-container .monaco-editor {
-  padding-bottom: 20px !important;
+/* Add styles for the container */
+/* Add these new styles */
+.property-value-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.monaco-editor .overflow-guard {
-  position: relative !important;
+.collapse-toggle-button-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  font-weight: 500;
+  margin-left: 4px;
 }
 
-/* Prevent text selection during dragging */
-.no-select,
-.no-select * {
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  -ms-user-select: none !important;
+.collapse-toggle-button-inline:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
 }
 
-/* Ensure cursor shows dragging state */
-.no-select {
-  cursor: grabbing !important;
-}
-/* Modern tabs styling */
-.react-tabs__tab-list {
-  border-bottom: none !important;
+.collapse-toggle-button-inline:active {
+  transform: scale(0.95);
 }
 
-.react-tabs__tab {
-  position: relative;
-  overflow: hidden;
+/* Remove the old container styles since we don't need them anymore */
+.collapse-button-container {
+  display: none;
 }
 
-.react-tabs__tab::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #0e639c;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+.collapse-toggle-button:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
 }
 
-.react-tabs__tab--selected::after {
-  transform: translateX(0);
+.collapse-toggle-button:active {
+  transform: scale(0.95);
 }
 
-/* Hide React Flow attribution */
-.react-flow__attribution {
-  display: none !important;
-}
-.react-tabs__tab-list {
-  margin-bottom: 0 !important;
+/* Add animation for collapsing/expanding */
+.react-flow__node {
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.react-tabs__tab-panel {
-  padding-top: 0 !important;
-}
-
-/* Add modern hover effects for nodes */
-.grouped-node-container {
-  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  position: relative;
-}
-
-.grouped-node:hover .grouped-node-container {
-  transform: translateY(-4px);
-  box-shadow: 0 0 0 2px #0e639c, 0 10px 20px rgba(0, 0, 0, 0.3);
-}
-
-.grouped-node:hover .grouped-node-header {
-  background-color: #4a6d8c; /* Slightly lighter on hover */
-}
-
-.grouped-node:hover .grouped-node-content {
-  background-color: #333333; /* Slightly lighter on hover */
-}
-
-/* Add subtle glow effect */
-.grouped-node:hover::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-  border-radius: 8px;
-  filter: blur(15px);
-  background-color: rgba(14, 99, 156, 0.2); /* Subtle blue glow */
+.react-flow__node[hidden="true"],
+.react-flow__edge[hidden="true"] {
   opacity: 0;
-  animation: fadeIn 0.3s ease forwards;
+  pointer-events: none;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 /* Add these styles at the end of your file */
 
 /* Node highlighting system */

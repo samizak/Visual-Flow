@@ -13,6 +13,7 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
   const { label, type, properties, hasChildren } = nodeData;
   const { getNodes, getEdges, setNodes, setEdges } = useReactFlow();
   const [isDragging, setIsDragging] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false); // Add state for collapse/expand
 
   // Get color based on type
   const getTypeColor = (type: string) => {
@@ -43,7 +44,10 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
       return "grouped-node-value-array";
     }
     // Check if it's an object with key count (both singular and plural forms)
-    else if (value.startsWith("{") && (value.includes(" keys}") || value.includes(" key}"))) {
+    else if (
+      value.startsWith("{") &&
+      (value.includes(" keys}") || value.includes(" key}"))
+    ) {
       return "grouped-node-value-object";
     }
     // Check if it's an object (old format)
@@ -212,6 +216,112 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
     return edges.some((edge) => edge.source === id);
   }, [id, getEdges, hasChildren]);
 
+  // Toggle collapse/expand function
+  const toggleCollapse = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation(); // Prevent event from bubbling up
+
+      const nodes = getNodes();
+      const edges = getEdges();
+
+      // Find all descendant nodes
+      const descendants = new Set<string>();
+      const edgesToToggle = new Set<string>();
+
+      // Start with direct children
+      let currentLevel = [id];
+      let hasMore = true;
+
+      while (hasMore && currentLevel.length > 0) {
+        const nextLevel: string[] = [];
+        hasMore = false;
+
+        // For each node in current level
+        for (const nodeId of currentLevel) {
+          // Skip the root node (only process children)
+          if (nodeId === id) continue;
+
+          // Find outgoing edges from this node
+          const outgoingEdges = edges.filter((edge) => edge.source === nodeId);
+
+          for (const edge of outgoingEdges) {
+            edgesToToggle.add(edge.id);
+
+            if (!descendants.has(edge.target)) {
+              descendants.add(edge.target);
+              nextLevel.push(edge.target);
+              hasMore = true;
+            }
+          }
+        }
+
+        // Add direct children of the root node
+        if (currentLevel[0] === id) {
+          const directChildren = edges
+            .filter((edge) => edge.source === id)
+            .map((edge) => {
+              edgesToToggle.add(edge.id);
+              return edge.target;
+            });
+
+          for (const child of directChildren) {
+            if (!descendants.has(child)) {
+              descendants.add(child);
+              nextLevel.push(child);
+              hasMore = true;
+            }
+          }
+        }
+
+        currentLevel = nextLevel;
+      }
+
+      // Toggle visibility of descendant nodes and their edges
+      setNodes(
+        nodes.map((node) => {
+          if (descendants.has(node.id)) {
+            return {
+              ...node,
+              hidden: !isCollapsed,
+            };
+          }
+          return node;
+        })
+      );
+
+      setEdges(
+        edges.map((edge) => {
+          if (edgesToToggle.has(edge.id)) {
+            return {
+              ...edge,
+              hidden: !isCollapsed,
+            };
+          }
+          return edge;
+        })
+      );
+
+      setIsCollapsed(!isCollapsed);
+    },
+    [id, getNodes, getEdges, setNodes, setEdges, isCollapsed]
+  );
+
+  // Collapse/Expand button component
+  const CollapseButton = () => {
+    if ((type === "array" || type === "object") && hasOutgoingEdges()) {
+      return (
+        <button
+          className="collapse-toggle-button"
+          onClick={toggleCollapse}
+          title={isCollapsed ? "Expand" : "Collapse"}
+        >
+          {isCollapsed ? "+" : "−"}
+        </button>
+      );
+    }
+    return null;
+  };
+
   return (
     <div
       className="grouped-node"
@@ -261,13 +371,32 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
               {prop.key && prop.value && (
                 <span className="grouped-node-separator">: </span>
               )}
-              {prop.value && (
-                <span
-                  className={`grouped-node-value ${getValueClass(prop.value)}`}
-                >
-                  {prop.value}
-                </span>
-              )}
+              <div className="property-value-container">
+                {prop.value && (
+                  <span
+                    className={`grouped-node-value ${getValueClass(
+                      prop.value
+                    )}`}
+                  >
+                    {prop.value}
+                  </span>
+                )}
+                {(prop.value?.includes(" keys}") || 
+                  prop.value?.includes(" key}") ||
+                  prop.value?.includes(" items]") ||
+                  prop.value?.includes(" item]")) && (
+                  <button
+                    className="collapse-toggle-button-inline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleCollapse(e);
+                    }}
+                    title={isCollapsed ? "Expand" : "Collapse"}
+                  >
+                    {isCollapsed ? "+" : "−"}
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
