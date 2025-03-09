@@ -85,11 +85,15 @@ export const useNodeInteractions = (
     // Start with the current node
     const nodesToHighlight = new Set([id]);
     const edgesToHighlight = new Set<string>();
+    const pathEdges = new Set<string>(); // Edges in the path from root to hovered node
 
     // Find all ancestors by traversing edges backwards
     let currentNodes = [id];
     let foundNewNodes = true;
-
+    
+    // Track the path from root to the hovered node
+    const nodeToParentMap = new Map<string, { nodeId: string, edgeId: string }>();
+    
     // Keep finding ancestors until we can't find any more
     while (foundNewNodes) {
       foundNewNodes = false;
@@ -107,9 +111,23 @@ export const useNodeInteractions = (
             nodesToHighlight.add(edge.source);
             currentNodes.push(edge.source);
             foundNewNodes = true;
+            
+            // Track the parent relationship for path construction
+            nodeToParentMap.set(nodeId, { 
+              nodeId: edge.source, 
+              edgeId: edge.id 
+            });
           }
         }
       }
+    }
+    
+    // Construct the path from root to hovered node
+    let currentNodeId = id;
+    while (nodeToParentMap.has(currentNodeId)) {
+      const { edgeId } = nodeToParentMap.get(currentNodeId)!;
+      pathEdges.add(edgeId);
+      currentNodeId = nodeToParentMap.get(currentNodeId)!.nodeId;
     }
 
     // Use requestAnimationFrame for smoother updates
@@ -122,11 +140,15 @@ export const useNodeInteractions = (
         }))
       );
 
-      // Update edges with highlight class
+      // Update edges with highlight class and animated class for path edges
       setEdges(
         edges.map((edge) => ({
           ...edge,
-          className: edgesToHighlight.has(edge.id) ? "highlight" : "",
+          className: edgesToHighlight.has(edge.id) 
+            ? pathEdges.has(edge.id) 
+              ? "highlight animated-path" 
+              : "highlight" 
+            : "",
         }))
       );
 

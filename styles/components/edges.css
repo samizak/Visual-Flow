@@ -22,6 +22,26 @@
 .react-flow.dimmed .react-flow__edge.highlight path {
   stroke: #0e639c;
   stroke-width: 2;
+  stroke-dasharray: 5;
+  animation: flowAnimation 1.5s linear infinite;
+}
+
+/* Animated path edges */
+.react-flow.dimmed .react-flow__edge.animated-path path {
+  stroke: #0e639c;
+  stroke-width: 3;
+  stroke-dasharray: 10;
+  animation: flowAnimation 1.5s linear infinite;
+}
+
+/* Animation for the flowing effect */
+@keyframes flowAnimation {
+  0% {
+    stroke-dashoffset: 20;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
 }
 
 /* Handle styles */

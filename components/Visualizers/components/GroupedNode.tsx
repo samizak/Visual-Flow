@@ -63,27 +63,11 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
       <Handle type="target" position={Position.Left} />
       <div
         className="grouped-node-container my-4"
-        style={{
-          borderColor: backgroundColor,
-          width: "100%",
-          height: "100%",
-        }}
+        style={{ borderColor: backgroundColor }}
       >
         <div
           className="grouped-node-header"
-          style={{
-            backgroundColor,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "4px 12px",
-            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-            fontWeight: 500,
-            letterSpacing: "0.3px",
-            transition: "background-color 0.2s ease",
-            fontSize: "13px",
-            width: "100%",
-          }}
+          style={{ backgroundColor }}
         >
           <span>{label}</span>
           {hasOutgoingEdges() && (
@@ -91,42 +75,21 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
               className="node-action-button cursor-pointer"
               onClick={toggleNodeCollapse}
               title={isNodeCollapsed ? "Expand All" : "Collapse All"}
-              style={{ padding: "2px 6px" }}
             >
               <LinkIcon />
             </div>
           )}
         </div>
-        <div
-          className="grouped-node-content"
-          style={{ padding: 0, width: "100%", height: "100%" }}
-        >
+        <div className="grouped-node-content">
           {properties.map((prop, index) => (
             <div
               key={index}
-              style={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                flex: "1 1 auto",
-              }}
+              className="property-wrapper"
             >
               <div
-                className="grouped-node-property"
-                style={{
-                  backgroundColor: isCollapsible(prop.value)
-                    ? "rgba(255, 255, 255, 0.03)"
-                    : "transparent",
-                  padding: "8px 12px",
-                  width: "100%",
-                  flex: 1,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  boxSizing: "border-box",
-                }}
+                className={`grouped-node-property ${isCollapsible(prop.value) ? "collapsible" : ""}`}
               >
-                <div className="property-content" style={{ flex: 1 }}>
+                <div className="property-content">
                   {prop.key && (
                     <span className="grouped-node-key">{prop.key}</span>
                   )}
@@ -159,14 +122,7 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
                 </div>
               </div>
               {index < properties.length - 1 && (
-                <div
-                  className="property-separator"
-                  style={{
-                    height: "1px",
-                    backgroundColor: "rgba(255, 255, 255, 0.06)",
-                    width: "100%",
-                  }}
-                />
+                <div className="property-separator" />
               )}
             </div>
           ))}
