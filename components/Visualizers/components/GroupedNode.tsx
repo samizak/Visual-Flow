@@ -23,6 +23,66 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
     return colors[type as keyof typeof colors] || "#607d8b";
   };
 
+  // Add this function to determine the CSS class based on value
+  const getValueClass = (value: string): string => {
+    // Check if it's a number
+    if (/^-?\d+(\.\d+)?$/.test(value)) {
+      return "grouped-node-value-number";
+    }
+    // Check if it's a boolean
+    else if (value === "true" || value === "false") {
+      return "grouped-node-value-boolean";
+    }
+    // Check if it's null
+    else if (value === "null") {
+      return "grouped-node-value-null";
+    }
+    // Check if it's an array
+    else if (value.startsWith("[") && value.endsWith("]")) {
+      return "grouped-node-value-array";
+    }
+    // Check if it's an object
+    else if (value === "{...}") {
+      return "grouped-node-value-object";
+    }
+    // Default for strings (has quotes)
+    else if (value.startsWith('"') && value.endsWith('"')) {
+      return "grouped-node-value";
+    }
+    // Fallback
+    return "grouped-node-value";
+  };
+
+  // New function to get value text color based on data type
+  const getValueTextColor = (value: string): string => {
+    // Check if it's a number
+    if (/^-?\d+(\.\d+)?$/.test(value)) {
+      return "#b5cea8"; // Light green for numbers
+    }
+    // Check if it's a string (has quotes)
+    else if (value.startsWith('"') && value.endsWith('"')) {
+      return "#ce9178"; // Keep current orange-ish for strings
+    }
+    // Check if it's a boolean
+    else if (value === "true" || value === "false") {
+      return "#569cd6"; // Blue for booleans
+    }
+    // Check if it's null
+    else if (value === "null") {
+      return "#d7ba7d"; // Gold/yellow for null
+    }
+    // Check if it's an array
+    else if (value.startsWith("[") && value.endsWith("]")) {
+      return "#d7ba7d"; // Gold/yellow for arrays
+    }
+    // Check if it's an object
+    else if (value === "{...}") {
+      return "#4ec9b0"; // Teal for objects
+    }
+    // Default color
+    return "#e0e0e0"; // Light gray default
+  };
+
   const backgroundColor = getTypeColor(type);
 
   // Find all ancestor nodes when hovering
@@ -167,7 +227,9 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
                 <span className="grouped-node-separator">: </span>
               )}
               {prop.value && (
-                <span className="grouped-node-value">{prop.value}</span>
+                <span className={`grouped-node-value ${getValueClass(prop.value)}`}>
+                  {prop.value}
+                </span>
               )}
             </div>
           ))}

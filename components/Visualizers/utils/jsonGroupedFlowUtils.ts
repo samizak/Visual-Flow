@@ -16,6 +16,8 @@ export const getDisplayValue = (value: any, type: string): string => {
   }
   if (type === "array") return `[${value.length}]`;
   if (type === "string") return `"${value}"`;
+  if (type === "boolean") return String(value); // Ensure booleans are preserved as-is
+  if (type === "number") return String(value);  // Ensure numbers are preserved as-is
   if (type === "null") return "null";
   return String(value);
 };

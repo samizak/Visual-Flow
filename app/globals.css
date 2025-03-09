@@ -97,8 +97,29 @@ body {
   color: #cccccc;
 }
 
+/* Add these new classes for different data types after your grouped-node-value class */
 .grouped-node-value {
-  color: #ce9178;
+  color: #ce9178; /* Default color for strings */
+}
+
+.grouped-node-value-number {
+  color: #b5cea8; /* Light green for numbers */
+}
+
+.grouped-node-value-boolean {
+  color: #569cd6; /* Blue for booleans */
+}
+
+.grouped-node-value-null {
+  color: #d7ba7d; /* Gold/yellow for null */
+}
+
+.grouped-node-value-array {
+  color: #d7ba7d; /* Gold/yellow for arrays */
+}
+
+.grouped-node-value-object {
+  color: #4ec9b0; /* Teal for objects */
 }
 
 /* Dark theme for React Flow controls */
