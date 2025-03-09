@@ -333,6 +333,7 @@ const GroupedNode = memo(({ data, id }: NodeProps) => {
   return (
     <div
       className="grouped-node"
+      data-type={type}
       onMouseEnter={highlightNodesAndEdges}
       onMouseLeave={resetHighlight}
       onMouseDown={handleDragStart}

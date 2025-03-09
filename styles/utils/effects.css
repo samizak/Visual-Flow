@@ -12,9 +12,15 @@
   z-index: 10;
 }
 
-/* Enhanced hover effect for highlighted nodes */
+/* Enhanced hover effect for highlighted nodes - type-specific colors */
+/* Default blue for object nodes */
 .react-flow.dimmed .react-flow__node.highlight .grouped-node-container {
   box-shadow: 0 0 0 2px #0e639c, 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Orange for array nodes */
+.react-flow.dimmed .react-flow__node.highlight .grouped-node[data-type="array"] .grouped-node-container {
+  box-shadow: 0 0 0 2px #b87333, 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* Dragging optimizations */
@@ -36,9 +42,11 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
 }
 
+/* Remove the forced background color for headers during drag */
+/* This was causing the orange headers to turn blue */
 .react-flow__node.dragging:hover .grouped-node-header,
 .react-flow__node.dragging .grouped-node-header {
-  background-color: #3a506b !important;
+  /* background-color: #3a506b !important; */ /* Removed this line */
 }
 
 .react-flow__node.dragging:hover .grouped-node-content,
@@ -114,4 +122,26 @@ div.hover-row.status-bar {
 /* Ensure cursor shows dragging state */
 .no-select {
   cursor: grabbing !important;
+}
+
+/* Type-specific glow effects */
+/* Default blue glow for object nodes */
+.grouped-node:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  border-radius: 8px;
+  filter: blur(15px);
+  background-color: rgba(14, 99, 156, 0.2);
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Orange glow for array nodes */
+.grouped-node[data-type="array"]:hover::after {
+  background-color: rgba(184, 115, 51, 0.2);
 }
