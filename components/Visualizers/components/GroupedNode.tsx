@@ -78,16 +78,22 @@ const GroupedNode = memo(
               >
                 <div className="property-content">
                   {prop.key && (
-                    <span className="grouped-node-key">{prop.key}</span>
+                    <span
+                      className="grouped-node-key truncate max-w-[350px]"
+                      title={prop.key}
+                    >
+                      {prop.key}
+                    </span>
                   )}
                   {prop.key && prop.value && (
                     <span className="grouped-node-separator">: </span>
                   )}
                   {prop.value && (
                     <span
-                      className={`grouped-node-value ${getValueClass(
+                      className={`grouped-node-value truncate max-w-[400px] ${getValueClass(
                         prop.value
                       )}`}
+                      title={prop.value}
                     >
                       {prop.value}
                     </span>
@@ -135,12 +141,15 @@ const GroupedNode = memo(
           className="grouped-node-container my-4"
           style={{ borderColor: backgroundColor }}
         >
-          <div className="grouped-node-header font-medium tracking-tight" style={{ backgroundColor }}>
+          <div
+            className="grouped-node-header font-medium tracking-tight"
+            style={{ backgroundColor }}
+          >
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center">
-                {renderNodeIcon()}
-              </div>
-              <span className="flex-grow text-center font-geist-sans">{label}</span>
+              <div className="flex items-center">{renderNodeIcon()}</div>
+              <span className="flex-grow text-center font-geist-sans">
+                {label}
+              </span>
               <div className="flex items-center">
                 {hasOutgoingEdges() && (
                   <div

@@ -27,8 +27,8 @@
 .grouped-node-container {
   border-radius: 6px;
   overflow: hidden;
-  min-width: 200px;
-  max-width: 300px;
+  min-width: 250px;
+  max-width: 500px;
   width: 100%;
   height: 100%;
   background-color: #1e1e1e;
