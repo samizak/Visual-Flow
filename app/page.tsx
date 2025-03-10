@@ -116,7 +116,7 @@ export default function Home() {
         onMinimize={minimizeJson}
         onCopy={copyJson}
         onSave={handleSave}
-        onCollapseLeftPanel={handleCollapseLeftPanel}
+        onTogglePanel={handleCollapseLeftPanel}
       />
 
       <div className="flex flex-1 overflow-hidden">

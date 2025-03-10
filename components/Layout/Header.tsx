@@ -29,7 +29,6 @@ interface HeaderProps {
   onCopy?: () => void;
   onTogglePanel?: () => void;
   onSave?: () => void;
-  onCollapseLeftPanel?: () => void;
 }
 
 export default function Header({
@@ -38,15 +37,11 @@ export default function Header({
   onCopy,
   onTogglePanel,
   onSave,
-  onCollapseLeftPanel,
 }: HeaderProps) {
   return (
     <header className="bg-[#1e1e1e] border-b border-gray-700 py-1 px-2">
       <div className="flex items-center justify-between">
-        <div
-          className="flex items-center space-x-2"
-          onClick={onCollapseLeftPanel}
-        >
+        <div className="flex items-center space-x-2">
           <Button
             variant="ghost"
             size="icon"

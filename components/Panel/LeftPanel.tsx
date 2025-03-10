@@ -93,7 +93,7 @@ export default function LeftPanel({
   }, []);
 
   return (
-    collapseLeftPanel && (
+    !collapseLeftPanel && (
       <div
         ref={panelRef}
         className="relative h-screen flex flex-col border-r border-gray-700 overflow-hidden"
