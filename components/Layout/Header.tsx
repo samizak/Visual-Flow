@@ -29,6 +29,7 @@ interface HeaderProps {
   onCopy?: () => void;
   onTogglePanel?: () => void;
   onSave?: () => void;
+  onImport?: () => void;
 }
 
 export default function Header({
@@ -37,6 +38,7 @@ export default function Header({
   onCopy,
   onTogglePanel,
   onSave,
+  onImport,
 }: HeaderProps) {
   return (
     <header className="bg-[#1e1e1e] border-b border-gray-700 py-1 px-2">
@@ -73,7 +75,7 @@ export default function Header({
                   <Save className="mr-2 h-4 w-4" />
                   <span>Save</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={onImport}>
                   <Upload className="mr-2 h-4 w-4" />
                   <span>Import</span>
                 </DropdownMenuItem>

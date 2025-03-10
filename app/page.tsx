@@ -63,6 +63,43 @@ export default function Home() {
     URL.revokeObjectURL(link.href);
   };
 
+  const handleImport = () => {
+    // Create a hidden file input element
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "application/json";
+    
+    // Handle file selection
+    fileInput.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const content = event.target?.result as string;
+          // Try to parse to validate it's proper JSON
+          JSON.parse(content);
+          // Set the JSON data
+          setJsonData(content);
+          toast.success("JSON imported successfully");
+        } catch (error) {
+          toast.error("Invalid JSON file");
+          console.error("Error parsing JSON file:", error);
+        }
+      };
+      
+      reader.onerror = () => {
+        toast.error("Failed to read file");
+      };
+      
+      reader.readAsText(file);
+    };
+    
+    // Trigger the file input click
+    fileInput.click();
+  };
+
   useEffect(() => {
     if (jsonData.trim() === "") {
       setIsValidJson(true);
@@ -116,6 +153,7 @@ export default function Home() {
         onMinimize={minimizeJson}
         onCopy={copyJson}
         onSave={handleSave}
+        onImport={handleImport}
         onTogglePanel={handleCollapseLeftPanel}
       />
 
