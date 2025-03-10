@@ -128,7 +128,7 @@ const GroupedNode = memo(
 
     return (
       <div
-        className="grouped-node"
+        className="grouped-node w-fit!"
         data-type={label === "Root" ? "root" : type}
         onMouseEnter={highlightNodesAndEdges}
         onMouseLeave={resetHighlight}
