@@ -123,21 +123,25 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
   const rootId = `node-${nodeId++}`;
 
   // Helper function to process array items
-  // Helper function to process array items
   function processArrayItems(
     data: any[],
     parentId: string,
     key: string,
     position: { x: number; y: number },
     isNestedArray: boolean,
-    currentBreadcrumbs: string[]
+    breadcrumbs: string[]
   ) {
     // Process each array item
     data.forEach((item: any, index: number) => {
       const itemType = getValueType(item);
       const itemId = `node-${nodeId++}`;
       const itemKey = index.toString();
-      const itemLabel = `${key} > ${itemKey}`;
+      
+      // Create breadcrumb path for this item
+      const itemBreadcrumbs = [...breadcrumbs, itemKey];
+      const itemLabel = breadcrumbs.length > 0 
+        ? `${breadcrumbs[breadcrumbs.length - 1]} > ${itemKey}`
+        : `${key} > ${itemKey}`;
       
       // Use calculateChildPosition to determine position
       const childPosition = calculateChildPosition(
@@ -191,7 +195,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
                 nestedChildPosition.x,
                 nestedChildPosition.y,
                 "array", // Pass array as parent type
-                [...currentBreadcrumbs, itemKey, childKey]
+                itemBreadcrumbs
               );
             }
           });
@@ -205,7 +209,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
             itemPosition.x,
             itemPosition.y,
             "array", // Pass array as parent type
-            currentBreadcrumbs
+            itemBreadcrumbs
           );
         }
       } else {
@@ -242,15 +246,8 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
     breadcrumbs: string[]
   ) {
     const dataType = getValueType(data);
-    // Removed console.log
     
-    // Create current breadcrumb path - but we'll only use the current key for display
-    const currentBreadcrumbs = [...breadcrumbs];
-    if (key !== "Root") {
-      currentBreadcrumbs.push(key);
-    }
-
-    // For arrays, we use the key directly without breadcrumbs
+    // For label, use the key directly
     const label = key;
 
     // Connect to parent if it exists
@@ -262,8 +259,6 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
     const position = findNonOverlappingPosition({ x: xPos, y: yPos }, nodes);
 
     if (data && dataType == "array") {
-      // Removed console.log
-      
       // Handle empty arrays
       if (data.length === 0) {
         nodes.push(
@@ -295,7 +290,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
             key,
             position,
             true, // isNestedArray
-            currentBreadcrumbs
+            breadcrumbs
           );
         } else {
           // For top-level arrays, process items directly
@@ -305,15 +300,13 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
             key,
             position,
             false, // not a nested array
-            currentBreadcrumbs
+            breadcrumbs
           );
         }
       }
     }
 
     if (data && dataType === "object") {
-      // Removed console.log
-      
       // Handle empty objects
       if (Object.keys(data).length === 0) {
         nodes.push(
@@ -378,7 +371,6 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         // Using map instead of forEach for processing children
         childEntries.map(([childKey, childValue], childIndex) => {
           const childType = getValueType(childValue);
-          // Removed console.log
           
           // Skip empty objects and arrays
           if (childType === "object" && 
@@ -394,7 +386,9 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
           }
           
           const childId = `node-${nodeId++}`;
-          // Removed console.log
+          
+          // Create child breadcrumbs by adding the current key
+          const childBreadcrumbs = [...breadcrumbs, childKey];
           
           // Use calculateChildPosition for children
           const childPosition = calculateChildPosition(
@@ -412,7 +406,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
             childPosition.x,
             childPosition.y,
             dataType, // Pass current type as parent type
-            currentBreadcrumbs // Pass current breadcrumbs
+            childBreadcrumbs // Pass updated breadcrumbs
           );
           
           return childId; // Return childId for potential future use
