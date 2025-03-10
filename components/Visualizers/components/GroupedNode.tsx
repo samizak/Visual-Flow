@@ -78,7 +78,7 @@ const GroupedNode = memo(
         type === "boolean" ||
         type === "null"
       ) {
-        return <PrimitiveIcon />;
+        return <Type className="mr-2" size={18} />;
       }
       return null;
     };
