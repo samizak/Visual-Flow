@@ -318,85 +318,165 @@ export const useNodeInteractions = (
   const togglePropertyCollapse = useCallback(
     (e: React.MouseEvent, propKey: string) => {
       e.stopPropagation(); // Prevent event from bubbling up
-
+  
       const nodes = getNodes();
       const edges = getEdges();
-
+  
+      console.log(`Attempting to toggle property: ${propKey}`);
+  
       // Find edges that connect this node to the property node
       const propertyEdges = edges.filter(
         (edge) =>
           edge.source === id &&
-          (edge.sourceHandle === propKey || edge.data?.key === propKey)
+          (edge.sourceHandle === propKey ||
+            edge.data?.key === propKey ||
+            // Add specific handling for array indices
+            (propKey.match(/^\d+$/) &&
+              edge.data?.arrayIndex === parseInt(propKey)))
       );
-
+  
       let targetIds = new Set<string>();
       let edgeIds = new Set<string>();
-
+  
       // If we can't find edges by sourceHandle, try to find by target node label
       if (propertyEdges.length === 0) {
+        // Get all direct child edges from this node
         const allChildEdges = edges.filter((edge) => edge.source === id);
-
-        // Get all target nodes
-        const targetNodeIds = allChildEdges.map((edge) => edge.target);
-        const targetNodes = nodes.filter((node) =>
-          targetNodeIds.includes(node.id)
-        );
-
-        // Find nodes that match the property key in their label
-        const matchingNodes = targetNodes.filter(
-          (node) =>
-            node.data?.label === propKey ||
-            (typeof node.data?.label === "string" &&
-              node.data?.label.startsWith(propKey + " "))
-        );
-
-        if (matchingNodes.length > 0) {
-          targetIds = new Set(matchingNodes.map((node) => node.id));
-
-          // Find edges that connect to these nodes
-          const matchingEdges = edges.filter(
-            (edge) => edge.source === id && targetIds.has(edge.target)
+  
+        // For arrays with generic property keys like "prop-0", we need a different approach
+        if (propKey.startsWith("prop-")) {
+          // For arrays, we want to get ALL child nodes, not just the one at the index
+          // This is because "prop-0" might be the collapse button for the entire array
+          const currentNode = nodes.find(node => node.id === id);
+          
+          // Check if this is an array node
+          if (currentNode?.data?.type === "array") {
+            console.log("This is an array node, getting all children");
+            
+            // Get all direct children
+            allChildEdges.forEach(edge => {
+              targetIds.add(edge.target);
+              edgeIds.add(edge.id);
+            });
+          } else {
+            // If not an array, use the original index-based approach
+            const index = parseInt(propKey.split("-")[1]);
+            
+            // Get all direct children in order
+            const childEdges = allChildEdges.sort((a, b) => {
+              // Sort by array index if available
+              const aIndex =
+                a.data?.arrayIndex !== undefined ? a.data.arrayIndex : 0;
+              const bIndex =
+                b.data?.arrayIndex !== undefined ? b.data.arrayIndex : 0;
+              return (aIndex as any) - (bIndex as any);
+            });
+            
+            // Get the edge at the specified index
+            if (index >= 0 && index < childEdges.length) {
+              const targetEdge = childEdges[index];
+              targetIds.add(targetEdge.target);
+              edgeIds.add(targetEdge.id);
+            }
+          }
+        } else {
+          // Get all target nodes
+          const targetNodeIds = allChildEdges.map((edge) => edge.target);
+          const targetNodes = nodes.filter((node) =>
+            targetNodeIds.includes(node.id)
           );
-
-          edgeIds = new Set(matchingEdges.map((edge) => edge.id));
+  
+          // Find nodes that match the property key in their label
+          const matchingNodes = targetNodes.filter((node: any) => {
+            // For array indices, match exactly
+            if (propKey.match(/^\d+$/) && node.data?.label === propKey) {
+              return true;
+            }
+  
+            // For array indices with additional info (e.g., "0 [3 items]")
+            if (
+              propKey.match(/^\d+$/) &&
+              typeof node.data?.label === "string" &&
+              node.data.label.startsWith(propKey + " ")
+            ) {
+              return true;
+            }
+  
+            // For regular properties
+            if (node.data?.label === propKey) {
+              return true;
+            }
+  
+            // For properties with additional info
+            if (
+              typeof node.data?.label === "string" &&
+              node.data.label.startsWith(propKey + " ")
+            ) {
+              return true;
+            }
+  
+            return false;
+          });
+  
+          if (matchingNodes.length > 0) {
+            console.log(
+              `Found ${matchingNodes.length} matching nodes for property ${propKey}`
+            );
+            targetIds = new Set(matchingNodes.map((node) => node.id));
+  
+            // Find edges that connect to these nodes
+            const matchingEdges = edges.filter(
+              (edge) => edge.source === id && targetIds.has(edge.target)
+            );
+  
+            edgeIds = new Set(matchingEdges.map((edge) => edge.id));
+          }
         }
       } else {
         // We found edges by sourceHandle
+        console.log(
+          `Found ${propertyEdges.length} direct property edges for ${propKey}`
+        );
         targetIds = new Set(propertyEdges.map((edge) => edge.target));
         edgeIds = new Set(propertyEdges.map((edge) => edge.id));
       }
-
+  
+      // Debug logging to see what's happening
+      console.log(
+        `Property ${propKey} - Found ${targetIds.size} target nodes and ${edgeIds.size} edges`
+      );
+  
       // If we found target nodes, process them and their descendants
       if (targetIds.size > 0) {
         // Get the current collapse state for this property
         const isPropertyCollapsed = collapsedProperties[propKey] || false;
-
+  
         // For each target node, find all its descendants
         const allDescendantNodes = new Set<string>();
         const allDescendantEdges = new Set<string>();
-
+  
         // Add the direct property nodes first
         targetIds.forEach((targetId) => {
           allDescendantNodes.add(targetId);
-
+  
           // Then find all descendants of each property node
           const { descendantNodes, descendantEdges } = findAllDescendants(
             targetId,
             edges
           );
-
+  
           // Add all descendants
           descendantNodes.forEach((id) => allDescendantNodes.add(id));
           descendantEdges.forEach((id) => allDescendantEdges.add(id));
         });
-
+  
         // Add the direct edges
         edgeIds.forEach((id) => allDescendantEdges.add(id));
-
+  
         // console.log(
         //   `Property ${propKey} has ${allDescendantNodes.size} descendant nodes and ${allDescendantEdges.size} descendant edges`
         // );
-
+  
         // Toggle visibility of all descendant nodes
         setNodes(
           nodes.map((node) => {
@@ -409,7 +489,7 @@ export const useNodeInteractions = (
             return node;
           })
         );
-
+  
         setEdges(
           edges.map((edge) => {
             if (allDescendantEdges.has(edge.id)) {
@@ -421,7 +501,7 @@ export const useNodeInteractions = (
             return edge;
           })
         );
-
+  
         // Update the collapsed state for this specific property
         setCollapsedProperties((prev) => ({
           ...prev,
