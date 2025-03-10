@@ -7,10 +7,7 @@ import {
   NODE_HEIGHT,
   NODE_MARGIN,
 } from "./jsonUtils";
-import {
-  findNonOverlappingPosition,
-  calculateChildPosition,
-} from "./nodePositioning";
+import dagre from "@dagrejs/dagre";
 
 // Define more specific interfaces for node properties
 interface NodeProperty {
@@ -41,6 +38,9 @@ function createNode(
       properties,
     },
     position,
+    // Add width and height for dagre layout calculations
+    width: NODE_WIDTH,
+    height: NODE_HEIGHT,
   };
 }
 
@@ -112,7 +112,11 @@ function createPrimitiveNode(
 }
 
 // Helper function to create an edge with a unique ID
-function createEdge(source: string, target: string, edgeType: string = "smoothstep"): Edge {
+function createEdge(
+  source: string,
+  target: string,
+  edgeType: string = "smoothstep"
+): Edge {
   return {
     id: `edge-${source}-${target}-${Date.now()}-${Math.floor(
       Math.random() * 1000
@@ -124,14 +128,15 @@ function createEdge(source: string, target: string, edgeType: string = "smoothst
 }
 
 // Convert JSON to nodes and edges with grouped properties
-export const convertJsonToGroupedFlow = (json: any, edgeType: string = "smoothstep"): JsonFlowResult => {
+export const convertJsonToGroupedFlow = (
+  json: any,
+  edgeType: string = "smoothstep"
+): JsonFlowResult => {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
   let nodeId = 0;
 
   // Memoization caches
-  const positionCache = new Map<string, NodePosition>();
-  const childPositionCache = new Map<string, NodePosition[]>();
   const hasChildrenCache = new Map<string, boolean>();
   const objectPropertiesCache = new Map<object, NodeProperty[]>();
 
@@ -141,39 +146,65 @@ export const convertJsonToGroupedFlow = (json: any, edgeType: string = "smoothst
   // Process the root object - place at (0,0) as the center point
   processJsonNode(json, rootId, null, "Root", 0, 0, "root", []);
 
-  return { nodes, edges };
+  // Apply dagre layout to position all nodes
+  const positionedNodes = applyDagreLayout(nodes, edges);
 
-  // Memoized function to find non-overlapping position
-  function memoizedFindNonOverlappingPosition(
-    basePosition: NodePosition,
-    cacheKey: string
-  ): NodePosition {
-    if (positionCache.has(cacheKey)) {
-      return positionCache.get(cacheKey)!;
-    }
+  return { nodes: positionedNodes, edges };
 
-    const position = findNonOverlappingPosition(basePosition, nodes);
-    positionCache.set(cacheKey, position);
-    return position;
-  }
+  // Apply dagre layout to position nodes
+  function applyDagreLayout(nodes: Node[], edges: Edge[]): Node[] {
+    // Import dagre dynamically to avoid SSR issues
+    const dagre = require("@dagrejs/dagre");
 
-  // Memoized function to calculate child positions
-  function memoizedCalculateChildPositions(
-    parentPosition: NodePosition,
-    childCount: number,
-    cacheKey: string
-  ): NodePosition[] {
-    if (childPositionCache.has(cacheKey)) {
-      return childPositionCache.get(cacheKey)!;
-    }
+    // Create a new dagre graph
+    const dagreGraph = new dagre.graphlib.Graph();
+    dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-    const positions: NodePosition[] = [];
-    for (let i = 0; i < childCount; i++) {
-      positions.push(calculateChildPosition(parentPosition, i, childCount));
-    }
+    // Set graph direction and spacing
+    dagreGraph.setGraph({
+      rankdir: "LR", // Left to right layout
+      nodesep: NODE_MARGIN * 2,
+      ranksep: NODE_MARGIN * 3,
+      marginx: 50,
+      marginy: 50,
+    });
 
-    childPositionCache.set(cacheKey, positions);
-    return positions;
+    // Add nodes to dagre graph
+    nodes.forEach((node) => {
+      dagreGraph.setNode(node.id, {
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
+      });
+    });
+
+    // Add edges to dagre graph
+    edges.forEach((edge) => {
+      dagreGraph.setEdge(edge.source, edge.target);
+    });
+
+    // Calculate layout
+    dagre.layout(dagreGraph);
+
+    // Apply calculated positions to nodes
+    return nodes.map((node) => {
+      const dagreNode = dagreGraph.node(node.id);
+
+      // Only update position if dagre calculated one
+      if (dagreNode) {
+        // Dagre positions nodes by their center, but React Flow uses top-left corner
+        const position = {
+          x: dagreNode.x - NODE_WIDTH / 2,
+          y: dagreNode.y - NODE_HEIGHT / 2,
+        };
+
+        return {
+          ...node,
+          position,
+        };
+      }
+
+      return node;
+    });
   }
 
   // Memoized function to check if an object has complex children
@@ -211,6 +242,46 @@ export const convertJsonToGroupedFlow = (json: any, edgeType: string = "smoothst
     return properties;
   }
 
+  // Process object children
+  function processObjectChildren(
+    data: Record<string, any>,
+    parentId: string,
+    parentPosition: NodePosition,
+    breadcrumbs: string[]
+  ): void {
+    // Filter for complex children (objects and arrays)
+    const childEntries = Object.entries(data).filter(([_, value]) => {
+      const type = getValueType(value);
+      return (
+        (type === "object" && Object.keys(value || {}).length > 0) ||
+        (type === "array" && Array.isArray(value) && value.length > 0)
+      );
+    });
+
+    // Process each child with temporary positions - dagre will reposition
+    childEntries.forEach(([childKey, childValue], childIndex) => {
+      const childId = `node-${nodeId++}`;
+
+      // Create child breadcrumbs
+      const childBreadcrumbs = [...breadcrumbs, childKey];
+
+      // Use temporary position - dagre will reposition later
+      const childPosition = { x: 0, y: 0 };
+
+      // Process the child node
+      processJsonNode(
+        childValue,
+        childId,
+        parentId,
+        childKey,
+        childPosition.x,
+        childPosition.y,
+        "object", // Parent type is object
+        childBreadcrumbs
+      );
+    });
+  }
+
   // Main function to process JSON nodes recursively - now acts as a router
   function processJsonNode(
     data: any,
@@ -229,12 +300,8 @@ export const convertJsonToGroupedFlow = (json: any, edgeType: string = "smoothst
       edges.push(createEdge(parentId, currentId, edgeType));
     }
 
-    // Find non-overlapping position with memoization
-    const positionCacheKey = `${xPos}-${yPos}-${nodes.length}`;
-    const position = memoizedFindNonOverlappingPosition(
-      { x: xPos, y: yPos },
-      positionCacheKey
-    );
+    // Use temporary position - dagre will reposition later
+    const position = { x: 0, y: 0 };
 
     // Route to the appropriate handler based on data type
     if (data && dataType === "array") {
@@ -292,7 +359,7 @@ export const convertJsonToGroupedFlow = (json: any, edgeType: string = "smoothst
       // Create a node for the nested array
       nodes.push(createArrayNode(currentId, key, data.length, position));
 
-      // Process array items with memoized positions
+      // Process array items
       processArrayItems(
         data,
         currentId,
@@ -343,89 +410,6 @@ export const convertJsonToGroupedFlow = (json: any, edgeType: string = "smoothst
     }
   }
 
-  // Helper function to create object properties
-  function createObjectProperties(data: Record<string, any>): NodeProperty[] {
-    return Object.entries(data).map(([propKey, propValue]) => {
-      const propType = getValueType(propValue);
-
-      // For objects, show the number of keys
-      if (propType === "object") {
-        const keyCount = propValue ? Object.keys(propValue as any).length : 0;
-        return {
-          key: propKey,
-          value: `{${keyCount} ${keyCount === 1 ? "key" : "keys"}}`,
-          type: propType,
-        };
-      }
-      // For arrays, show the number of items
-      else if (propType === "array") {
-        const arrayValue = propValue as any[];
-        const itemCount = Array.isArray(arrayValue) ? arrayValue.length : 0;
-        return {
-          key: propKey,
-          value: `[${itemCount} ${itemCount === 1 ? "item" : "items"}]`,
-          type: propType,
-        };
-      }
-      // For primitive types, show the value
-      else {
-        return {
-          key: propKey,
-          value: getDisplayValue(propValue, propType),
-          type: propType,
-        };
-      }
-    });
-  }
-
-  // Process object children
-  function processObjectChildren(
-    data: Record<string, any>,
-    parentId: string,
-    parentPosition: NodePosition,
-    breadcrumbs: string[]
-  ): void {
-    // Filter for complex children (objects and arrays)
-    const childEntries = Object.entries(data).filter(([_, value]) => {
-      const type = getValueType(value);
-      return (
-        (type === "object" && Object.keys(value || {}).length > 0) ||
-        (type === "array" && Array.isArray(value) && value.length > 0)
-      );
-    });
-
-    // Calculate all child positions at once using memoization
-    const childPositionsCacheKey = `${parentId}-${childEntries.length}`;
-    const childPositions = memoizedCalculateChildPositions(
-      parentPosition,
-      childEntries.length,
-      childPositionsCacheKey
-    );
-
-    // Process each child with pre-calculated positions
-    childEntries.forEach(([childKey, childValue], childIndex) => {
-      const childId = `node-${nodeId++}`;
-
-      // Create child breadcrumbs
-      const childBreadcrumbs = [...breadcrumbs, childKey];
-
-      // Get pre-calculated position
-      const childPosition = childPositions[childIndex];
-
-      // Process the child node
-      processJsonNode(
-        childValue,
-        childId,
-        parentId,
-        childKey,
-        childPosition.x,
-        childPosition.y,
-        "object", // Parent type is object
-        childBreadcrumbs
-      );
-    });
-  }
-
   // Helper function to process array items
   function processArrayItems(
     data: any[],
@@ -435,15 +419,7 @@ export const convertJsonToGroupedFlow = (json: any, edgeType: string = "smoothst
     isNestedArray: boolean,
     breadcrumbs: string[]
   ): void {
-    // Calculate all item positions at once using memoization
-    const itemPositionsCacheKey = `${parentId}-${data.length}`;
-    const itemPositions = memoizedCalculateChildPositions(
-      position,
-      data.length,
-      itemPositionsCacheKey
-    );
-
-    // Process each array item with pre-calculated positions
+    // Process each array item with temporary positions - dagre will reposition
     data.forEach((item: any, index: number) => {
       const itemType = getValueType(item);
       const itemId = `node-${nodeId++}`;
@@ -456,13 +432,8 @@ export const convertJsonToGroupedFlow = (json: any, edgeType: string = "smoothst
           ? `${breadcrumbs[breadcrumbs.length - 1]} > ${itemKey}`
           : `${key} > ${itemKey}`;
 
-      // Get pre-calculated position and ensure no overlap
-      const basePosition = itemPositions[index];
-      const positionCacheKey = `item-${itemId}-${basePosition.x}-${basePosition.y}`;
-      const itemPosition = memoizedFindNonOverlappingPosition(
-        basePosition,
-        positionCacheKey
-      );
+      // Use temporary position - dagre will reposition later
+      const itemPosition = { x: 0, y: 0 };
 
       if (itemType === "object" || itemType === "array") {
         if (isNestedArray && itemType === "object") {
@@ -534,20 +505,12 @@ export const convertJsonToGroupedFlow = (json: any, edgeType: string = "smoothst
         );
       });
 
-      // Calculate all child positions at once using memoization
-      const childPositionsCacheKey = `${itemId}-${complexChildren.length}`;
-      const childPositions = memoizedCalculateChildPositions(
-        itemPosition,
-        complexChildren.length,
-        childPositionsCacheKey
-      );
-
-      // Process each child with pre-calculated positions
+      // Process each child with temporary positions - dagre will reposition
       complexChildren.forEach(([childKey, childValue], childIndex) => {
         const childId = `node-${nodeId++}`;
 
-        // Get pre-calculated position
-        const childPosition = childPositions[childIndex];
+        // Use temporary position - dagre will reposition later
+        const childPosition = { x: 0, y: 0 };
 
         processJsonNode(
           childValue,
@@ -563,3 +526,37 @@ export const convertJsonToGroupedFlow = (json: any, edgeType: string = "smoothst
     }
   }
 };
+// Replace the stub implementation at the bottom with a proper implementation
+function createObjectProperties(data: Record<string, any>): NodeProperty[] {
+  return Object.entries(data).map(([propKey, propValue]) => {
+    const propType = getValueType(propValue);
+
+    // For objects, show the number of keys
+    if (propType === "object") {
+      const keyCount = propValue ? Object.keys(propValue as any).length : 0;
+      return {
+        key: propKey,
+        value: `{${keyCount} ${keyCount === 1 ? "key" : "keys"}}`,
+        type: propType,
+      };
+    }
+    // For arrays, show the number of items
+    else if (propType === "array") {
+      const arrayValue = propValue as any[];
+      const itemCount = Array.isArray(arrayValue) ? arrayValue.length : 0;
+      return {
+        key: propKey,
+        value: `[${itemCount} ${itemCount === 1 ? "item" : "items"}]`,
+        type: propType,
+      };
+    }
+    // For primitive types, show the value
+    else {
+      return {
+        key: propKey,
+        value: getDisplayValue(propValue, propType),
+        type: propType,
+      };
+    }
+  });
+}
