@@ -2,12 +2,19 @@
 
 // Get color based on node type
 export const getTypeColor = (type: string): string => {
+  console.log(`Getting color for type: ${type}`);
+
   const colors = {
     object: "#3a506b", // Blue-gray
     array: "#b87333", // Orange
+    primitive: "#2e7d32", // Modern dark green for primitives
+    root: "#6b46c1", // Modern dark purple for root node (updated)
   };
 
-  return colors[type as keyof typeof colors] || "#607d8b";
+  // Add fallback logic to ensure we always return a color
+  const color = colors[type as keyof typeof colors] || colors.primitive;
+  console.log(`Selected color for type ${type}: ${color}`);
+  return color;
 };
 
 // Determine the CSS class based on value

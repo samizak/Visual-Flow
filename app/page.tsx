@@ -68,12 +68,12 @@ export default function Home() {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = "application/json";
-    
+
     // Handle file selection
     fileInput.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
-      
+
       const reader = new FileReader();
       reader.onload = (event) => {
         try {
@@ -88,14 +88,14 @@ export default function Home() {
           console.error("Error parsing JSON file:", error);
         }
       };
-      
+
       reader.onerror = () => {
         toast.error("Failed to read file");
       };
-      
+
       reader.readAsText(file);
     };
-    
+
     // Trigger the file input click
     fileInput.click();
   };
@@ -107,6 +107,7 @@ export default function Home() {
     }
     try {
       if (jsonData.trim()) {
+        // Actually parse the JSON to validate it
         JSON.parse(jsonData);
         setIsValidJson(true);
       } else {
@@ -165,7 +166,8 @@ export default function Home() {
         />
 
         <RightPanel
-          jsonData={jsonData}
+          jsonData={jsonData} // Always pass the current JSON data
+          isValidJson={isValidJson} // Pass the validation state separately
           setNodeCount={setNodeCount}
           nodeCount={nodeCount}
         />

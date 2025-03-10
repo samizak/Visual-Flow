@@ -85,6 +85,26 @@ export const ArrayIcon: React.FC = () => (
   </svg>
 );
 
+// Add this new primitive icon component
+export const PrimitiveIcon: React.FC = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="mr-2"
+  >
+    <path d="M20 7h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h3"></path>
+    <path d="M14 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10"></path>
+    <line x1="12" y1="7" x2="12" y2="19"></line>
+  </svg>
+);
+
 // Collapse/Expand button component
 interface CollapseButtonProps {
   isCollapsed: boolean;

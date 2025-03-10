@@ -49,7 +49,7 @@ export default function Header({
             size="icon"
             onClick={onTogglePanel}
             className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
-            title="Toggle Panel"
+            title="Colalpse Panel"
           >
             <PanelLeft className="h-5 w-5" />
           </Button>
@@ -136,6 +136,10 @@ export default function Header({
                 <DropdownMenuItem>
                   <Layers className="mr-2 h-4 w-4" />
                   <span>3D Node View</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  {/* <Layers className="mr-2 h-4 w-4" /> */}
+                  <span>Tree View</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>

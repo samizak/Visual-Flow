@@ -35,9 +35,9 @@ const proOptions = {
 export default function JsonFlowChart({
   jsonData,
   onNodeCountChange,
-  isValidJson = true, // Make isValidJson optional with default value
+  isValidJson = true, // Add this new prop with default value
 }: JsonFlowChartProps & { onNodeCountChange?: (count: number) => void } & {
-  isValidJson?: boolean; // Changed to optional
+  isValidJson?: boolean; // Make it optional with a default value
 }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -57,14 +57,21 @@ export default function JsonFlowChart({
       }
 
       try {
-        const parsedJson = JSON.parse(jsonString);
-        const { nodes: flowNodes, edges: flowEdges } =
-          convertJsonToGroupedFlow(parsedJson);
-        setNodes(flowNodes as any);
-        setEdges(flowEdges as any);
-        setLastValidJson(jsonString);
-        setIsLoading(false);
-        onNodeCountChange?.(flowNodes.length);
+        // Only attempt to parse and update if the JSON is valid
+        if (isValidJson) {
+          const parsedJson = JSON.parse(jsonString);
+          const { nodes: flowNodes, edges: flowEdges } =
+            convertJsonToGroupedFlow(parsedJson);
+          setNodes(flowNodes as any);
+          setEdges(flowEdges as any);
+          setLastValidJson(jsonString);
+          setIsLoading(false);
+          onNodeCountChange?.(flowNodes.length);
+        } else {
+          // If JSON is invalid but we have a previous visualization,
+          // just keep the current state and stop loading
+          setIsLoading(false);
+        }
       } catch (error) {
         // If parsing fails, keep the last valid visualization
         console.log("JSON parsing error (not displayed to user):", error);
@@ -80,7 +87,7 @@ export default function JsonFlowChart({
         }
       }
     },
-    [setNodes, setEdges, lastValidJson, onNodeCountChange]
+    [setNodes, setEdges, lastValidJson, onNodeCountChange, isValidJson]
   );
 
   // Process JSON data with debounce
@@ -91,7 +98,8 @@ export default function JsonFlowChart({
     }
 
     // Only show loading state if we're going from valid to new state
-    if (lastValidJson !== jsonData && !isLoading) {
+    // and the JSON is valid
+    if (lastValidJson !== jsonData && !isLoading && isValidJson) {
       setIsLoading(true);
     }
 
@@ -106,7 +114,7 @@ export default function JsonFlowChart({
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [jsonData, processJsonData, lastValidJson, isLoading]);
+  }, [jsonData, processJsonData, lastValidJson, isLoading, isValidJson]);
 
   if (isLoading) {
     return (
@@ -115,6 +123,20 @@ export default function JsonFlowChart({
       </div>
     );
   }
+  // console.log(nodes);
+  // const _nodes = nodes.reduce((acc: any, e: any) => {
+  //   acc[e.id] = e.data.label; // Key: id, Value: label
+  //   return acc;
+  // }, {});
+
+  // const _edges = edges.map((e: any) => [e.id, e.source, e.target]);
+
+  // console.log(_nodes);
+  // for (let i = 0; i < edges.length; i++) {
+  //   const _key1 = _edges[i][1];
+  //   const _key2 = _edges[i][2];
+  //   console.log({ from: _nodes[_key1], to: _nodes[_key2] });
+  // }
 
   return (
     <div className="h-full w-full">

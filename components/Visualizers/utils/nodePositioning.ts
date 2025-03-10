@@ -17,7 +17,12 @@ export function findNonOverlappingPosition(
   newPos: { x: number; y: number },
   existingNodes: Node[]
 ): { x: number; y: number } {
-  let position = { ...newPos };
+  // Round positions to nearest 10 for cleaner layout
+  let position = {
+    x: Math.round(newPos.x / 10) * 10,
+    y: Math.round(newPos.y / 10) * 10,
+  };
+
   let attempts = 0;
   const maxAttempts = 100; // Prevent infinite loops
 
@@ -44,5 +49,31 @@ export function findNonOverlappingPosition(
   return {
     x: newPos.x + attempts * 50,
     y: newPos.y + attempts * 50,
+  };
+}
+
+// Add export keyword to make the function available for import
+export function calculateChildPosition(
+  parentPos: { x: number; y: number },
+  childIndex: number,
+  totalChildren: number,
+  level: number = 1
+): { x: number; y: number } {
+  // Base horizontal spacing from parent
+  const baseXOffset = NODE_WIDTH + NODE_MARGIN * 3;
+
+  // Calculate vertical distribution
+  let yOffset = 0;
+
+  if (totalChildren > 1) {
+    // Create a balanced tree with parent in the middle
+    const totalHeight = (totalChildren - 1) * (NODE_HEIGHT + NODE_MARGIN * 2);
+    yOffset = childIndex * (NODE_HEIGHT + NODE_MARGIN * 2) - totalHeight / 2;
+  }
+
+  // Round positions to nearest 10
+  return {
+    x: Math.round((parentPos.x + baseXOffset) / 10) * 10,
+    y: Math.round((parentPos.y + yOffset) / 10) * 10,
   };
 }

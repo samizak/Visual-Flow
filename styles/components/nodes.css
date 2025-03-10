@@ -157,3 +157,39 @@
   opacity: 0;
   animation: fadeIn 0.3s ease forwards;
 }
+
+/* Root node specific hover effects */
+.grouped-node[data-type="root"] .grouped-node-container {
+  border-color: #6b46c1;
+}
+
+.grouped-node[data-type="root"] .grouped-node-header {
+  background-color: #6b46c1;
+}
+
+.grouped-node[data-type="root"]:hover .grouped-node-container {
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 2px #6b46c1, 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.grouped-node[data-type="root"]:hover .grouped-node-header {
+  background-color: #805ad5; /* Lighter purple for hover state */
+}
+
+/* Primitive node specific hover effects */
+.grouped-node[data-type="primitive"] .grouped-node-container {
+  border-color: #2e7d32;
+}
+
+.grouped-node[data-type="primitive"] .grouped-node-header {
+  background-color: #2e7d32;
+}
+
+.grouped-node[data-type="primitive"]:hover .grouped-node-container {
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 2px #2e7d32, 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.grouped-node[data-type="primitive"]:hover .grouped-node-header {
+  background-color: #43a047; /* Lighter green for hover state */
+}

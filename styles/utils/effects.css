@@ -141,3 +141,29 @@ div.hover-row.status-bar {
 .grouped-node[data-type="array"]:hover::after {
   background-color: rgba(184, 115, 51, 0.2);
 }
+
+/* Teal glow for primitive string nodes - updated to green */
+.grouped-node[data-type="primitive"]:hover::after {
+  background-color: rgba(46, 125, 50, 0.2);
+}
+
+/* Add specific highlighting for primitive nodes in dimmed mode */
+.react-flow.dimmed
+  .react-flow__node.highlight
+  .grouped-node[data-type="primitive"]
+  .grouped-node-container {
+  box-shadow: 0 0 0 2px #2e7d32, 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Purple glow for root node */
+.grouped-node[data-type="root"]:hover::after {
+  background-color: rgba(107, 70, 193, 0.2);
+}
+
+/* Add specific highlighting for root node in dimmed mode */
+.react-flow.dimmed
+  .react-flow__node.highlight
+  .grouped-node[data-type="root"]
+  .grouped-node-container {
+  box-shadow: 0 0 0 2px #6b46c1, 0 10px 20px rgba(0, 0, 0, 0.4);
+}

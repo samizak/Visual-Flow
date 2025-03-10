@@ -5,9 +5,10 @@ import {
   LinkIcon,
   CollapseButton,
   PropertyCollapseButton,
+  PrimitiveIcon, // Import the new PrimitiveIcon
 } from "./NodeComponents";
 import { useNodeInteractions } from "../hooks/useNodeInteractions";
-import { Braces, Brackets, Box } from "lucide-react";
+import { Braces, Brackets, Box, Type, Hash, ToggleLeft, X } from "lucide-react";
 
 interface GroupedNodeData {
   label: string;
@@ -20,6 +21,10 @@ const GroupedNode = memo(
   ({ data, id, isVisible = true }: NodeProps & { isVisible?: boolean }) => {
     const nodeData = data as unknown as GroupedNodeData;
     const { label, type, properties, hasChildren } = nodeData;
+
+    // Add debug logging to check node type
+    console.log(`Node ${id} - Label: ${label}, Type: ${type}`);
+
     const [isDragging, setIsDragging] = useState(false);
     const [isNodeCollapsed, setIsNodeCollapsed] = useState(false);
     const [collapsedProperties, setCollapsedProperties] = useState<
@@ -28,6 +33,9 @@ const GroupedNode = memo(
 
     // Memoize the background color to prevent recalculation
     const backgroundColor = useMemo(() => getTypeColor(type), [type]);
+
+    // Log the background color to verify it's correct
+    console.log(`Node ${id} - Background color: ${backgroundColor}`);
 
     // Use the custom hook for node interactions
     const {
@@ -51,12 +59,26 @@ const GroupedNode = memo(
 
     // Render the appropriate icon based on node type
     const renderNodeIcon = () => {
+      console.log("[RENDERNODEICONS] => ", {
+        label,
+        type,
+        properties,
+        hasChildren,
+      });
       if (label === "Root") {
         return <Box className="mr-2" size={18} />;
       } else if (type === "object") {
         return <Braces className="mr-2" size={18} />;
       } else if (type === "array") {
         return <Brackets className="mr-2" size={18} />;
+      } else if (
+        type === "primitive" ||
+        type === "string" ||
+        type === "number" ||
+        type === "boolean" ||
+        type === "null"
+      ) {
+        return <Type className="mr-2" size={18} />;
       }
       return null;
     };
@@ -126,7 +148,7 @@ const GroupedNode = memo(
     return (
       <div
         className="grouped-node"
-        data-type={type}
+        data-type={label === "Root" ? "root" : type}
         onMouseEnter={highlightNodesAndEdges}
         onMouseLeave={resetHighlight}
         onMouseDown={handleDragStart}
@@ -139,11 +161,13 @@ const GroupedNode = memo(
         <Handle type="target" position={Position.Left} />
         <div
           className="grouped-node-container my-4"
-          style={{ borderColor: backgroundColor }}
+          style={{
+            borderColor: label === "Root" ? "#9370DB" : backgroundColor,
+          }}
         >
           <div
             className="grouped-node-header font-medium tracking-tight"
-            style={{ backgroundColor }}
+            style={{ backgroundColor: label !== "Root" ? backgroundColor : "" }}
           >
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center">{renderNodeIcon()}</div>

@@ -268,9 +268,9 @@ export const useNodeInteractions = (
         edges
       );
 
-      console.log(
-        `Node ${id} has ${descendantNodes.size} descendant nodes and ${descendantEdges.size} descendant edges`
-      );
+      // console.log(
+      //   `Node ${id} has ${descendantNodes.size} descendant nodes and ${descendantEdges.size} descendant edges`
+      // );
 
       // Toggle visibility of ALL descendant nodes and their edges
       setNodes(
@@ -393,9 +393,9 @@ export const useNodeInteractions = (
         // Add the direct edges
         edgeIds.forEach((id) => allDescendantEdges.add(id));
 
-        console.log(
-          `Property ${propKey} has ${allDescendantNodes.size} descendant nodes and ${allDescendantEdges.size} descendant edges`
-        );
+        // console.log(
+        //   `Property ${propKey} has ${allDescendantNodes.size} descendant nodes and ${allDescendantEdges.size} descendant edges`
+        // );
 
         // Toggle visibility of all descendant nodes
         setNodes(
