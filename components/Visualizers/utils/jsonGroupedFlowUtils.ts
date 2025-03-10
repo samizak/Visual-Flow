@@ -131,6 +131,12 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
   const edges: Edge[] = [];
   let nodeId = 0;
 
+  // Memoization caches
+  const positionCache = new Map<string, NodePosition>();
+  const childPositionCache = new Map<string, NodePosition[]>();
+  const hasChildrenCache = new Map<string, boolean>();
+  const objectPropertiesCache = new Map<object, NodeProperty[]>();
+
   // Create root node at the center
   const rootId = `node-${nodeId++}`;
 
@@ -138,6 +144,67 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
   processJsonNode(json, rootId, null, "Root", 0, 0, "root", []);
 
   return { nodes, edges };
+
+  // Memoized function to find non-overlapping position
+  function memoizedFindNonOverlappingPosition(
+    basePosition: NodePosition,
+    cacheKey: string
+  ): NodePosition {
+    if (positionCache.has(cacheKey)) {
+      return positionCache.get(cacheKey)!;
+    }
+    
+    const position = findNonOverlappingPosition(basePosition, nodes);
+    positionCache.set(cacheKey, position);
+    return position;
+  }
+
+  // Memoized function to calculate child positions
+  function memoizedCalculateChildPositions(
+    parentPosition: NodePosition,
+    childCount: number,
+    cacheKey: string
+  ): NodePosition[] {
+    if (childPositionCache.has(cacheKey)) {
+      return childPositionCache.get(cacheKey)!;
+    }
+    
+    const positions: NodePosition[] = [];
+    for (let i = 0; i < childCount; i++) {
+      positions.push(calculateChildPosition(parentPosition, i, childCount));
+    }
+    
+    childPositionCache.set(cacheKey, positions);
+    return positions;
+  }
+
+  // Memoized function to check if an object has complex children
+  function memoizedHasComplexChildren(data: Record<string, any>, cacheKey: string): boolean {
+    if (hasChildrenCache.has(cacheKey)) {
+      return hasChildrenCache.get(cacheKey)!;
+    }
+    
+    const hasChildren = Object.values(data).some(value => {
+      const type = getValueType(value);
+      return (type === "object" && Object.keys(value || {}).length > 0) || 
+             (type === "array" && Array.isArray(value) && value.length > 0);
+    });
+    
+    hasChildrenCache.set(cacheKey, hasChildren);
+    return hasChildren;
+  }
+
+  // Memoized function to create object properties
+  function memoizedCreateObjectProperties(data: Record<string, any>): NodeProperty[] {
+    // Use the object reference as a key
+    if (objectPropertiesCache.has(data)) {
+      return objectPropertiesCache.get(data)!;
+    }
+    
+    const properties = createObjectProperties(data);
+    objectPropertiesCache.set(data, properties);
+    return properties;
+  }
 
   // Main function to process JSON nodes recursively - now acts as a router
   function processJsonNode(
@@ -157,8 +224,12 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       edges.push(createEdge(parentId, currentId));
     }
 
-    // Find non-overlapping position
-    const position = findNonOverlappingPosition({ x: xPos, y: yPos }, nodes);
+    // Find non-overlapping position with memoization
+    const positionCacheKey = `${xPos}-${yPos}-${nodes.length}`;
+    const position = memoizedFindNonOverlappingPosition(
+      { x: xPos, y: yPos }, 
+      positionCacheKey
+    );
 
     // Route to the appropriate handler based on data type
     if (data && dataType === "array") {
@@ -214,7 +285,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         )
       );
 
-      // Process array items
+      // Process array items with memoized positions
       processArrayItems(
         data,
         currentId,
@@ -257,8 +328,8 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       return;
     }
 
-    // Create properties for the object node
-    const properties = createObjectProperties(data);
+    // Create properties for the object node using memoization
+    const properties = memoizedCreateObjectProperties(data);
 
     // Create the node
     nodes.push(
@@ -270,8 +341,12 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       )
     );
 
-    // Process children
-    processObjectChildren(data, currentId, position, breadcrumbs);
+    // Check if we need to process children using memoization
+    const hasChildrenCacheKey = `${currentId}-hasChildren`;
+    if (memoizedHasComplexChildren(data, hasChildrenCacheKey)) {
+      // Process children
+      processObjectChildren(data, currentId, position, breadcrumbs);
+    }
   }
 
   // Helper function to create object properties
@@ -321,37 +396,27 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
     // Filter for complex children (objects and arrays)
     const childEntries = Object.entries(data).filter(([_, value]) => {
       const type = getValueType(value);
-      return type === "object" || type === "array";
+      return (type === "object" && Object.keys(value || {}).length > 0) || 
+             (type === "array" && Array.isArray(value) && value.length > 0);
     });
     
-    // Process each child
-    childEntries.map(([childKey, childValue], childIndex) => {
-      const childType = getValueType(childValue);
-      
-      // Skip empty objects and arrays
-      if (childType === "object" && 
-          childValue && 
-          Object.keys(childValue as any).length === 0) {
-        return null;
-      }
-      
-      if (childType === "array" && 
-          (!Array.isArray(childValue) || 
-           (childValue as any[]).length === 0)) {
-        return null;
-      }
-      
+    // Calculate all child positions at once using memoization
+    const childPositionsCacheKey = `${parentId}-${childEntries.length}`;
+    const childPositions = memoizedCalculateChildPositions(
+      parentPosition, 
+      childEntries.length,
+      childPositionsCacheKey
+    );
+    
+    // Process each child with pre-calculated positions
+    childEntries.forEach(([childKey, childValue], childIndex) => {
       const childId = `node-${nodeId++}`;
       
       // Create child breadcrumbs
       const childBreadcrumbs = [...breadcrumbs, childKey];
       
-      // Calculate child position
-      const childPosition = calculateChildPosition(
-        parentPosition,
-        childIndex,
-        childEntries.length
-      );
+      // Get pre-calculated position
+      const childPosition = childPositions[childIndex];
       
       // Process the child node
       processJsonNode(
@@ -364,8 +429,6 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         "object", // Parent type is object
         childBreadcrumbs
       );
-      
-      return childId;
     });
   }
 
@@ -378,7 +441,15 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
     isNestedArray: boolean,
     breadcrumbs: string[]
   ): void {
-    // Process each array item
+    // Calculate all item positions at once using memoization
+    const itemPositionsCacheKey = `${parentId}-${data.length}`;
+    const itemPositions = memoizedCalculateChildPositions(
+      position, 
+      data.length,
+      itemPositionsCacheKey
+    );
+    
+    // Process each array item with pre-calculated positions
     data.forEach((item: any, index: number) => {
       const itemType = getValueType(item);
       const itemId = `node-${nodeId++}`;
@@ -390,15 +461,10 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         ? `${breadcrumbs[breadcrumbs.length - 1]} > ${itemKey}`
         : `${key} > ${itemKey}`;
       
-      // Calculate position
-      const childPosition = calculateChildPosition(
-        position,
-        index,
-        data.length
-      );
-      
-      // Apply non-overlapping adjustment
-      const itemPosition = findNonOverlappingPosition(childPosition, nodes);
+      // Get pre-calculated position and ensure no overlap
+      const basePosition = itemPositions[index];
+      const positionCacheKey = `item-${itemId}-${basePosition.x}-${basePosition.y}`;
+      const itemPosition = memoizedFindNonOverlappingPosition(basePosition, positionCacheKey);
       
       if (itemType === "object" || itemType === "array") {
         if (isNestedArray && itemType === "object") {
@@ -449,18 +515,15 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
     itemPosition: NodePosition,
     itemBreadcrumbs: string[]
   ): void {
+    // Create object properties with memoization
+    const properties = memoizedCreateObjectProperties(item);
+    
     // Create a node for the object but mark it as being inside an array
     nodes.push(
       createObjectNode(
         itemId,
         itemLabel,
-        Object.entries(item).map(([k, v]) => {
-          const vType = getValueType(v);
-          return {
-            key: k,
-            value: getDisplayValue(v, vType)
-          };
-        }),
+        properties,
         itemPosition
       )
     );
@@ -468,30 +531,42 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
     // Connect to the array node
     edges.push(createEdge(parentId, itemId));
     
-    // Process children of this object
-    Object.entries(item).forEach(([childKey, childValue], childIndex) => {
-      const childType = getValueType(childValue);
+    // Check if we need to process children using memoization
+    const hasChildrenCacheKey = `${itemId}-hasChildren`;
+    if (memoizedHasComplexChildren(item, hasChildrenCacheKey)) {
+      // Filter for complex children
+      const complexChildren = Object.entries(item).filter(([_, value]) => {
+        const type = getValueType(value);
+        return (type === "object" && Object.keys(value || {}).length > 0) || 
+               (type === "array" && Array.isArray(value) && value.length > 0);
+      });
       
-      if (childType === "object" || childType === "array") {
+      // Calculate all child positions at once using memoization
+      const childPositionsCacheKey = `${itemId}-${complexChildren.length}`;
+      const childPositions = memoizedCalculateChildPositions(
+        itemPosition, 
+        complexChildren.length,
+        childPositionsCacheKey
+      );
+      
+      // Process each child with pre-calculated positions
+      complexChildren.forEach(([childKey, childValue], childIndex) => {
         const childId = `node-${nodeId++}`;
-        // Calculate position for nested children
-        const nestedChildPosition = calculateChildPosition(
-          itemPosition,
-          childIndex,
-          Object.keys(item).length
-        );
+        
+        // Get pre-calculated position
+        const childPosition = childPositions[childIndex];
         
         processJsonNode(
           childValue,
           childId,
           itemId,
           childKey,
-          nestedChildPosition.x,
-          nestedChildPosition.y,
+          childPosition.x,
+          childPosition.y,
           "array", // Pass array as parent type
           [...itemBreadcrumbs, childKey]
         );
-      }
-    });
+      });
+    }
   }
 };
