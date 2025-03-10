@@ -1,14 +1,9 @@
 import { memo, useState, useMemo } from "react";
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { getTypeColor, getValueClass, isCollapsible } from "../utils/nodeUtils";
-import {
-  LinkIcon,
-  CollapseButton,
-  PropertyCollapseButton,
-  PrimitiveIcon, // Import the new PrimitiveIcon
-} from "./NodeComponents";
+import { PropertyCollapseButton } from "./NodeComponents";
 import { useNodeInteractions } from "../hooks/useNodeInteractions";
-import { Braces, Brackets, Box, Type, Hash, ToggleLeft, X } from "lucide-react";
+import { Braces, Brackets, Box, Type, LinkIcon } from "lucide-react";
 
 interface GroupedNodeData {
   label: string;
@@ -28,10 +23,8 @@ const GroupedNode = memo(
       Record<string, boolean>
     >({});
 
-    // Memoize the background color to prevent recalculation
     const backgroundColor = useMemo(() => getTypeColor(type), [type]);
 
-    // Use the custom hook for node interactions
     const {
       highlightNodesAndEdges,
       resetHighlight,
