@@ -2,8 +2,6 @@
 
 // Get color based on node type
 export const getTypeColor = (type: string): string => {
-  console.log(`Getting color for type: ${type}`);
-
   const colors = {
     object: "#3a506b", // Blue-gray
     array: "#b87333", // Orange
@@ -13,7 +11,6 @@ export const getTypeColor = (type: string): string => {
 
   // Add fallback logic to ensure we always return a color
   const color = colors[type as keyof typeof colors] || colors.primitive;
-  console.log(`Selected color for type ${type}: ${color}`);
   return color;
 };
 
@@ -57,11 +54,15 @@ export const getValueClass = (value: string): string => {
 // Check if a value represents a collapsible structure
 export const isCollapsible = (value: string): boolean => {
   // Return false for empty objects and arrays
-  if (value === "{0 keys}" || value === "{0 key}" || 
-      value === "[0 items]" || value === "[0 item]") {
+  if (
+    value === "{0 keys}" ||
+    value === "{0 key}" ||
+    value === "[0 items]" ||
+    value === "[0 item]"
+  ) {
     return false;
   }
-  
+
   return (
     value?.includes(" keys}") ||
     value?.includes(" key}") ||

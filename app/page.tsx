@@ -15,7 +15,8 @@ export default function Home() {
   const [isFormatting, setIsFormatting] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
   const [collapseLeftPanel, setCollapseLeftPanel] = useState(false);
-  const [edgeType, setEdgeType] = useState<string>("smoothstep"); // New state for edge type
+  // Update this line to use the correct value
+  const [edgeType, setEdgeType] = useState<string>("smoothstep");
 
   const formatJson = () => {
     try {
@@ -157,6 +158,8 @@ export default function Home() {
         onSave={handleSave}
         onImport={handleImport}
         onTogglePanel={handleCollapseLeftPanel}
+        edgeStyle={edgeType}
+        onEdgeStyleChange={setEdgeType}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -171,7 +174,7 @@ export default function Home() {
           isValidJson={isValidJson}
           setNodeCount={setNodeCount}
           nodeCount={nodeCount}
-          edgeType={edgeType} // Pass the edge type to RightPanel
+          edgeType={edgeType}
         />
       </div>
 

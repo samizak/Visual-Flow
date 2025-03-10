@@ -22,9 +22,6 @@ const GroupedNode = memo(
     const nodeData = data as unknown as GroupedNodeData;
     const { label, type, properties, hasChildren } = nodeData;
 
-    // Add debug logging to check node type
-    console.log(`Node ${id} - Label: ${label}, Type: ${type}`);
-
     const [isDragging, setIsDragging] = useState(false);
     const [isNodeCollapsed, setIsNodeCollapsed] = useState(false);
     const [collapsedProperties, setCollapsedProperties] = useState<
@@ -33,9 +30,6 @@ const GroupedNode = memo(
 
     // Memoize the background color to prevent recalculation
     const backgroundColor = useMemo(() => getTypeColor(type), [type]);
-
-    // Log the background color to verify it's correct
-    console.log(`Node ${id} - Background color: ${backgroundColor}`);
 
     // Use the custom hook for node interactions
     const {
@@ -59,12 +53,6 @@ const GroupedNode = memo(
 
     // Render the appropriate icon based on node type
     const renderNodeIcon = () => {
-      console.log("[RENDERNODEICONS] => ", {
-        label,
-        type,
-        properties,
-        hasChildren,
-      });
       if (label === "Root") {
         return <Box className="mr-2" size={18} />;
       } else if (type === "object") {

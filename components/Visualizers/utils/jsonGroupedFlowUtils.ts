@@ -112,26 +112,11 @@ function createPrimitiveNode(
 }
 
 // Helper function to create an edge with a unique ID
-function createEdge(
-  source: string,
-  target: string,
-  edgeType: string = "smoothstep"
-): Edge {
-  return {
-    id: `edge-${source}-${target}-${Date.now()}-${Math.floor(
-      Math.random() * 1000
-    )}`,
-    source,
-    target,
-    type: edgeType,
-  };
-}
-
-// Convert JSON to nodes and edges with grouped properties
-export const convertJsonToGroupedFlow = (
+// Update your convertJsonToGroupedFlow function to accept and use edgeType
+export function convertJsonToGroupedFlow(
   json: any,
   edgeType: string = "smoothstep"
-): JsonFlowResult => {
+): JsonFlowResult {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
   let nodeId = 0;
@@ -525,7 +510,7 @@ export const convertJsonToGroupedFlow = (
       });
     }
   }
-};
+}
 // Replace the stub implementation at the bottom with a proper implementation
 function createObjectProperties(data: Record<string, any>): NodeProperty[] {
   return Object.entries(data).map(([propKey, propValue]) => {
@@ -559,4 +544,20 @@ function createObjectProperties(data: Record<string, any>): NodeProperty[] {
       };
     }
   });
+}
+
+// Add this function to your file, preferably near other utility functions
+function createEdge(
+  source: string,
+  target: string,
+  edgeType: string = "smoothstep"
+): Edge {
+  return {
+    id: `edge-${source}-${target}-${Date.now()}-${Math.floor(
+      Math.random() * 1000
+    )}`,
+    source,
+    target,
+    type: edgeType,
+  };
 }

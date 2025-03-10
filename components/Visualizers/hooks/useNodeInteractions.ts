@@ -70,24 +70,24 @@ export const useNodeInteractions = (
   );
 
   // Helper function to get direct child edges
-  const getDirectChildEdges = useCallback(
-    (nodeId: string, edges: Edge[]) => {
-      return edges.filter((edge) => edge.source === nodeId);
+  const getDirectChildEdges = useCallback((nodeId: string, edges: Edge[]) => {
+    return edges.filter((edge) => edge.source === nodeId);
+  }, []);
+
+  // Helper function to toggle flow element class
+  const toggleFlowElementClass = useCallback(
+    (addClass: boolean, className: string) => {
+      const flowElement = document.querySelector(".react-flow");
+      if (flowElement) {
+        if (addClass) {
+          flowElement.classList.add(className);
+        } else {
+          flowElement.classList.remove(className);
+        }
+      }
     },
     []
   );
-
-  // Helper function to toggle flow element class
-  const toggleFlowElementClass = useCallback((addClass: boolean, className: string) => {
-    const flowElement = document.querySelector(".react-flow");
-    if (flowElement) {
-      if (addClass) {
-        flowElement.classList.add(className);
-      } else {
-        flowElement.classList.remove(className);
-      }
-    }
-  }, []);
 
   // Helper function to update node visibility
   const updateNodesVisibility = useCallback(
@@ -151,8 +151,6 @@ export const useNodeInteractions = (
 
           // Check if this is an array node
           if (currentNode?.data?.type === "array") {
-            console.log("This is an array node, getting all children");
-
             // Get all direct children
             allChildEdges.forEach((edge) => {
               targetIds.add(edge.target);
@@ -219,9 +217,6 @@ export const useNodeInteractions = (
           });
 
           if (matchingNodes.length > 0) {
-            console.log(
-              `Found ${matchingNodes.length} matching nodes for property ${propKey}`
-            );
             targetIds = new Set(matchingNodes.map((node) => node.id));
 
             // Find edges that connect to these nodes
@@ -233,10 +228,6 @@ export const useNodeInteractions = (
           }
         }
       } else {
-        // We found edges by sourceHandle
-        console.log(
-          `Found ${propertyEdges.length} direct property edges for ${propKey}`
-        );
         targetIds = new Set(propertyEdges.map((edge) => edge.target));
         edgeIds = new Set(propertyEdges.map((edge) => edge.id));
       }
@@ -331,7 +322,15 @@ export const useNodeInteractions = (
       // Add dimmed class to the flow container
       toggleFlowElementClass(true, "dimmed");
     });
-  }, [id, getNodes, getEdges, setNodes, setEdges, isDragging, toggleFlowElementClass]);
+  }, [
+    id,
+    getNodes,
+    getEdges,
+    setNodes,
+    setEdges,
+    isDragging,
+    toggleFlowElementClass,
+  ]);
 
   // Reset highlighting when mouse leaves
   const resetHighlight = useCallback(() => {
@@ -362,7 +361,14 @@ export const useNodeInteractions = (
       // Remove dimmed class from flow container
       toggleFlowElementClass(false, "dimmed");
     });
-  }, [getNodes, getEdges, setNodes, setEdges, isDragging, toggleFlowElementClass]);
+  }, [
+    getNodes,
+    getEdges,
+    setNodes,
+    setEdges,
+    isDragging,
+    toggleFlowElementClass,
+  ]);
 
   // Handle drag start
   const handleDragStart = useCallback(() => {
@@ -443,15 +449,8 @@ export const useNodeInteractions = (
       const nodes = getNodes();
       const edges = getEdges();
 
-      console.log(`Attempting to toggle property: ${propKey}`);
-
       // Find property target nodes and edges
       const { targetIds, edgeIds } = findPropertyTargets(propKey, nodes, edges);
-
-      // Debug logging to see what's happening
-      console.log(
-        `Property ${propKey} - Found ${targetIds.size} target nodes and ${edgeIds.size} edges`
-      );
 
       // If we found target nodes, process them and their descendants
       if (targetIds.size > 0) {
@@ -485,7 +484,8 @@ export const useNodeInteractions = (
           return { allDescendantNodes, allDescendantEdges };
         };
 
-        const { allDescendantNodes, allDescendantEdges } = processPropertyDescendants();
+        const { allDescendantNodes, allDescendantEdges } =
+          processPropertyDescendants();
 
         // Toggle visibility of all descendant nodes
         setNodes(
@@ -528,7 +528,7 @@ export const useNodeInteractions = (
       collapsedProperties,
       setCollapsedProperties,
       findAllDescendants,
-      findPropertyTargets
+      findPropertyTargets,
     ]
   );
 

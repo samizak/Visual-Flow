@@ -1,25 +1,20 @@
-import { Dispatch, SetStateAction } from "react";
 import JsonFlowChart from "../Visualizers/JsonFlowChart";
 import { Box, Braces, Brackets, Type } from "lucide-react"; // Import icons
+import { Dispatch, SetStateAction } from "react"; // Add this import
 
-// Add edgeType to the props interface
-interface RightPanelProps {
-  jsonData: string;
-  isValidJson: boolean;
-  setNodeCount: (count: number) => void;
-  nodeCount: number;
-  edgeType?: string; // New optional prop
-}
-
-// Update the component to use the edgeType prop
 export default function RightPanel({
   jsonData,
-  isValidJson,
+  isValidJson = true,
   setNodeCount,
   nodeCount,
-  edgeType = "smoothstep", // Default value
-}: RightPanelProps) {
-  // Pass edgeType to your visualization component
+  edgeType = "smoothstep",
+}: {
+  jsonData: string;
+  isValidJson?: boolean;
+  setNodeCount: Dispatch<SetStateAction<number>>;
+  nodeCount: number;
+  edgeType?: string;
+}) {
   return (
     <div className="flex-1 flex flex-col border-l border-gray-700">
       <div className="flex-grow relative">
@@ -30,8 +25,9 @@ export default function RightPanel({
                 jsonData={jsonData}
                 isValidJson={isValidJson}
                 onNodeCountChange={setNodeCount}
+                edgeType={edgeType}
               />
-
+              
               {/* Show an overlay warning when JSON is invalid */}
               {!isValidJson && (
                 <div className="absolute top-4 right-4 bg-red-900/80 text-white px-3 py-2 rounded-md shadow-md text-sm">

@@ -8,6 +8,8 @@ import {
   ConnectionLineType,
   BackgroundVariant,
   Panel,
+  useReactFlow,
+  ReactFlowProvider, // Add this import
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -32,18 +34,50 @@ const proOptions = {
   hideAttribution: true,
 };
 
-export default function JsonFlowChart({
+// Create a wrapper component that includes the ReactFlowProvider
+export default function JsonFlowChartWithProvider(props: JsonFlowChartProps & { 
+  onNodeCountChange?: (count: number) => void;
+  isValidJson?: boolean; 
+}) {
+  return (
+    <ReactFlowProvider>
+      <JsonFlowChart {...props} />
+    </ReactFlowProvider>
+  );
+}
+
+// The actual component implementation
+function JsonFlowChart({
   jsonData,
   onNodeCountChange,
-  isValidJson = true, // Add this new prop with default value
+  isValidJson = true,
+  edgeType = "smoothstep",
 }: JsonFlowChartProps & { onNodeCountChange?: (count: number) => void } & {
-  isValidJson?: boolean; // Make it optional with a default value
+  isValidJson?: boolean;
 }) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lastValidJson, setLastValidJson] = useState("");
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const reactFlowInstance = useReactFlow(); // Now this will work correctly
+  const prevEdgeTypeRef = useRef(edgeType);
+
+  // Effect to update edge types when edgeType prop changes
+  useEffect(() => {
+    if (edges.length > 0 && prevEdgeTypeRef.current !== edgeType) {
+      // Update all edges with the new edge type
+      const updatedEdges = edges.map((edge: any) => {
+        return {
+          ...edge,
+          type: edgeType,
+        };
+      });
+
+      setEdges(updatedEdges as any);
+      prevEdgeTypeRef.current = edgeType;
+    }
+  }, [edgeType, edges, setEdges]);
 
   // Convert JSON to nodes and edges
   const processJsonData = useCallback(
@@ -61,7 +95,7 @@ export default function JsonFlowChart({
         if (isValidJson) {
           const parsedJson = JSON.parse(jsonString);
           const { nodes: flowNodes, edges: flowEdges } =
-            convertJsonToGroupedFlow(parsedJson);
+            convertJsonToGroupedFlow(parsedJson, edgeType);
           setNodes(flowNodes as any);
           setEdges(flowEdges as any);
           setLastValidJson(jsonString);
@@ -73,8 +107,6 @@ export default function JsonFlowChart({
           setIsLoading(false);
         }
       } catch (error) {
-        // If parsing fails, keep the last valid visualization
-        console.log("JSON parsing error (not displayed to user):", error);
         if (lastValidJson) {
           // Don't update the visualization if we have a previous valid state
           setIsLoading(false);
@@ -87,7 +119,14 @@ export default function JsonFlowChart({
         }
       }
     },
-    [setNodes, setEdges, lastValidJson, onNodeCountChange, isValidJson]
+    [
+      edgeType,
+      setNodes,
+      setEdges,
+      onNodeCountChange,
+      isValidJson,
+      lastValidJson,
+    ]
   );
 
   // Process JSON data with debounce
@@ -123,20 +162,6 @@ export default function JsonFlowChart({
       </div>
     );
   }
-  // console.log(nodes);
-  // const _nodes = nodes.reduce((acc: any, e: any) => {
-  //   acc[e.id] = e.data.label; // Key: id, Value: label
-  //   return acc;
-  // }, {});
-
-  // const _edges = edges.map((e: any) => [e.id, e.source, e.target]);
-
-  // console.log(_nodes);
-  // for (let i = 0; i < edges.length; i++) {
-  //   const _key1 = _edges[i][1];
-  //   const _key2 = _edges[i][2];
-  //   console.log({ from: _nodes[_key1], to: _nodes[_key2] });
-  // }
 
   return (
     <div className="h-full w-full">
@@ -146,9 +171,13 @@ export default function JsonFlowChart({
         nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        connectionLineType={ConnectionLineType.Bezier}
+        connectionLineType={
+          edgeType === "default"
+            ? ConnectionLineType.Bezier
+            : ConnectionLineType.SmoothStep
+        }
         defaultEdgeOptions={{
-          type: "default",
+          type: edgeType,
           style: { stroke: "#555" },
         }}
         fitView

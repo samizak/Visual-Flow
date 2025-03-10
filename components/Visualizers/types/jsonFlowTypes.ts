@@ -4,6 +4,7 @@ import { Node, Edge } from "reactflow";
 export interface JsonFlowChartProps {
   jsonData: string;
   onNodeCountChange?: (count: number) => void;
+  edgeType?: string;
 }
 
 export interface FlowChartLegendProps {
