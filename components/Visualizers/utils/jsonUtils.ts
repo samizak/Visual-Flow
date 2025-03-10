@@ -27,6 +27,6 @@ export function getDisplayValue(value: any, type: string): string {
 }
 
 // Constants for node dimensions and spacing
-export const NODE_WIDTH = 250;
+export const NODE_WIDTH = 350;
 export const NODE_HEIGHT = 150;
 export const NODE_MARGIN = 30;

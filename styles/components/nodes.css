@@ -86,12 +86,6 @@
   background-color: rgba(255, 255, 255, 0.08);
 }
 
-.property-content {
-  display: flex;
-  flex-wrap: wrap;
-  flex: 1;
-}
-
 .property-actions {
   display: flex;
   align-items: center;
@@ -192,4 +186,18 @@
 
 .grouped-node[data-type="primitive"]:hover .grouped-node-header {
   background-color: #43a047; /* Lighter green for hover state */
+}
+
+.grouped-node-property {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.property-content {
+  min-width: 0; /* This is important for truncation to work properly */
+  max-width: calc(100% - 24px); /* Leave space for the collapse button */
 }

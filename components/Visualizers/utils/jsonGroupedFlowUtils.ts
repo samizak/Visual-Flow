@@ -7,7 +7,6 @@ import {
   NODE_HEIGHT,
   NODE_MARGIN,
 } from "./jsonUtils";
-import dagre from "@dagrejs/dagre";
 
 // Define more specific interfaces for node properties
 interface NodeProperty {

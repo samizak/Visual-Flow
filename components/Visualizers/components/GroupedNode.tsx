@@ -86,10 +86,10 @@ const GroupedNode = memo(
                   isCollapsible(prop.value) ? "collapsible" : ""
                 }`}
               >
-                <div className="property-content">
+                <div className="property-content truncate max-w-[300px]">
                   {prop.key && (
                     <span
-                      className="grouped-node-key truncate max-w-[350px]"
+                      className="grouped-node-key truncate max-w-[300px]"
                       title={prop.key}
                     >
                       {prop.key}
@@ -100,7 +100,7 @@ const GroupedNode = memo(
                   )}
                   {prop.value && (
                     <span
-                      className={`grouped-node-value truncate max-w-[400px] ${getValueClass(
+                      className={`grouped-node-value truncate max-w-[300px] ${getValueClass(
                         prop.value
                       )}`}
                       title={prop.value}
