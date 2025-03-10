@@ -66,7 +66,7 @@ const GroupedNode = memo(
         hasChildren,
       });
       if (label === "Root") {
-        return <Box className="mr-2" size={18} />;
+        return <Box className="mr-2" size={18} style={{ color: "#6b46c1" }} />;
       } else if (type === "object") {
         return <Braces className="mr-2" size={18} />;
       } else if (type === "array") {
@@ -78,7 +78,7 @@ const GroupedNode = memo(
         type === "boolean" ||
         type === "null"
       ) {
-        return <Type className="mr-2" size={18} />;
+        return <PrimitiveIcon />;
       }
       return null;
     };

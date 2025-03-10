@@ -56,6 +56,12 @@ export const getValueClass = (value: string): string => {
 
 // Check if a value represents a collapsible structure
 export const isCollapsible = (value: string): boolean => {
+  // Return false for empty objects and arrays
+  if (value === "{0 keys}" || value === "{0 key}" || 
+      value === "[0 items]" || value === "[0 item]") {
+    return false;
+  }
+  
   return (
     value?.includes(" keys}") ||
     value?.includes(" key}") ||
