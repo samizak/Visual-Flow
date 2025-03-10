@@ -15,6 +15,7 @@ export default function Home() {
   const [isFormatting, setIsFormatting] = useState(false);
   const mainRef = useRef<HTMLDivElement>(null);
   const [collapseLeftPanel, setCollapseLeftPanel] = useState(false);
+  const [edgeType, setEdgeType] = useState<string>("smoothstep"); // New state for edge type
 
   const formatJson = () => {
     try {
@@ -166,10 +167,11 @@ export default function Home() {
         />
 
         <RightPanel
-          jsonData={jsonData} // Always pass the current JSON data
-          isValidJson={isValidJson} // Pass the validation state separately
+          jsonData={jsonData}
+          isValidJson={isValidJson}
           setNodeCount={setNodeCount}
           nodeCount={nodeCount}
+          edgeType={edgeType} // Pass the edge type to RightPanel
         />
       </div>
 
