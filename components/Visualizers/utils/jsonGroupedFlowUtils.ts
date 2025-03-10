@@ -9,13 +9,25 @@ import {
 } from "./jsonUtils";
 import { findNonOverlappingPosition, calculateChildPosition } from "./nodePositioning";
 
+// Define more specific interfaces for node properties
+interface NodeProperty {
+  key: string;
+  value: string;
+  type?: string;
+}
+
+interface NodePosition {
+  x: number;
+  y: number;
+}
+
 // Helper function to create a node
 function createNode(
   id: string,
   type: string,
   label: string,
-  properties: any[],
-  position: { x: number; y: number }
+  properties: NodeProperty[],
+  position: NodePosition
 ): Node {
   return {
     id,
@@ -34,7 +46,7 @@ function createArrayNode(
   id: string,
   label: string,
   itemCount: number,
-  position: { x: number; y: number }
+  position: NodePosition
 ): Node {
   return createNode(
     id,
@@ -48,7 +60,7 @@ function createArrayNode(
 function createEmptyArrayNode(
   id: string,
   label: string,
-  position: { x: number; y: number }
+  position: NodePosition
 ): Node {
   return createNode(
     id,
@@ -62,8 +74,8 @@ function createEmptyArrayNode(
 function createObjectNode(
   id: string,
   label: string,
-  properties: any[],
-  position: { x: number; y: number }
+  properties: NodeProperty[],
+  position: NodePosition
 ): Node {
   return createNode(
     id,
@@ -77,7 +89,7 @@ function createObjectNode(
 function createEmptyObjectNode(
   id: string,
   label: string,
-  position: { x: number; y: number }
+  position: NodePosition
 ): Node {
   return createNode(
     id,
@@ -92,7 +104,7 @@ function createPrimitiveNode(
   id: string,
   label: string,
   value: any,
-  position: { x: number; y: number }
+  position: NodePosition
 ): Node {
   return createNode(
     id,
@@ -122,15 +134,250 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
   // Create root node at the center
   const rootId = `node-${nodeId++}`;
 
+  // Process the root object - place at (0,0) as the center point
+  processJsonNode(json, rootId, null, "Root", 0, 0, "root", []);
+
+  return { nodes, edges };
+
+  // Main function to process JSON nodes recursively - now acts as a router
+  function processJsonNode(
+    data: any,
+    currentId: string,
+    parentId: string | null,
+    key: string,
+    xPos: number,
+    yPos: number,
+    parentType: string | null,
+    breadcrumbs: string[]
+  ): void {
+    const dataType = getValueType(data);
+    
+    // Connect to parent if it exists
+    if (parentId) {
+      edges.push(createEdge(parentId, currentId));
+    }
+
+    // Find non-overlapping position
+    const position = findNonOverlappingPosition({ x: xPos, y: yPos }, nodes);
+
+    // Route to the appropriate handler based on data type
+    if (data && dataType === "array") {
+      processArrayNode(data, currentId, parentId, key, position, parentType, breadcrumbs);
+    } else if (data && dataType === "object") {
+      processObjectNode(data, currentId, key, position, parentType, breadcrumbs);
+    } else {
+      // For primitive types (should not happen at this level, but just in case)
+      nodes.push(
+        createPrimitiveNode(
+          currentId,
+          key,
+          getDisplayValue(data, dataType),
+          position
+        )
+      );
+    }
+  }
+
+  // Process array nodes
+  function processArrayNode(
+    data: any[],
+    currentId: string,
+    parentId: string | null,
+    key: string,
+    position: NodePosition,
+    parentType: string | null,
+    breadcrumbs: string[]
+  ): void {
+    // Handle empty arrays
+    if (data.length === 0) {
+      nodes.push(
+        createEmptyArrayNode(
+          currentId,
+          key,
+          position
+        )
+      );
+      return;
+    }
+
+    // For nested arrays (when parent type is also array), create a node
+    const isNestedArray = parentType === "array";
+
+    if (isNestedArray) {
+      // Create a node for the nested array
+      nodes.push(
+        createArrayNode(
+          currentId,
+          key,
+          data.length,
+          position
+        )
+      );
+
+      // Process array items
+      processArrayItems(
+        data,
+        currentId,
+        key,
+        position,
+        true, // isNestedArray
+        breadcrumbs
+      );
+    } else {
+      // For top-level arrays, process items directly
+      processArrayItems(
+        data,
+        parentId || currentId,
+        key,
+        position,
+        false, // not a nested array
+        breadcrumbs
+      );
+    }
+  }
+
+  // Process object nodes
+  function processObjectNode(
+    data: Record<string, any>,
+    currentId: string,
+    key: string,
+    position: NodePosition,
+    parentType: string | null,
+    breadcrumbs: string[]
+  ): void {
+    // Handle empty objects
+    if (Object.keys(data).length === 0) {
+      nodes.push(
+        createEmptyObjectNode(
+          currentId,
+          key,
+          position
+        )
+      );
+      return;
+    }
+
+    // Create properties for the object node
+    const properties = createObjectProperties(data);
+
+    // Create the node
+    nodes.push(
+      createObjectNode(
+        currentId, 
+        key, 
+        properties, 
+        position
+      )
+    );
+
+    // Process children
+    processObjectChildren(data, currentId, position, breadcrumbs);
+  }
+
+  // Helper function to create object properties
+  function createObjectProperties(data: Record<string, any>): NodeProperty[] {
+    return Object.entries(data).map(([propKey, propValue]) => {
+      const propType = getValueType(propValue);
+
+      // For objects, show the number of keys
+      if (propType === "object") {
+        const keyCount = propValue
+          ? Object.keys(propValue as any).length
+          : 0;
+        return {
+          key: propKey,
+          value: `{${keyCount} ${keyCount === 1 ? "key" : "keys"}}`,
+          type: propType,
+        };
+      }
+      // For arrays, show the number of items
+      else if (propType === "array") {
+        const arrayValue = propValue as any[];
+        const itemCount = Array.isArray(arrayValue) ? arrayValue.length : 0;
+        return {
+          key: propKey,
+          value: `[${itemCount} ${itemCount === 1 ? "item" : "items"}]`,
+          type: propType,
+        };
+      }
+      // For primitive types, show the value
+      else {
+        return {
+          key: propKey,
+          value: getDisplayValue(propValue, propType),
+          type: propType,
+        };
+      }
+    });
+  }
+
+  // Process object children
+  function processObjectChildren(
+    data: Record<string, any>,
+    parentId: string,
+    parentPosition: NodePosition,
+    breadcrumbs: string[]
+  ): void {
+    // Filter for complex children (objects and arrays)
+    const childEntries = Object.entries(data).filter(([_, value]) => {
+      const type = getValueType(value);
+      return type === "object" || type === "array";
+    });
+    
+    // Process each child
+    childEntries.map(([childKey, childValue], childIndex) => {
+      const childType = getValueType(childValue);
+      
+      // Skip empty objects and arrays
+      if (childType === "object" && 
+          childValue && 
+          Object.keys(childValue as any).length === 0) {
+        return null;
+      }
+      
+      if (childType === "array" && 
+          (!Array.isArray(childValue) || 
+           (childValue as any[]).length === 0)) {
+        return null;
+      }
+      
+      const childId = `node-${nodeId++}`;
+      
+      // Create child breadcrumbs
+      const childBreadcrumbs = [...breadcrumbs, childKey];
+      
+      // Calculate child position
+      const childPosition = calculateChildPosition(
+        parentPosition,
+        childIndex,
+        childEntries.length
+      );
+      
+      // Process the child node
+      processJsonNode(
+        childValue,
+        childId,
+        parentId,
+        childKey,
+        childPosition.x,
+        childPosition.y,
+        "object", // Parent type is object
+        childBreadcrumbs
+      );
+      
+      return childId;
+    });
+  }
+
   // Helper function to process array items
   function processArrayItems(
     data: any[],
     parentId: string,
     key: string,
-    position: { x: number; y: number },
+    position: NodePosition,
     isNestedArray: boolean,
     breadcrumbs: string[]
-  ) {
+  ): void {
     // Process each array item
     data.forEach((item: any, index: number) => {
       const itemType = getValueType(item);
@@ -143,7 +390,7 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
         ? `${breadcrumbs[breadcrumbs.length - 1]} > ${itemKey}`
         : `${key} > ${itemKey}`;
       
-      // Use calculateChildPosition to determine position
+      // Calculate position
       const childPosition = calculateChildPosition(
         position,
         index,
@@ -155,50 +402,14 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
       
       if (itemType === "object" || itemType === "array") {
         if (isNestedArray && itemType === "object") {
-          // Create a node for the object but mark it as being inside an array
-          nodes.push(
-            createObjectNode(
-              itemId,
-              itemLabel,
-              Object.entries(item).map(([k, v]) => {
-                const vType = getValueType(v);
-                return {
-                  key: k,
-                  value: getDisplayValue(v, vType)
-                };
-              }),
-              itemPosition
-            )
+          processNestedArrayObjectItem(
+            item, 
+            itemId, 
+            parentId, 
+            itemLabel, 
+            itemPosition, 
+            itemBreadcrumbs
           );
-          
-          // Connect to the array node
-          edges.push(createEdge(parentId, itemId));
-          
-          // Process children of this object
-          Object.entries(item).forEach(([childKey, childValue], childIndex) => {
-            const childType = getValueType(childValue);
-            
-            if (childType === "object" || childType === "array") {
-              const childId = `node-${nodeId++}`;
-              // Use calculateChildPosition for nested children too
-              const nestedChildPosition = calculateChildPosition(
-                itemPosition,
-                childIndex,
-                Object.keys(item).length
-              );
-              
-              processJsonNode(
-                childValue,
-                childId,
-                itemId,
-                childKey,
-                nestedChildPosition.x,
-                nestedChildPosition.y,
-                "array", // Pass array as parent type
-                itemBreadcrumbs
-              );
-            }
-          });
         } else {
           // For arrays or objects in non-nested arrays, process recursively
           processJsonNode(
@@ -229,189 +440,58 @@ export const convertJsonToGroupedFlow = (json: any): JsonFlowResult => {
     });
   }
 
-  // Process the root object - place at (0,0) as the center point
-  processJsonNode(json, rootId, null, "Root", 0, 0, "root", []);
-
-  return { nodes, edges };
-
-  // Main function to process JSON nodes recursively
-  function processJsonNode(
-    data: any,
-    currentId: string,
-    parentId: string | null,
-    key: string,
-    xPos: number,
-    yPos: number,
-    parentType: string | null,
-    breadcrumbs: string[]
-  ) {
-    const dataType = getValueType(data);
+  // Process objects inside nested arrays
+  function processNestedArrayObjectItem(
+    item: Record<string, any>,
+    itemId: string,
+    parentId: string,
+    itemLabel: string,
+    itemPosition: NodePosition,
+    itemBreadcrumbs: string[]
+  ): void {
+    // Create a node for the object but mark it as being inside an array
+    nodes.push(
+      createObjectNode(
+        itemId,
+        itemLabel,
+        Object.entries(item).map(([k, v]) => {
+          const vType = getValueType(v);
+          return {
+            key: k,
+            value: getDisplayValue(v, vType)
+          };
+        }),
+        itemPosition
+      )
+    );
     
-    // For label, use the key directly
-    const label = key;
-
-    // Connect to parent if it exists
-    if (parentId) {
-      edges.push(createEdge(parentId, currentId));
-    }
-
-    // Find non-overlapping position
-    const position = findNonOverlappingPosition({ x: xPos, y: yPos }, nodes);
-
-    if (data && dataType == "array") {
-      // Handle empty arrays
-      if (data.length === 0) {
-        nodes.push(
-          createEmptyArrayNode(
-            currentId,
-            label,
-            position
-          )
+    // Connect to the array node
+    edges.push(createEdge(parentId, itemId));
+    
+    // Process children of this object
+    Object.entries(item).forEach(([childKey, childValue], childIndex) => {
+      const childType = getValueType(childValue);
+      
+      if (childType === "object" || childType === "array") {
+        const childId = `node-${nodeId++}`;
+        // Calculate position for nested children
+        const nestedChildPosition = calculateChildPosition(
+          itemPosition,
+          childIndex,
+          Object.keys(item).length
         );
-      } else {
-        // For nested arrays (when parent type is also array), create a node
-        const isNestedArray = parentType === "array";
-
-        if (isNestedArray) {
-          // Create a node for the nested array
-          nodes.push(
-            createArrayNode(
-              currentId,
-              label,
-              data.length,
-              position
-            )
-          );
-
-          // Process array items with the consolidated function
-          processArrayItems(
-            data,
-            currentId,
-            key,
-            position,
-            true, // isNestedArray
-            breadcrumbs
-          );
-        } else {
-          // For top-level arrays, process items directly
-          processArrayItems(
-            data,
-            parentId || currentId,
-            key,
-            position,
-            false, // not a nested array
-            breadcrumbs
-          );
-        }
-      }
-    }
-
-    if (data && dataType === "object") {
-      // Handle empty objects
-      if (Object.keys(data).length === 0) {
-        nodes.push(
-          createEmptyObjectNode(
-            currentId,
-            key,
-            position
-          )
-        );
-      } else {
-        // Using map instead of imperative loop for properties
-        const properties = Object.entries(data).map(([propKey, propValue]) => {
-          const propType = getValueType(propValue);
-
-          // For objects, show the number of keys instead of {...}
-          if (propType === "object") {
-            const keyCount = propValue
-              ? Object.keys(propValue as any).length
-              : 0;
-            return {
-              key: propKey,
-              value: `{${keyCount} ${keyCount === 1 ? "key" : "keys"}}`,
-              type: propType,
-            };
-          }
-          // For arrays, show the number of items instead of [...]
-          else if (propType === "array") {
-            const arrayValue = propValue as any[];
-            const itemCount = Array.isArray(arrayValue) ? arrayValue.length : 0;
-            return {
-              key: propKey,
-              value: `[${itemCount} ${itemCount === 1 ? "item" : "items"}]`,
-              type: propType,
-            };
-          }
-          // For primitive types, show the value
-          else {
-            return {
-              key: propKey,
-              value: getDisplayValue(propValue, propType),
-              type: propType,
-            };
-          }
-        });
-
-        // Create the node
-        nodes.push(
-          createObjectNode(
-            currentId, 
-            key, 
-            properties, 
-            position
-          )
-        );
-
-        // Process children (objects and arrays only) - using filter and map
-        const childEntries = Object.entries(data).filter(([_, value]) => {
-          const type = getValueType(value);
-          return type === "object" || type === "array";
-        });
         
-        // Using map instead of forEach for processing children
-        childEntries.map(([childKey, childValue], childIndex) => {
-          const childType = getValueType(childValue);
-          
-          // Skip empty objects and arrays
-          if (childType === "object" && 
-              childValue && 
-              Object.keys(childValue as any).length === 0) {
-            return null;
-          }
-          
-          if (childType === "array" && 
-              (!Array.isArray(childValue) || 
-               (childValue as any[]).length === 0)) {
-            return null;
-          }
-          
-          const childId = `node-${nodeId++}`;
-          
-          // Create child breadcrumbs by adding the current key
-          const childBreadcrumbs = [...breadcrumbs, childKey];
-          
-          // Use calculateChildPosition for children
-          const childPosition = calculateChildPosition(
-            position,
-            childIndex,
-            childEntries.length
-          );
-          
-          // Process the child node
-          processJsonNode(
-            childValue,
-            childId,
-            currentId,
-            childKey,
-            childPosition.x,
-            childPosition.y,
-            dataType, // Pass current type as parent type
-            childBreadcrumbs // Pass updated breadcrumbs
-          );
-          
-          return childId; // Return childId for potential future use
-        });
+        processJsonNode(
+          childValue,
+          childId,
+          itemId,
+          childKey,
+          nestedChildPosition.x,
+          nestedChildPosition.y,
+          "array", // Pass array as parent type
+          [...itemBreadcrumbs, childKey]
+        );
       }
-    }
+    });
   }
 };
