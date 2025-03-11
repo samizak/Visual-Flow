@@ -77,13 +77,13 @@ export default function NodeDataDrawer({
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={handleCopy}
-                    className="p-2 rounded-md bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors text-white shadow-sm"
+                    className="p-2 rounded-md bg-indigo-500/20 hover:bg-indigo-500/40 transition-colors text-white shadow-sm cursor-pointer"
                     title="Copy JSON"
                   >
                     <Copy size={16} />
                   </button>
                   <DrawerClose
-                    className="p-2 rounded-md bg-gray-700/70 hover:bg-gray-600 transition-colors text-white shadow-sm"
+                    className="p-2 rounded-md bg-gray-700/70 hover:bg-gray-600 transition-colors text-white shadow-sm cursor-pointer"
                     title="Close"
                   >
                     <X size={16} />

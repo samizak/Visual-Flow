@@ -20,7 +20,7 @@ export default function Home() {
   const {
     jsonData,
     setJsonData,
-    isValidJson,  // Make sure this is being destructured from useJsonOperations
+    isValidJson,
     formatJson,
     minimizeJson,
     copyJson,
@@ -75,12 +75,12 @@ export default function Home() {
           jsonInput={jsonData}
           setJsonInput={setJsonData}
           collapseLeftPanel={collapseLeftPanel}
-          isValidJson={isValidJson}  // Make sure this prop is being passed
+          isValidJson={isValidJson} // Make sure this prop is being passed
         />
 
         <RightPanel
           jsonData={jsonData}
-          isValidJson={isValidJson}  // Make sure this prop is being passed
+          isValidJson={isValidJson} // Make sure this prop is being passed
           setNodeCount={setNodeCount}
           nodeCount={nodeCount}
           edgeType={edgeType}

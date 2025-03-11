@@ -5,7 +5,7 @@ import React from "react";
 
 // Base toast options
 const baseToastOptions = {
-  duration: 3000,
+  duration: 2000,
   className: "custom-toast border shadow-lg",
 };
 
@@ -13,13 +13,15 @@ const baseToastOptions = {
 export function successToast(message: string, options?: any) {
   return sonnerToast.custom(
     () => (
-      <div className="flex items-start gap-3 w-full">
-        <div className="bg-green-500/20 p-2 rounded-full">
-          <CheckCircle2 className="h-5 w-5 text-green-500" />
-        </div>
-        <div className="flex-1">
-          <h3 className="font-medium text-white">Success</h3>
-          <p className="text-sm text-gray-300 mt-1">{message}</p>
+      <div className="flex items-center w-full">
+        <div className="flex items-center gap-3 w-full">
+          <div className="bg-green-500/20 p-2 rounded-full flex-shrink-0">
+            <CheckCircle2 className="h-5 w-5 text-green-500" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-medium text-white">Success</h3>
+            <p className="text-sm text-gray-300 mt-1">{message}</p>
+          </div>
         </div>
       </div>
     ),
@@ -35,13 +37,15 @@ export function successToast(message: string, options?: any) {
 export function errorToast(message: string, options?: any) {
   return sonnerToast.custom(
     () => (
-      <div className="flex items-start gap-3 w-full">
-        <div className="bg-red-500/20 p-2 rounded-full">
-          <AlertCircle className="h-5 w-5 text-red-500" />
-        </div>
-        <div className="flex-1">
-          <h3 className="font-medium text-white">Error</h3>
-          <p className="text-sm text-gray-300 mt-1">{message}</p>
+      <div className="flex items-center w-full">
+        <div className="flex items-center gap-3 w-full">
+          <div className="bg-red-500/20 p-2 rounded-full flex-shrink-0">
+            <AlertCircle className="h-5 w-5 text-red-500" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-medium text-white">Error</h3>
+            <p className="text-sm text-gray-300 mt-1">{message}</p>
+          </div>
         </div>
       </div>
     ),

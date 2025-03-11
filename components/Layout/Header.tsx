@@ -13,6 +13,7 @@ import {
   LayoutGrid,
   Layers,
   Settings,
+  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -99,7 +100,7 @@ export default function Header({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
+                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors select-none"
                 >
                   <FileIcon className="mr-1 h-4 w-4" />
                   File
@@ -108,11 +109,17 @@ export default function Header({
               <DropdownMenuContent className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50">
                 <DropdownMenuLabel>File Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={onSave}>
+                <DropdownMenuItem
+                  onClick={onSave}
+                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+                >
                   <Save className="mr-2 h-4 w-4" />
                   <span>Save</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleImportClick}>
+                <DropdownMenuItem
+                  onClick={handleImportClick}
+                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+                >
                   <Upload className="mr-2 h-4 w-4" />
                   <span>Import</span>
                 </DropdownMenuItem>
@@ -124,7 +131,7 @@ export default function Header({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
+                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors select-none"
                 >
                   <FileCode className="mr-1 h-4 w-4" />
                   Edit
@@ -133,15 +140,24 @@ export default function Header({
               <DropdownMenuContent className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50">
                 <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={onFormat}>
+                <DropdownMenuItem
+                  onClick={onFormat}
+                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+                >
                   <FileCode className="mr-2 h-4 w-4" />
                   <span>Format JSON</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={onMinimize}>
+                <DropdownMenuItem
+                  onClick={onMinimize}
+                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+                >
                   <Minimize className="mr-2 h-4 w-4" />
                   <span>Minimize JSON</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={onCopy}>
+                <DropdownMenuItem
+                  onClick={onCopy}
+                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+                >
                   <Copy className="mr-2 h-4 w-4" />
                   <span>Copy JSON</span>
                 </DropdownMenuItem>
@@ -153,7 +169,7 @@ export default function Header({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
+                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors select-none"
                 >
                   <Eye className="mr-1 h-4 w-4" />
                   View
@@ -162,19 +178,22 @@ export default function Header({
               <DropdownMenuContent className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50">
                 <DropdownMenuLabel>View Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
                   <LayoutGrid className="mr-2 h-4 w-4" />
                   <span>Diagram View</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
                   <Layers className="mr-2 h-4 w-4" />
                   <span>3D Node View</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
                   <span>Tree View</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                <DropdownMenuItem
+                  onClick={() => setSettingsOpen(true)}
+                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+                >
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
@@ -228,9 +247,9 @@ export default function Header({
             <Button
               variant="outline"
               onClick={() => setSettingsOpen(false)}
-              className="bg-[#2d2d2d] border-gray-700 hover:bg-gray-800"
+              className="bg-[#2d2d2d] border-gray-700 hover:bg-gray-800 hover:text-white hover:border-gray-500 transition-all duration-200 flex items-center gap-2 px-4 py-2 rounded-md"
             >
-              Close
+              Cancel
             </Button>
           </DialogFooter>
         </DialogContent>
