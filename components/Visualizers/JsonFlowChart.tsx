@@ -159,71 +159,83 @@ function JsonFlowChart({
       try {
         const parsedJson = JSON.parse(jsonData);
         const nodeData: any = node.data;
-        
+
         // Check if this is an array item node (label format: "arrayName > index")
         if (nodeData.label && nodeData.label.includes(" > ")) {
           const parts = nodeData.label.split(" > ");
           const arrayName = parts[0];
           const indexPath = parts.slice(1);
-          
+
           // Handle nested array indices (e.g., "products > 1 > num > 3")
           let currentValue = parsedJson;
           let currentPath = arrayName;
-          
+
           // First get to the array
           if (arrayName in parsedJson) {
             currentValue = parsedJson[arrayName];
           } else {
             // If direct access fails, try to find the array using a recursive search
             const findInObject = (obj: any, key: string): any => {
-              if (!obj || typeof obj !== 'object') return undefined;
-              
+              if (!obj || typeof obj !== "object") return undefined;
+
               if (key in obj) return obj[key];
-              
+
               for (const prop in obj) {
                 const value = obj[prop];
-                if (typeof value === 'object') {
+                if (typeof value === "object") {
                   const found = findInObject(value, key);
                   if (found !== undefined) return found;
                 }
               }
-              
+
               return undefined;
             };
-            
+
             currentValue = findInObject(parsedJson, arrayName);
             if (currentValue === undefined) {
               throw new Error(`Could not find array: ${arrayName}`);
             }
           }
-          
+
           // Then navigate through the indices
           for (const indexStr of indexPath) {
             // Handle both numeric indices and property names
             const index = parseInt(indexStr, 10);
-            
+
             if (!isNaN(index)) {
               // It's a numeric index
               if (Array.isArray(currentValue) && index < currentValue.length) {
                 currentValue = currentValue[index];
-              } else if (typeof currentValue === 'object' && currentValue !== null && index in currentValue) {
+              } else if (
+                typeof currentValue === "object" &&
+                currentValue !== null &&
+                index in currentValue
+              ) {
                 // Some objects might have numeric keys
                 currentValue = currentValue[index];
               } else {
-                throw new Error(`Invalid array index: ${indexStr} in path: ${currentPath}`);
+                throw new Error(
+                  `Invalid array index: ${indexStr} in path: ${currentPath}`
+                );
               }
             } else {
               // It's a property name
-              if (typeof currentValue === 'object' && currentValue !== null && indexStr in currentValue) {
+              if (
+                typeof currentValue === "object" &&
+                currentValue !== null &&
+                indexStr in currentValue
+              ) {
                 currentValue = currentValue[indexStr];
               } else {
-                throw new Error(`Invalid property: ${indexStr} in path: ${currentPath}`);
+                throw new Error(
+                  `Invalid property: ${indexStr} in path: ${currentPath}`
+                );
               }
             }
-            
+
             currentPath += ` > ${indexStr}`;
           }
-          
+
           // Create a wrapper object with the appropriate key
           // For array items, use the full path as the label for clarity
           const displayData = { [arrayName]: currentValue };
@@ -232,29 +244,29 @@ function JsonFlowChart({
           setDrawerOpen(true);
           return;
         }
-        
+
         // For non-array nodes, use the existing logic
         let nodeKey = nodeData.label;
-        
+
         // Find the node's value in the original JSON
         const findNodeValue = (obj: any, key: string): any => {
           // Direct property match
-          if (obj && typeof obj === 'object' && key in obj) {
+          if (obj && typeof obj === "object" && key in obj) {
             return obj[key];
           }
-          
+
           // Search in nested objects and arrays
-          if (obj && typeof obj === 'object') {
+          if (obj && typeof obj === "object") {
             for (const prop in obj) {
               const value = obj[prop];
-              
+
               // If this property matches our key, return its value
               if (prop === key) {
                 return value;
               }
-              
+
               // If this is an object or array, search inside it
-              if (value && typeof value === 'object') {
+              if (value && typeof value === "object") {
                 const found = findNodeValue(value, key);
                 if (found !== undefined) {
                   return found;
@@ -262,13 +274,13 @@ function JsonFlowChart({
               }
             }
           }
-          
+
           return undefined;
         };
-        
+
         // Get the node value
         const nodeValue = findNodeValue(parsedJson, nodeKey);
-        
+
         if (nodeValue !== undefined) {
           const displayData = { [nodeKey]: nodeValue };
           setSelectedNodeData(displayData);
@@ -283,13 +295,13 @@ function JsonFlowChart({
         }
       } catch (error) {
         console.error("Error processing node data:", error);
-        
+
         const nodeData: any = node.data;
         let cleanLabel = nodeData.label || "Node";
         if (cleanLabel.includes(" > ")) {
           cleanLabel = cleanLabel.split(" > ")[0];
         }
-        
+
         setSelectedNodeData({ [cleanLabel]: "Error retrieving data" });
         setSelectedNodeLabel(nodeData.label || "Node");
         setDrawerOpen(true);
@@ -360,11 +372,6 @@ function JsonFlowChart({
             size={1}
             color="#333"
           />
-          <Panel position="top-right">
-            <div className="bg-[#1e1e1e] p-2 rounded-md text-xs text-gray-400">
-              Nodes: {nodes.length}
-            </div>
-          </Panel>
         </ReactFlow>
       )}
 
