@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { Button } from "../ui/button";
 import {
   PanelLeft,
@@ -48,6 +48,7 @@ interface HeaderProps {
   onImport?: () => void;
   edgeStyle?: string;
   onEdgeStyleChange: (style: string) => void;
+  onFileLoad?: (content: string) => void;
 }
 
 export default function Header({
@@ -59,16 +60,25 @@ export default function Header({
   onImport,
   edgeStyle,
   onEdgeStyleChange,
+  onFileLoad,
 }: HeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleEdgeStyleChange = (value: string) => {
     onEdgeStyleChange(value);
     toast.success("Style successfully changed");
   };
 
+  // Trigger file input click
+  const handleImportClick = () => {
+    if (onImport) {
+      onImport();
+    }
+  };
+
   return (
-    <header className="bg-[#1e1e1e] border-b border-gray-700 py-1 px-2">
+    <header className="bg-[#1e1e1e] border-b border-gray-700 py-1 px-2 relative">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Button
@@ -76,7 +86,7 @@ export default function Header({
             size="icon"
             onClick={onTogglePanel}
             className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
-            title="Collapse Panel"
+            title="Collapse Editor"
           >
             <PanelLeft className="h-5 w-5" />
           </Button>
@@ -102,14 +112,10 @@ export default function Header({
                   <Save className="mr-2 h-4 w-4" />
                   <span>Save</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={onImport}>
+                <DropdownMenuItem onClick={handleImportClick}>
                   <Upload className="mr-2 h-4 w-4" />
                   <span>Import</span>
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem>
-                  <Download className="mr-2 h-4 w-4" />
-                  <span>Export</span>
-                </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
 
