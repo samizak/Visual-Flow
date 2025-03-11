@@ -171,20 +171,61 @@ function JsonFlowChart({
           let currentPath = arrayName;
           
           // First get to the array
-          currentValue = currentValue[arrayName];
-          
-          // Then navigate through the indices
-          for (const indexStr of indexPath) {
-            const index = parseInt(indexStr, 10);
-            if (!isNaN(index) && Array.isArray(currentValue) && index < currentValue.length) {
-              currentValue = currentValue[index];
-              currentPath += ` > ${index}`;
-            } else {
-              throw new Error(`Invalid array index: ${indexStr} in path: ${currentPath}`);
+          if (arrayName in parsedJson) {
+            currentValue = parsedJson[arrayName];
+          } else {
+            // If direct access fails, try to find the array using a recursive search
+            const findInObject = (obj: any, key: string): any => {
+              if (!obj || typeof obj !== 'object') return undefined;
+              
+              if (key in obj) return obj[key];
+              
+              for (const prop in obj) {
+                const value = obj[prop];
+                if (typeof value === 'object') {
+                  const found = findInObject(value, key);
+                  if (found !== undefined) return found;
+                }
+              }
+              
+              return undefined;
+            };
+            
+            currentValue = findInObject(parsedJson, arrayName);
+            if (currentValue === undefined) {
+              throw new Error(`Could not find array: ${arrayName}`);
             }
           }
           
-          // Create a wrapper object with the array name as the key and the item as the value
+          // Then navigate through the indices
+          for (const indexStr of indexPath) {
+            // Handle both numeric indices and property names
+            const index = parseInt(indexStr, 10);
+            
+            if (!isNaN(index)) {
+              // It's a numeric index
+              if (Array.isArray(currentValue) && index < currentValue.length) {
+                currentValue = currentValue[index];
+              } else if (typeof currentValue === 'object' && currentValue !== null && index in currentValue) {
+                // Some objects might have numeric keys
+                currentValue = currentValue[index];
+              } else {
+                throw new Error(`Invalid array index: ${indexStr} in path: ${currentPath}`);
+              }
+            } else {
+              // It's a property name
+              if (typeof currentValue === 'object' && currentValue !== null && indexStr in currentValue) {
+                currentValue = currentValue[indexStr];
+              } else {
+                throw new Error(`Invalid property: ${indexStr} in path: ${currentPath}`);
+              }
+            }
+            
+            currentPath += ` > ${indexStr}`;
+          }
+          
+          // Create a wrapper object with the appropriate key
+          // For array items, use the full path as the label for clarity
           const displayData = { [arrayName]: currentValue };
           setSelectedNodeData(displayData);
           setSelectedNodeLabel(nodeData.label);
