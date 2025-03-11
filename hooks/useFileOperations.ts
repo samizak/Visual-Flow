@@ -6,15 +6,18 @@ interface UseFileOperationsProps {
   onSuccessfulLoad?: (content: string) => void;
 }
 
-export function useFileOperations({ setJsonData, onSuccessfulLoad }: UseFileOperationsProps) {
+export function useFileOperations({
+  setJsonData,
+  onSuccessfulLoad,
+}: UseFileOperationsProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFiles = useCallback(
     (files: FileList) => {
       const file = files[0];
-      
+
       // Check if file is a JSON file
-      if (!file.name.toLowerCase().endsWith('.json')) {
+      if (!file.name.toLowerCase().endsWith(".json")) {
         errorToast("Only JSON files are currently supported");
         return;
       }
@@ -32,7 +35,7 @@ export function useFileOperations({ setJsonData, onSuccessfulLoad }: UseFileOper
           }
           successToast(`File "${file.name}" loaded successfully`);
         } catch (error) {
-          errorToast("Invalid JSON file. Please check the file format.");
+          errorToast("Invalid JSON file. Please check for errors.");
         }
       };
       reader.readAsText(file);

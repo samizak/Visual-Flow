@@ -8,16 +8,15 @@ interface DragOverlayProps {
 }
 
 export default function DragOverlay({ isVisible, error }: DragOverlayProps) {
-  // Add console log to debug
-  console.log("DragOverlay:", { isVisible, error });
-  
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
           className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
           style={{
-            backgroundColor: error ? "rgba(45, 10, 10, 0.95)" : "rgba(10, 22, 41, 0.95)"
+            backgroundColor: error
+              ? "rgba(45, 10, 10, 0.95)"
+              : "rgba(10, 22, 41, 0.95)",
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

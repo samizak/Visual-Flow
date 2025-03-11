@@ -66,7 +66,6 @@ export default function Home() {
   const { handleFiles, importFile } = useFileOperations({
     setJsonData,
     onSuccessfulLoad: (content) => {
-      // When a file is successfully loaded, update both states
       setVisualizationJson(content);
     },
   });
@@ -108,10 +107,7 @@ export default function Home() {
         onSave={saveJson}
         onImport={importFile}
         edgeStyle={edgeType}
-        onEdgeStyleChange={(style) => {
-          console.log("Edge style changed to:", style);
-          setEdgeType(style);
-        }}
+        onEdgeStyleChange={(style) => setEdgeType(style)}
       />
 
       <div className="flex flex-1 overflow-hidden">

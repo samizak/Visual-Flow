@@ -22,6 +22,7 @@ export default function LeftPanel({
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
   const panelRef = useRef<HTMLDivElement>(null);
+  const placeholderRef = useRef<HTMLDivElement>(null);
 
   // Editor options to disable minimap and customize other settings
   const editorOptions = {
@@ -56,15 +57,52 @@ export default function LeftPanel({
       // This is a more direct way to disable bracket pair guides
       model._bracketPairColorizer?.dispose();
     }
+
+    // Show placeholder if editor is empty
+    updatePlaceholderVisibility(jsonInput);
   };
+
+  // Handle editor content change
+  const handleEditorChange = (value: string | undefined) => {
+    if (setJsonInput) {
+      setJsonInput(value || "");
+    }
+
+    // Show/hide placeholder based on content
+    updatePlaceholderVisibility(value);
+  };
+
+  // Helper function to update placeholder visibility
+  const updatePlaceholderVisibility = (content: string | undefined) => {
+    if (placeholderRef.current) {
+      placeholderRef.current.style.display = content ? "none" : "block";
+    }
+  };
+
+  // Add effect to update placeholder when jsonInput changes
+  useEffect(() => {
+    updatePlaceholderVisibility(jsonInput);
+  }, [jsonInput]);
+
+  // Add a state to track active resizing
+  const [isResizing, setIsResizing] = useState(false);
 
   // Handle mouse down to start resizing
   const handleMouseDown = (e: React.MouseEvent) => {
     resizingRef.current = true;
+    setIsResizing(true); // Set resizing state to true
     startXRef.current = e.clientX;
     startWidthRef.current = width;
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
+  };
+
+  // Handle mouse up to stop resizing
+  const handleMouseUp = () => {
+    resizingRef.current = false;
+    setIsResizing(false); // Reset resizing state
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
   };
 
   // Handle mouse move to resize
@@ -83,13 +121,6 @@ export default function LeftPanel({
     setWidth(newWidth);
   };
 
-  // Handle mouse up to stop resizing
-  const handleMouseUp = () => {
-    resizingRef.current = false;
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
-  };
-
   // Clean up event listeners
   useEffect(() => {
     return () => {
@@ -105,7 +136,6 @@ export default function LeftPanel({
         className="relative h-screen flex flex-col border-r border-gray-700 overflow-hidden"
         style={{ width: `${width}vw` }}
       >
-        {/* Error message component */}
         <JsonErrorMessage
           isVisible={!isValidJson && jsonInput !== "" && isEditorLoaded}
         />
@@ -126,7 +156,7 @@ export default function LeftPanel({
             theme="vs-dark"
             defaultLanguage="json"
             value={jsonInput}
-            onChange={(e) => setJsonInput(e)}
+            onChange={handleEditorChange}
             options={
               {
                 ...editorOptions,
@@ -138,15 +168,14 @@ export default function LeftPanel({
             className="monaco-editor-container"
           />
 
-          {/* Placeholder overlay */}
-          {!jsonInput && isEditorLoaded && (
-            <div className="absolute top-0 left-12 right-0 bottom-0 pointer-events-none flex items-center justify-center z-10">
-              <div className="text-gray-400 max-w-md bg-[#1e1e1e] bg-opacity-80 p-6 rounded-md">
-                <h3 className="text-lg font-medium mb-2">
-                  Paste your JSON here
-                </h3>
-                <pre className="text-sm opacity-70 font-mono">
-                  {`{
+          <div
+            ref={placeholderRef}
+            className="absolute top-4 left-16 pointer-events-none z-10 text-gray-400"
+            style={{ display: "none" }}
+          >
+            <h3 className="text-md font-medium mb-2">Paste your JSON here</h3>
+            <pre className="opacity-70 font-mono">
+              {`{
   "example": "value",
   "numbers": 123,
   "boolean": true,
@@ -155,17 +184,25 @@ export default function LeftPanel({
     "key": "value"
   }
 }`}
-                </pre>
-              </div>
-            </div>
-          )}
+            </pre>
+          </div>
         </div>
 
         {/* Resize handle */}
         <div
-          className="absolute top-0 right-0 w-1 h-full bg-gray-700 cursor-col-resize hover:bg-blue-500 z-10"
+          className="absolute top-0 right-0 h-full z-30 cursor-col-resize group"
+          style={{ width: "8px" }}
           onMouseDown={handleMouseDown}
-        />
+        >
+          {/* Visual indicator line */}
+          <div
+            className={`absolute right-0 h-full top-0 transition-all duration-150 ${
+              isResizing
+                ? "w-0.5 bg-blue-500"
+                : "w-px bg-gray-700 group-hover:w-0.5 group-hover:bg-blue-500"
+            }`}
+          ></div>
+        </div>
 
         {/* Apply Changes button at the bottom of the panel */}
         {onApplyChanges && (

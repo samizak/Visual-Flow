@@ -287,8 +287,7 @@ function JsonFlowChart({
           setSelectedNodeLabel(nodeData.label || "Node");
           setDrawerOpen(true);
         } else {
-          // If we couldn't find the node by key, show an error
-          console.log("Could not find node value for key:", nodeKey);
+          console.error("Could not find node value for key:", nodeKey);
           setSelectedNodeData({ [nodeKey]: "Could not find data" });
           setSelectedNodeLabel(nodeData.label || "Node");
           setDrawerOpen(true);

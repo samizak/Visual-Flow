@@ -31,7 +31,6 @@ export default function SettingsDialog({
   onEdgeStyleChange,
 }: SettingsDialogProps) {
   const handleEdgeStyleChange = (value: string) => {
-    // Remove console.log and ensure we're passing the new value
     if (value !== edgeStyle) {
       onEdgeStyleChange(value);
       successToast("Style successfully changed");
