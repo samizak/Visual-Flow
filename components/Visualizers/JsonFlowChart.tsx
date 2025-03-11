@@ -19,6 +19,7 @@ import GroupedNode from "./components/GroupedNode";
 import SchemaNode from "./components/SchemaNode";
 import { convertJsonToGroupedFlow } from "./utils/jsonGroupedFlowUtils";
 import NodeDataDrawer from "./components/NodeDataDrawer";
+import { AnyARecord } from "node:dns";
 
 // Define the node types for ReactFlow
 const nodeTypes = {
@@ -141,13 +142,120 @@ function JsonFlowChart({
   );
 
   // Handle node click to show drawer
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    // Extract the node data
-    const nodeData: any = node.data;
-    setSelectedNodeData(nodeData);
-    setSelectedNodeLabel(nodeData.label || "Node");
-    setDrawerOpen(true);
-  }, []);
+  const onNodeClick = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      if (node.data.label === "Root" && jsonData) {
+        try {
+          const parsedJson = JSON.parse(jsonData);
+          setSelectedNodeData(parsedJson);
+          setSelectedNodeLabel("Root");
+          setDrawerOpen(true);
+          return;
+        } catch (error) {
+          console.error("Error parsing root JSON:", error);
+        }
+      }
+
+      try {
+        const parsedJson = JSON.parse(jsonData);
+        const nodeData: any = node.data;
+        
+        // Check if this is an array item node (label format: "arrayName > index")
+        if (nodeData.label && nodeData.label.includes(" > ")) {
+          const parts = nodeData.label.split(" > ");
+          const arrayName = parts[0];
+          const indexPath = parts.slice(1);
+          
+          // Handle nested array indices (e.g., "products > 1 > num > 3")
+          let currentValue = parsedJson;
+          let currentPath = arrayName;
+          
+          // First get to the array
+          currentValue = currentValue[arrayName];
+          
+          // Then navigate through the indices
+          for (const indexStr of indexPath) {
+            const index = parseInt(indexStr, 10);
+            if (!isNaN(index) && Array.isArray(currentValue) && index < currentValue.length) {
+              currentValue = currentValue[index];
+              currentPath += ` > ${index}`;
+            } else {
+              throw new Error(`Invalid array index: ${indexStr} in path: ${currentPath}`);
+            }
+          }
+          
+          // Create a wrapper object with the array name as the key and the item as the value
+          const displayData = { [arrayName]: currentValue };
+          setSelectedNodeData(displayData);
+          setSelectedNodeLabel(nodeData.label);
+          setDrawerOpen(true);
+          return;
+        }
+        
+        // For non-array nodes, use the existing logic
+        let nodeKey = nodeData.label;
+        
+        // Find the node's value in the original JSON
+        const findNodeValue = (obj: any, key: string): any => {
+          // Direct property match
+          if (obj && typeof obj === 'object' && key in obj) {
+            return obj[key];
+          }
+          
+          // Search in nested objects and arrays
+          if (obj && typeof obj === 'object') {
+            for (const prop in obj) {
+              const value = obj[prop];
+              
+              // If this property matches our key, return its value
+              if (prop === key) {
+                return value;
+              }
+              
+              // If this is an object or array, search inside it
+              if (value && typeof value === 'object') {
+                const found = findNodeValue(value, key);
+                if (found !== undefined) {
+                  return found;
+                }
+              }
+            }
+          }
+          
+          return undefined;
+        };
+        
+        // Get the node value
+        const nodeValue = findNodeValue(parsedJson, nodeKey);
+        
+        if (nodeValue !== undefined) {
+          const displayData = { [nodeKey]: nodeValue };
+          setSelectedNodeData(displayData);
+          setSelectedNodeLabel(nodeData.label || "Node");
+          setDrawerOpen(true);
+        } else {
+          // If we couldn't find the node by key, show an error
+          console.log("Could not find node value for key:", nodeKey);
+          setSelectedNodeData({ [nodeKey]: "Could not find data" });
+          setSelectedNodeLabel(nodeData.label || "Node");
+          setDrawerOpen(true);
+        }
+      } catch (error) {
+        console.error("Error processing node data:", error);
+        
+        const nodeData: any = node.data;
+        let cleanLabel = nodeData.label || "Node";
+        if (cleanLabel.includes(" > ")) {
+          cleanLabel = cleanLabel.split(" > ")[0];
+        }
+        
+        setSelectedNodeData({ [cleanLabel]: "Error retrieving data" });
+        setSelectedNodeLabel(nodeData.label || "Node");
+        setDrawerOpen(true);
+      }
+    },
+    [jsonData]
+  );
 
   // Process JSON data with debounce
   useEffect(() => {

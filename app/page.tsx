@@ -16,7 +16,7 @@ export default function Home() {
   const mainRef = useRef<HTMLDivElement>(null);
   const [collapseLeftPanel, setCollapseLeftPanel] = useState(false);
   // Update this line to use the correct value
-  const [edgeType, setEdgeType] = useState<string>("smoothstep");
+  const [edgeType, setEdgeType] = useState<string>("default");
 
   const formatJson = () => {
     try {
