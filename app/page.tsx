@@ -20,7 +20,7 @@ export default function Home() {
   const {
     jsonData,
     setJsonData,
-    isValidJson,
+    isValidJson,  // Make sure this is being destructured from useJsonOperations
     formatJson,
     minimizeJson,
     copyJson,
@@ -38,7 +38,7 @@ export default function Home() {
     handleDrop,
   } = useDragAndDrop({ onFilesDrop: handleFiles });
 
-  const { isDragging, mainRef, handleMouseDown } = useMouseInteractions();
+  const { mainRef, handleMouseDown } = useMouseInteractions();
 
   return (
     <main
@@ -75,11 +75,12 @@ export default function Home() {
           jsonInput={jsonData}
           setJsonInput={setJsonData}
           collapseLeftPanel={collapseLeftPanel}
+          isValidJson={isValidJson}  // Make sure this prop is being passed
         />
 
         <RightPanel
           jsonData={jsonData}
-          isValidJson={isValidJson}
+          isValidJson={isValidJson}  // Make sure this prop is being passed
           setNodeCount={setNodeCount}
           nodeCount={nodeCount}
           edgeType={edgeType}

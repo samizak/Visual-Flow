@@ -1,14 +1,17 @@
 import Editor from "@monaco-editor/react";
 import { useState, useRef, useEffect } from "react";
+import JsonErrorMessage from "./JsonErrorMessage";
 
 export default function LeftPanel({
   jsonInput,
   setJsonInput,
   collapseLeftPanel,
+  isValidJson = true,
 }: {
   jsonInput: any;
   setJsonInput: any;
   collapseLeftPanel: boolean;
+  isValidJson?: boolean;
 }) {
   const [width, setWidth] = useState(20);
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
@@ -99,6 +102,11 @@ export default function LeftPanel({
         className="relative h-screen flex flex-col border-r border-gray-700 overflow-hidden"
         style={{ width: `${width}vw` }}
       >
+        {/* Error message component */}
+        <JsonErrorMessage
+          isVisible={!isValidJson && jsonInput !== "" && isEditorLoaded}
+        />
+
         <div className="flex-grow relative overflow-hidden pb-16">
           {!isEditorLoaded && (
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#1e1e1e]">
@@ -127,7 +135,7 @@ export default function LeftPanel({
             className="monaco-editor-container"
           />
 
-          {/* Placeholder overlay - only shown when jsonInput is empty AND editor is loaded */}
+          {/* Placeholder overlay */}
           {!jsonInput && isEditorLoaded && (
             <div className="absolute top-0 left-12 right-0 bottom-0 pointer-events-none flex items-center justify-center z-10">
               <div className="text-gray-400 max-w-md bg-[#1e1e1e] bg-opacity-80 p-6 rounded-md">

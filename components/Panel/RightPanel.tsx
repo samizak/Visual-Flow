@@ -28,27 +28,7 @@ export default function RightPanel({
                 edgeType={edgeType}
               />
               
-              {/* Show an overlay warning when JSON is invalid */}
-              {!isValidJson && (
-                <div className="absolute top-4 right-4 bg-red-900/80 text-white px-3 py-2 rounded-md shadow-md text-sm">
-                  <div className="flex items-center">
-                    <svg
-                      className="w-4 h-4 mr-2"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                      />
-                    </svg>
-                    <span>Invalid JSON - Showing last valid diagram</span>
-                  </div>
-                </div>
-              )}
+              {/* Removed the invalid JSON overlay warning */}
 
               {/* Legend overlay with icons */}
               <div className="absolute top-4 left-4 bg-[#1e1e1e] bg-opacity-80 p-2 rounded-md shadow-md">
