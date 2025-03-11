@@ -36,6 +36,7 @@ interface HeaderProps {
   onEdgeStyleChange: (style: string) => void;
   onFileLoad?: (content: string) => void;
   onApplyChanges?: () => void;
+  collapseLeftPanel?: boolean; // Add this prop
 }
 
 export default function Header({
@@ -49,6 +50,7 @@ export default function Header({
   onEdgeStyleChange,
   onFileLoad,
   onApplyChanges,
+  collapseLeftPanel = false, // Add default value
 }: HeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -69,9 +71,9 @@ export default function Header({
             size="icon"
             onClick={onTogglePanel}
             className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
-            title="Collapse Editor"
+            title={collapseLeftPanel ? "Expand Editor" : "Collapse Editor"}
           >
-            <PanelLeft className="h-5 w-5" />
+            <PanelLeft className={`h-5 w-5 transition-transform duration-300 ${collapseLeftPanel ? 'rotate-180' : ''}`} />
           </Button>
 
           <div className="h-5 w-px bg-gray-600 mx-0.5"></div>

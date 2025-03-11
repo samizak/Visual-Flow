@@ -130,10 +130,20 @@ export default function LeftPanel({
   }, []);
 
   return (
-    !collapseLeftPanel && (
+    <div
+      className={`transition-all duration-300 ease-in-out overflow-hidden ${
+        collapseLeftPanel ? 'w-0 opacity-0' : ''
+      }`}
+      style={{ 
+        width: collapseLeftPanel ? '0' : `${width}vw`,
+        maxWidth: collapseLeftPanel ? '0' : `${width}vw`
+      }}
+    >
       <div
         ref={panelRef}
-        className="relative h-screen flex flex-col border-r border-gray-700 overflow-hidden"
+        className={`relative h-screen flex flex-col border-r border-gray-700 overflow-hidden transition-opacity duration-300 ${
+          collapseLeftPanel ? 'opacity-0' : 'opacity-100'
+        }`}
         style={{ width: `${width}vw` }}
       >
         <JsonErrorMessage
@@ -222,6 +232,6 @@ export default function LeftPanel({
           </div>
         )}
       </div>
-    )
+    </div>
   );
 }
