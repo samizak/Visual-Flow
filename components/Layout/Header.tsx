@@ -37,7 +37,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Label } from "../ui/label";
-import { toast } from "sonner";
+import { successToast } from "../../lib/toast";
 
 interface HeaderProps {
   onFormat?: () => void;
@@ -67,7 +67,7 @@ export default function Header({
 
   const handleEdgeStyleChange = (value: string) => {
     onEdgeStyleChange(value);
-    toast.success("Style successfully changed");
+    successToast("Style successfully changed");
   };
 
   // Trigger file input click

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { toast } from "sonner";
+import { successToast, errorToast } from "../lib/toast";
 
 export function useJsonOperations() {
   const [jsonData, setJsonData] = useState<string>("");
@@ -30,10 +30,10 @@ export function useJsonOperations() {
         const parsedJson = JSON.parse(jsonData);
         const formattedJson = JSON.stringify(parsedJson, null, 2);
         setJsonData(formattedJson);
-        toast.success("JSON formatted successfully");
+        successToast("JSON formatted successfully");
       }
     } catch (e) {
-      toast.error("Cannot format invalid JSON");
+      errorToast("Cannot format invalid JSON");
     }
   }, [jsonData]);
 
@@ -43,10 +43,10 @@ export function useJsonOperations() {
         const parsedJson = JSON.parse(jsonData);
         const minimizedJson = JSON.stringify(parsedJson);
         setJsonData(minimizedJson);
-        toast.success("JSON minimized successfully");
+        successToast("JSON minimized successfully");
       }
     } catch (e) {
-      toast.error("Cannot minimize invalid JSON");
+      errorToast("Cannot minimize invalid JSON");
     }
   }, [jsonData]);
 
@@ -54,9 +54,9 @@ export function useJsonOperations() {
     if (jsonData.trim()) {
       navigator.clipboard
         .writeText(jsonData)
-        .then(() => toast.success("JSON copied to clipboard"))
+        .then(() => successToast("JSON copied to clipboard"))
         .catch((err) => {
-          toast.error("Failed to copy JSON to clipboard");
+          errorToast("Failed to copy JSON to clipboard");
           console.error("Failed to copy: ", err);
         });
     }
@@ -69,6 +69,7 @@ export function useJsonOperations() {
     link.download = "data.json";
     link.click();
     URL.revokeObjectURL(link.href);
+    successToast("JSON saved to file");
   }, [jsonData]);
 
   return {

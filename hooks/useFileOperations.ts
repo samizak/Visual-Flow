@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { toast } from "sonner";
+import { successToast, errorToast } from "../lib/toast";
 
 interface UseFileOperationsProps {
   setJsonData: (data: string) => void;
@@ -11,7 +11,7 @@ export function useFileOperations({ setJsonData }: UseFileOperationsProps) {
     
     // Check if file is a JSON file
     if (!file.name.toLowerCase().endsWith('.json')) {
-      toast.error("Only JSON files are currently supported");
+      errorToast("Only JSON files are currently supported");
       return;
     }
 
@@ -22,13 +22,13 @@ export function useFileOperations({ setJsonData }: UseFileOperationsProps) {
         // Try to parse the JSON to validate it
         JSON.parse(content);
         setJsonData(content);
-        toast.success(`File "${file.name}" loaded successfully`);
+        successToast(`File "${file.name}" loaded successfully`);
       } catch (error) {
-        toast.error("Invalid JSON file. Please check the file format.");
+        errorToast("Invalid JSON file. Please check the file format.");
       }
     };
     reader.onerror = () => {
-      toast.error("Error reading file");
+      errorToast("Error reading file");
     };
     reader.readAsText(file);
   }, [setJsonData]);
@@ -52,15 +52,15 @@ export function useFileOperations({ setJsonData }: UseFileOperationsProps) {
           JSON.parse(content);
           // Set the JSON data
           setJsonData(content);
-          toast.success("JSON imported successfully");
+          successToast("JSON imported successfully");
         } catch (error) {
-          toast.error("Invalid JSON file");
+          errorToast("Invalid JSON file");
           console.error("Error parsing JSON file:", error);
         }
       };
 
       reader.onerror = () => {
-        toast.error("Failed to read file");
+        errorToast("Failed to read file");
       };
 
       reader.readAsText(file);

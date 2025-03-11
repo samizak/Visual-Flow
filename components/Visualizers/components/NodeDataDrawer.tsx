@@ -1,5 +1,5 @@
 import { Copy, X, FileJson } from "lucide-react";
-import { toast } from "sonner";
+import { successToast, errorToast } from "../../../lib/toast";
 import {
   Drawer,
   DrawerContent,
@@ -30,8 +30,8 @@ export default function NodeDataDrawer({
   const handleCopy = () => {
     navigator.clipboard
       .writeText(formattedData)
-      .then(() => toast.success("Node data copied to clipboard"))
-      .catch(() => toast.error("Failed to copy node data"));
+      .then(() => successToast("Node data copied to clipboard"))
+      .catch(() => errorToast("Failed to copy node data"));
   };
 
   // Editor options
