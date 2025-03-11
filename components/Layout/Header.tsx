@@ -76,7 +76,7 @@ export default function Header({
 
           <div className="h-5 w-px bg-gray-600 mx-0.5"></div>
 
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1 pl-2">
             {/* File dropdown menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -176,12 +176,22 @@ export default function Header({
                   <LayoutGrid className="mr-2 h-4 w-4" />
                   <span>Diagram View</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
+                <DropdownMenuItem
+                  className="opacity-50 cursor-not-allowed inline-flex whitespace-nowrap text-xs"
+                  title="3D View coming soon"
+                  disabled
+                >
                   <Layers className="mr-2 h-4 w-4" />
                   <span>3D Node View</span>
+                  <span className="ml-2 text-xs text-gray-500">
+                    (Coming soon)
+                  </span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
+                <DropdownMenuItem className="opacity-50 cursor-not-allowed inline-flex whitespace-nowrap text-xs">
                   <span>Tree View</span>
+                  <span className="ml-2 text-xs text-gray-500">
+                    (Coming soon)
+                  </span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
