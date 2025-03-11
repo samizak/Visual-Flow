@@ -1,77 +1,65 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { successToast, errorToast } from "../lib/toast";
 
 interface UseFileOperationsProps {
   setJsonData: (data: string) => void;
+  onSuccessfulLoad?: (content: string) => void;
 }
 
-export function useFileOperations({ setJsonData }: UseFileOperationsProps) {
-  const handleFiles = useCallback((files: FileList) => {
-    const file = files[0];
-    
-    // Check if file is a JSON file
-    if (!file.name.toLowerCase().endsWith('.json')) {
-      errorToast("Only JSON files are currently supported");
-      return;
-    }
+export function useFileOperations({ setJsonData, onSuccessfulLoad }: UseFileOperationsProps) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-        // Try to parse the JSON to validate it
-        JSON.parse(content);
-        setJsonData(content);
-        successToast(`File "${file.name}" loaded successfully`);
-      } catch (error) {
-        errorToast("Invalid JSON file. Please check the file format.");
+  const handleFiles = useCallback(
+    (files: FileList) => {
+      const file = files[0];
+      
+      // Check if file is a JSON file
+      if (!file.name.toLowerCase().endsWith('.json')) {
+        errorToast("Only JSON files are currently supported");
+        return;
       }
-    };
-    reader.onerror = () => {
-      errorToast("Error reading file");
-    };
-    reader.readAsText(file);
-  }, [setJsonData]);
-
-  const importFile = useCallback(() => {
-    // Create a hidden file input element
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "application/json";
-
-    // Handle file selection
-    fileInput.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = (e) => {
         try {
-          const content = event.target?.result as string;
-          // Try to parse to validate it's proper JSON
+          const content = e.target?.result as string;
+          // Try to parse the JSON to validate it
           JSON.parse(content);
-          // Set the JSON data
           setJsonData(content);
-          successToast("JSON imported successfully");
+          // Call the callback if provided
+          if (onSuccessfulLoad) {
+            onSuccessfulLoad(content);
+          }
+          successToast(`File "${file.name}" loaded successfully`);
         } catch (error) {
-          errorToast("Invalid JSON file");
-          console.error("Error parsing JSON file:", error);
+          errorToast("Invalid JSON file. Please check the file format.");
         }
       };
-
-      reader.onerror = () => {
-        errorToast("Failed to read file");
-      };
-
       reader.readAsText(file);
+    },
+    [setJsonData, onSuccessfulLoad]
+  );
+
+  const importFile = useCallback(() => {
+    // Create a file input element if it doesn't exist
+    if (!fileInputRef.current) {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".json";
+      fileInputRef.current = input;
+    }
+
+    // Set up the change event handler
+    fileInputRef.current.onchange = (e) => {
+      const files = (e.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        handleFiles(files);
+      }
     };
 
-    // Trigger the file input click
-    fileInput.click();
-  }, [setJsonData]);
+    // Trigger the file dialog
+    fileInputRef.current.click();
+  }, [handleFiles]);
 
-  return {
-    handleFiles,
-    importFile
-  };
+  return { handleFiles, importFile };
 }

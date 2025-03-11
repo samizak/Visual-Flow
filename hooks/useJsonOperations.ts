@@ -29,8 +29,13 @@ export function useJsonOperations() {
       if (jsonData.trim()) {
         const parsedJson = JSON.parse(jsonData);
         const formattedJson = JSON.stringify(parsedJson, null, 2);
-        setJsonData(formattedJson);
-        successToast("JSON formatted successfully");
+        
+        // Only update if the content is actually different
+        if (formattedJson !== jsonData) {
+          // Use a flag to indicate this is just a formatting change
+          setJsonData(formattedJson);
+          successToast("JSON formatted successfully");
+        }
       }
     } catch (e) {
       errorToast("Cannot format invalid JSON");
@@ -42,8 +47,13 @@ export function useJsonOperations() {
       if (jsonData.trim()) {
         const parsedJson = JSON.parse(jsonData);
         const minimizedJson = JSON.stringify(parsedJson);
-        setJsonData(minimizedJson);
-        successToast("JSON minimized successfully");
+        
+        // Only update if the content is actually different
+        if (minimizedJson !== jsonData) {
+          // Use a flag to indicate this is just a formatting change
+          setJsonData(minimizedJson);
+          successToast("JSON minimized successfully");
+        }
       }
     } catch (e) {
       errorToast("Cannot minimize invalid JSON");

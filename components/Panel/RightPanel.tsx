@@ -1,20 +1,43 @@
 import JsonFlowChart from "../Visualizers/JsonFlowChart";
 import { Box, Braces, Brackets, Type } from "lucide-react"; // Import icons
-import { Dispatch, SetStateAction } from "react"; // Add this import
+import { Dispatch, SetStateAction, useState, useMemo } from "react"; // Add useMemo
 
+// In RightPanel.tsx
 export default function RightPanel({
   jsonData,
-  isValidJson = true,
+  parsedData, // Add this prop
+  isValidJson,
   setNodeCount,
   nodeCount,
-  edgeType = "smoothstep",
+  edgeType,
 }: {
   jsonData: string;
-  isValidJson?: boolean;
-  setNodeCount: Dispatch<SetStateAction<number>>;
+  parsedData?: any; // Optional pre-parsed data
+  isValidJson: boolean;
+  setNodeCount: (count: number) => void;
   nodeCount: number;
-  edgeType?: string;
+  edgeType: string;
 }) {
+  // Add state for selected path
+  const [selectedPath, setSelectedPath] = useState<string[]>([]);
+
+  // Use the pre-parsed data if available, otherwise parse it here
+  const data = useMemo(() => {
+    if (parsedData) return parsedData;
+    if (!jsonData || !isValidJson) return null;
+    try {
+      return JSON.parse(jsonData);
+    } catch (e) {
+      return null;
+    }
+  }, [jsonData, isValidJson, parsedData]);
+
+  // Add export ready function
+  const onExportReady = (exportFn: () => void) => {
+    // This function will be called when the chart is ready to export
+    // You can store the exportFn in state or call it directly if needed
+  };
+
   return (
     <div className="flex-1 flex flex-col border-l border-gray-700">
       <div className="flex-grow relative">
@@ -27,9 +50,6 @@ export default function RightPanel({
                 onNodeCountChange={setNodeCount}
                 edgeType={edgeType}
               />
-              
-              {/* Removed the invalid JSON overlay warning */}
-
               {/* Legend overlay with icons */}
               <div className="absolute top-4 left-4 bg-[#1e1e1e] bg-opacity-80 p-2 rounded-md shadow-md">
                 <div className="flex flex-col space-y-2">

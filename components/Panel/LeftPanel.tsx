@@ -1,17 +1,20 @@
 import Editor from "@monaco-editor/react";
 import { useState, useRef, useEffect } from "react";
 import JsonErrorMessage from "./JsonErrorMessage";
+import { Play } from "lucide-react";
 
 export default function LeftPanel({
   jsonInput,
   setJsonInput,
   collapseLeftPanel,
   isValidJson = true,
+  onApplyChanges,
 }: {
   jsonInput: any;
   setJsonInput: any;
   collapseLeftPanel: boolean;
   isValidJson?: boolean;
+  onApplyChanges?: () => void;
 }) {
   const [width, setWidth] = useState(20);
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
@@ -107,7 +110,7 @@ export default function LeftPanel({
           isVisible={!isValidJson && jsonInput !== "" && isEditorLoaded}
         />
 
-        <div className="flex-grow relative overflow-hidden pb-16">
+        <div className="flex-grow relative overflow-hidden">
           {!isEditorLoaded && (
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#1e1e1e]">
               <div className="text-center">
@@ -163,6 +166,24 @@ export default function LeftPanel({
           className="absolute top-0 right-0 w-1 h-full bg-gray-700 cursor-col-resize hover:bg-blue-500 z-10"
           onMouseDown={handleMouseDown}
         />
+
+        {/* Apply Changes button at the bottom of the panel */}
+        {onApplyChanges && (
+          <div className="p-2 border-t border-gray-700 bg-[#252525]">
+            <button
+              onClick={onApplyChanges}
+              disabled={!isValidJson}
+              className={`w-full py-1.5 px-3 rounded-md flex items-center justify-center gap-2 text-sm font-medium transition-colors ${
+                isValidJson
+                  ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                  : "bg-gray-700 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              <Play className="h-4 w-4" />
+              Apply Changes
+            </button>
+          </div>
+        )}
       </div>
     )
   );

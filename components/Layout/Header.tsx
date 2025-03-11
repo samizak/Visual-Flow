@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "../ui/button";
 import {
   PanelLeft,
@@ -9,11 +9,10 @@ import {
   Minimize,
   Save,
   Upload,
-  Download,
   LayoutGrid,
   Layers,
   Settings,
-  X,
+  Play,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -23,23 +22,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "../ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Label } from "../ui/label";
-import { successToast } from "../../lib/toast";
+import SettingsDialog from "./SettingsDialog";
 
+// Add to the interface
 interface HeaderProps {
   onFormat?: () => void;
   onMinimize?: () => void;
@@ -50,6 +35,7 @@ interface HeaderProps {
   edgeStyle?: string;
   onEdgeStyleChange: (style: string) => void;
   onFileLoad?: (content: string) => void;
+  onApplyChanges?: () => void;
 }
 
 export default function Header({
@@ -62,14 +48,10 @@ export default function Header({
   edgeStyle,
   onEdgeStyleChange,
   onFileLoad,
+  onApplyChanges,
 }: HeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleEdgeStyleChange = (value: string) => {
-    onEdgeStyleChange(value);
-    successToast("Style successfully changed");
-  };
 
   // Trigger file input click
   const handleImportClick = () => {
@@ -95,6 +77,7 @@ export default function Header({
           <div className="h-5 w-px bg-gray-600 mx-0.5"></div>
 
           <div className="flex items-center space-x-1">
+            {/* File dropdown menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -126,6 +109,7 @@ export default function Header({
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Edit dropdown menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -164,6 +148,7 @@ export default function Header({
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* View dropdown menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -178,6 +163,15 @@ export default function Header({
               <DropdownMenuContent className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50">
                 <DropdownMenuLabel>View Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {onApplyChanges && (
+                  <DropdownMenuItem
+                    onClick={onApplyChanges}
+                    className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+                  >
+                    <Play className="mr-2 h-4 w-4" />
+                    <span>Apply Changes</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
                   <LayoutGrid className="mr-2 h-4 w-4" />
                   <span>Diagram View</span>
@@ -201,59 +195,27 @@ export default function Header({
             </DropdownMenu>
           </div>
         </div>
+
+        {/* Add Apply Changes button to the right side of the header */}
+        {onApplyChanges && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onApplyChanges}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white border-none hover:text-white transition-colors"
+          >
+            <Play className="mr-1 h-4 w-4" />
+            Apply Changes
+          </Button>
+        )}
       </div>
 
-      {/* Settings Dialog */}
-      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <DialogContent className="bg-[#1e1e1e] border border-gray-700 text-white">
-          <DialogHeader>
-            <DialogTitle>Settings</DialogTitle>
-          </DialogHeader>
-          <div className="py-4 space-y-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="edge-style" className="text-right">
-                Edge Style
-              </Label>
-              <div className="col-span-3">
-                <Select value={edgeStyle} onValueChange={handleEdgeStyleChange}>
-                  <SelectTrigger
-                    className="w-full bg-[#2d2d2d] border-gray-700 text-white focus:ring-offset-0 focus:ring-gray-500"
-                    id="edge-style"
-                  >
-                    <SelectValue placeholder="Select edge style" />
-                  </SelectTrigger>
-                  <SelectContent
-                    className="bg-[#2d2d2d] border-gray-700 text-white"
-                    position="popper"
-                  >
-                    <SelectItem
-                      value="smoothstep"
-                      className="focus:bg-gray-700 focus:text-white"
-                    >
-                      Stepline
-                    </SelectItem>
-                    <SelectItem
-                      value="default"
-                      className="focus:bg-gray-700 focus:text-white"
-                    >
-                      Bezier
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setSettingsOpen(false)}
-              className="bg-[#2d2d2d] border-gray-700 hover:bg-gray-800 hover:text-white hover:border-gray-500 transition-all duration-200 flex items-center gap-2 px-4 py-2 rounded-md"
-            >
-              Cancel
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <SettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        edgeStyle={edgeStyle}
+        onEdgeStyleChange={onEdgeStyleChange}
+      />
     </header>
   );
 }
