@@ -45,6 +45,10 @@ export default function NodeDataDrawer({
     renderIndentGuides: true,
     tabSize: 2,
     stickyScroll: { enabled: false },
+    padding: {
+      top: 10,
+      bottom: 10,
+    },
   };
 
   return (
@@ -78,7 +82,8 @@ export default function NodeDataDrawer({
                   >
                     <Copy size={16} />
                   </button>
-                  <DrawerClose className="p-2 rounded-md bg-gray-700/70 hover:bg-gray-600 transition-colors text-white shadow-sm"
+                  <DrawerClose
+                    className="p-2 rounded-md bg-gray-700/70 hover:bg-gray-600 transition-colors text-white shadow-sm"
                     title="Close"
                   >
                     <X size={16} />
