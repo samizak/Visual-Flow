@@ -9,17 +9,21 @@ import {
   BackgroundVariant,
   Panel,
   useReactFlow,
-  ReactFlowProvider, // Add this import
+  ReactFlowProvider,
+  Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
 import { JsonFlowChartProps } from "./types/jsonFlowTypes";
 import GroupedNode from "./components/GroupedNode";
+import SchemaNode from "./components/SchemaNode";
 import { convertJsonToGroupedFlow } from "./utils/jsonGroupedFlowUtils";
+import NodeDataDrawer from "./components/NodeDataDrawer";
 
 // Define the node types for ReactFlow
 const nodeTypes = {
   grouped: GroupedNode,
+  schema: SchemaNode,
 };
 
 // Define custom styles for controls
@@ -35,10 +39,12 @@ const proOptions = {
 };
 
 // Create a wrapper component that includes the ReactFlowProvider
-export default function JsonFlowChartWithProvider(props: JsonFlowChartProps & { 
-  onNodeCountChange?: (count: number) => void;
-  isValidJson?: boolean; 
-}) {
+export default function JsonFlowChartWithProvider(
+  props: JsonFlowChartProps & {
+    onNodeCountChange?: (count: number) => void;
+    isValidJson?: boolean;
+  }
+) {
   return (
     <ReactFlowProvider>
       <JsonFlowChart {...props} />
@@ -60,21 +66,26 @@ function JsonFlowChart({
   const [isLoading, setIsLoading] = useState(true);
   const [lastValidJson, setLastValidJson] = useState("");
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const reactFlowInstance = useReactFlow(); // Now this will work correctly
+  const reactFlowInstance = useReactFlow();
   const prevEdgeTypeRef = useRef(edgeType);
+
+  // State for the drawer
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedNodeData, setSelectedNodeData] = useState<Record<string, any>>(
+    {}
+  );
+  const [selectedNodeLabel, setSelectedNodeLabel] = useState("");
 
   // Effect to update edge types when edgeType prop changes
   useEffect(() => {
     if (edges.length > 0 && prevEdgeTypeRef.current !== edgeType) {
       // Update all edges with the new edge type
-      const updatedEdges = edges.map((edge: any) => {
-        return {
-          ...edge,
-          type: edgeType,
-        };
-      });
+      const updatedEdges: any = edges.map((edge: any) => ({
+        ...edge,
+        type: edgeType,
+      }));
 
-      setEdges(updatedEdges as any);
+      setEdges(updatedEdges);
       prevEdgeTypeRef.current = edgeType;
     }
   }, [edgeType, edges, setEdges]);
@@ -129,6 +140,15 @@ function JsonFlowChart({
     ]
   );
 
+  // Handle node click to show drawer
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    // Extract the node data
+    const nodeData: any = node.data;
+    setSelectedNodeData(nodeData);
+    setSelectedNodeLabel(nodeData.label || "Node");
+    setDrawerOpen(true);
+  }, []);
+
   // Process JSON data with debounce
   useEffect(() => {
     // Clear any existing timer
@@ -165,40 +185,47 @@ function JsonFlowChart({
 
   return (
     <div className="h-full w-full">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        connectionLineType={
-          edgeType === "default"
-            ? ConnectionLineType.Bezier
-            : ConnectionLineType.SmoothStep
-        }
-        defaultEdgeOptions={{
-          type: edgeType,
-          style: { stroke: "#555" },
-        }}
-        fitView
-        fitViewOptions={{ padding: 0.1 }}
-        minZoom={0.1}
-        maxZoom={2}
-        attributionPosition="bottom-right"
-        nodesConnectable={false}
-        nodesDraggable={true}
-        elementsSelectable={false}
-        proOptions={proOptions}
-        onlyRenderVisibleElements={true}
-      >
-        <Controls style={controlsStyle} />
-        <Background
-          color="#aaa"
-          gap={25}
-          variant={BackgroundVariant.Lines}
-          style={{ opacity: 0.1 }}
-        />
-      </ReactFlow>
+      {isLoading ? (
+        <div className="flex h-full items-center justify-center">
+          <div className="text-gray-400">Loading visualization...</div>
+        </div>
+      ) : (
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          nodeTypes={nodeTypes}
+          onNodeClick={onNodeClick}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
+          minZoom={0.1}
+          maxZoom={2}
+          proOptions={proOptions}
+          connectionLineType={ConnectionLineType.SmoothStep}
+        >
+          <Controls style={controlsStyle} />
+          <Background
+            variant={BackgroundVariant.Dots}
+            gap={12}
+            size={1}
+            color="#333"
+          />
+          <Panel position="top-right">
+            <div className="bg-[#1e1e1e] p-2 rounded-md text-xs text-gray-400">
+              Nodes: {nodes.length}
+            </div>
+          </Panel>
+        </ReactFlow>
+      )}
+
+      {/* Node Data Drawer */}
+      <NodeDataDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        nodeData={selectedNodeData}
+        nodeLabel={selectedNodeLabel}
+      />
     </div>
   );
 }
