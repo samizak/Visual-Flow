@@ -4,6 +4,17 @@ import { FileJson, Github } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 
 export default function Header() {
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop - 80, // Offset for header height
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/50 border-b border-white/10">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -18,24 +29,34 @@ export default function Header() {
         </div>
 
         <div className="hidden md:flex items-center gap-8">
-          <Link
+          <a
             href="#features"
             className="text-white/70 hover:text-white transition-colors"
+            onClick={(e) => scrollToSection(e, "features")}
           >
             Features
-          </Link>
-          <Link
+          </a>
+          <a
+            href="#demo"
+            className="text-white/70 hover:text-white transition-colors"
+            onClick={(e) => scrollToSection(e, "demo")}
+          >
+            Demo
+          </a>
+          <a
             href="#workflow"
             className="text-white/70 hover:text-white transition-colors"
+            onClick={(e) => scrollToSection(e, "workflow")}
           >
             Workflow
-          </Link>
-          <Link
+          </a>
+          <a
             href="#pricing"
             className="text-white/70 hover:text-white transition-colors"
+            onClick={(e) => scrollToSection(e, "pricing")}
           >
             Pricing
-          </Link>
+          </a>
         </div>
 
         <div className="flex items-center gap-4">

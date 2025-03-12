@@ -2,7 +2,14 @@
 
 import React from "react";
 import { motion } from "motion/react";
-import { Terminal, Layers, Cpu, MousePointerClick } from "lucide-react";
+import { 
+  Network, 
+  Zap, 
+  Share2, 
+  Lock, 
+  FileJson, 
+  Sparkles 
+} from "lucide-react";
 import FeatureCard from "./FeatureCard";
 
 export default function FeaturesSection() {
@@ -17,7 +24,7 @@ export default function FeaturesSection() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            Powerful Features
+            Powerful Features for Developers
           </motion.h2>
           <motion.p
             className="text-xl text-white/70 max-w-2xl mx-auto"
@@ -30,30 +37,42 @@ export default function FeaturesSection() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <FeatureCard
-            icon={<Terminal className="h-6 w-6 text-indigo-400" />}
-            title="Smart Parsing"
-            description="Automatically parse and validate JSON data with intelligent error handling and suggestions."
+            icon={<Network className="h-6 w-6 text-indigo-400" />}
+            title="Interactive Visualizations"
+            description="Transform complex JSON structures into intuitive, interactive flowcharts that make data relationships clear at a glance."
             delay={0.1}
           />
           <FeatureCard
-            icon={<Layers className="h-6 w-6 text-indigo-400" />}
-            title="3D Visualization"
-            description="Transform your JSON into interactive 3D models that reveal structure and relationships."
+            icon={<Zap className="h-6 w-6 text-indigo-400" />}
+            title="Real-time Processing"
+            description="Instantly visualize your JSON data with our lightning-fast processing engine, even for large and complex structures."
             delay={0.2}
           />
           <FeatureCard
-            icon={<Cpu className="h-6 w-6 text-indigo-400" />}
-            title="Schema Detection"
-            description="Automatically detect and generate JSON schemas from your data samples."
+            icon={<Share2 className="h-6 w-6 text-indigo-400" />}
+            title="Collaboration Tools"
+            description="Share your visualizations with team members and collaborate in real-time with comments and annotations."
             delay={0.3}
           />
           <FeatureCard
-            icon={<MousePointerClick className="h-6 w-6 text-indigo-400" />}
-            title="Interactive Editing"
-            description="Edit your JSON with real-time visual feedback and intelligent suggestions."
+            icon={<Lock className="h-6 w-6 text-indigo-400" />}
+            title="Secure Data Handling"
+            description="Your data never leaves your browser. We process everything client-side for maximum security and privacy."
             delay={0.4}
+          />
+          <FeatureCard
+            icon={<FileJson className="h-6 w-6 text-indigo-400" />}
+            title="Advanced Formatting"
+            description="Automatically format and validate your JSON with intelligent indentation, syntax highlighting, and error detection."
+            delay={0.5}
+          />
+          <FeatureCard
+            icon={<Sparkles className="h-6 w-6 text-indigo-400" />}
+            title="AI-Powered Insights"
+            description="Get smart suggestions and insights about your data structure with our AI-powered analysis tools."
+            delay={0.6}
           />
         </div>
       </div>

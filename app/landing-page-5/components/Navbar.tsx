@@ -13,7 +13,7 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -22,8 +22,8 @@ export default function Navbar() {
     { name: "Features", href: "#features" },
     { name: "Demo", href: "#demo" },
     { name: "Workflow", href: "#workflow" },
-    { name: "Testimonials", href: "#testimonials" },
     { name: "Pricing", href: "#pricing" },
+    { name: "See Visual Flow in Action", href: "#demo", highlight: true },
   ];
 
   return (

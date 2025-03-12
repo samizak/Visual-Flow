@@ -6,6 +6,8 @@ import Footer from "./components/Footer";
 import HeroSection from "./components/HeroSection";
 import DemoSection from "./components/DemoSection";
 import FeaturesSection from "./components/FeaturesSection";
+import WorkflowSection from "./components/WorkflowSection";
+import PricingSection from "./components/PricingSection";
 import Scene from "./components/Scene";
 
 // Sample JSON for the interactive demo
@@ -34,8 +36,10 @@ export default function LandingPageThree() {
 
       <Header />
       <HeroSection LocalScene={Scene} />
-      <DemoSection LocalScene={Scene} sampleJson={sampleJson} />
       <FeaturesSection />
+      <DemoSection LocalScene={Scene} sampleJson={sampleJson} />
+      <WorkflowSection />
+      <PricingSection />
       <Footer />
     </div>
   );

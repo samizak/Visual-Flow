@@ -131,7 +131,13 @@ interface ConnectionLineProps {
 }
 
 // Connection line component
-const ConnectionLine = ({ startX, startY, endX, endY, delay }: ConnectionLineProps) => {
+const ConnectionLine = ({
+  startX,
+  startY,
+  endX,
+  endY,
+  delay,
+}: ConnectionLineProps) => {
   const pathRef = useRef(null);
 
   return (
@@ -205,7 +211,7 @@ export default function DemoSection() {
             transition={{ duration: 0.5 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               See It In Action
             </h2>
             <p className="text-xl text-white/70 max-w-2xl mx-auto">
@@ -214,173 +220,456 @@ export default function DemoSection() {
           </motion.div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Visualization panel */}
-          <div
-            ref={ref}
-            className="relative bg-slate-800/70 backdrop-blur-md border border-white/10 rounded-xl p-6 h-[600px] overflow-hidden shadow-lg lg:w-2/3"
-          >
-            {isInView && (
-              <>
-                {/* Root node */}
-                <Node
-                  label="Root Object"
-                  x={10}
-                  y={50}
-                  delay={0.2}
-                  isObject={true}
-                  isExpanded={expandedNodes["root"]}
-                  onToggle={() => toggleNode("root")}
-                />
+        <div
+          ref={ref}
+          className="relative bg-slate-900/30 backdrop-blur-md border border-white/5 rounded-xl p-6 h-[600px] overflow-hidden"
+        >
+          {isInView && (
+            <>
+              {/* Root node */}
+              <Node
+                label="Root Object"
+                x={10}
+                y={50}
+                delay={0.2}
+                isObject={true}
+                isExpanded={expandedNodes["root"]}
+                onToggle={() => toggleNode("root")}
+              />
 
-                {/* Company */}
-                <Node
-                  label="company"
-                  value={sampleJsonData.company}
-                  x={25}
-                  y={120}
-                  delay={0.4}
-                  isExpanded={expandedNodes["company"]}
-                  onToggle={() => toggleNode("company")}
-                />
-                <ConnectionLine
-                  startX={10}
-                  startY={65}
-                  endX={25}
-                  endY={130}
-                  delay={0.3}
-                />
+              {/* Company */}
+              <Node
+                label="company"
+                value={sampleJsonData.company}
+                x={25}
+                y={120}
+                delay={0.4}
+                isExpanded={expandedNodes["company"]}
+                onToggle={() => toggleNode("company")}
+              />
+              <ConnectionLine
+                startX={10}
+                startY={65}
+                endX={25}
+                endY={130}
+                delay={0.3}
+              />
 
-                {/* Founded */}
-                <Node
-                  label="founded"
-                  value={sampleJsonData.founded}
-                  x={25}
-                  y={180}
-                  delay={0.5}
-                  isExpanded={expandedNodes["founded"]}
-                  onToggle={() => toggleNode("founded")}
-                />
-                <ConnectionLine
-                  startX={10}
-                  startY={65}
-                  endX={25}
-                  endY={190}
-                  delay={0.4}
-                />
+              {/* Founded */}
+              <Node
+                label="founded"
+                value={sampleJsonData.founded}
+                x={25}
+                y={180}
+                delay={0.5}
+                isExpanded={expandedNodes["founded"]}
+                onToggle={() => toggleNode("founded")}
+              />
+              <ConnectionLine
+                startX={10}
+                startY={65}
+                endX={25}
+                endY={190}
+                delay={0.4}
+              />
 
-                {/* Location */}
-                <Node
-                  label="location"
-                  x={25}
-                  y={240}
-                  delay={0.6}
-                  isObject={true}
-                  isExpanded={expandedNodes["location"]}
-                  onToggle={() => toggleNode("location")}
-                />
-                <ConnectionLine
-                  startX={10}
-                  startY={65}
-                  endX={25}
-                  endY={250}
-                  delay={0.5}
-                />
+              {/* Location */}
+              <Node
+                label="location"
+                x={25}
+                y={240}
+                delay={0.6}
+                isObject={true}
+                isExpanded={expandedNodes["location"]}
+                onToggle={() => toggleNode("location")}
+              />
+              <ConnectionLine
+                startX={10}
+                startY={65}
+                endX={25}
+                endY={250}
+                delay={0.5}
+              />
 
-                {/* Rest of the nodes remain the same */}
-                {/* ... existing nodes ... */}
-              </>
-            )}
+              {expandedNodes["location"] && (
+                <>
+                  {/* Location city */}
+                  <Node
+                    label="city"
+                    value={sampleJsonData.location.city}
+                    x={40}
+                    y={300}
+                    delay={0.7}
+                    isExpanded={expandedNodes["location.city"]}
+                    onToggle={() => toggleNode("location.city")}
+                  />
+                  <ConnectionLine
+                    startX={25}
+                    startY={255}
+                    endX={40}
+                    endY={310}
+                    delay={0.6}
+                  />
 
-            {/* Interactive controls */}
-            <div className="absolute bottom-4 right-4 flex gap-3">
-              <motion.button
-                className="px-3 py-1.5 rounded-lg bg-slate-800 border border-white/10 text-white text-sm hover:bg-slate-700 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  // Expand all nodes
-                  const allExpanded: Record<string, boolean> = {};
-                  Object.keys(expandedNodes).forEach((key) => {
-                    allExpanded[key] = true;
-                  });
-                  setExpandedNodes(allExpanded as typeof expandedNodes);
-                }}
-              >
-                Expand All
-              </motion.button>
-              <motion.button
-                className="px-3 py-1.5 rounded-lg bg-slate-800 border border-white/10 text-white text-sm hover:bg-slate-700 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  // Collapse all nodes
-                  const allCollapsed: Record<string, boolean> = {};
-                  Object.keys(expandedNodes).forEach((key) => {
-                    allCollapsed[key] = false;
-                  });
-                  // Keep root expanded
-                  allCollapsed["root"] = true;
-                  setExpandedNodes(allCollapsed as typeof expandedNodes);
-                }}
-              >
-                Collapse All
-              </motion.button>
-            </div>
+                  {/* Location country */}
+                  <Node
+                    label="country"
+                    value={sampleJsonData.location.country}
+                    x={40}
+                    y={360}
+                    delay={0.8}
+                    isExpanded={expandedNodes["location.country"]}
+                    onToggle={() => toggleNode("location.country")}
+                  />
+                  <ConnectionLine
+                    startX={25}
+                    startY={255}
+                    endX={40}
+                    endY={370}
+                    delay={0.7}
+                  />
 
-            {/* Floating decorative elements */}
-            <motion.div
-              className="absolute -top-10 -right-10 w-40 h-40 bg-purple-500/10 rounded-full blur-xl"
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.5, 0.3],
+                  {/* Coordinates */}
+                  <Node
+                    label="coordinates"
+                    x={40}
+                    y={420}
+                    delay={0.9}
+                    isObject={true}
+                    isExpanded={expandedNodes["location.coordinates"]}
+                    onToggle={() => toggleNode("location.coordinates")}
+                  />
+                  <ConnectionLine
+                    startX={25}
+                    startY={255}
+                    endX={40}
+                    endY={430}
+                    delay={0.8}
+                  />
+
+                  {expandedNodes["location.coordinates"] && (
+                    <>
+                      {/* Lat */}
+                      <Node
+                        label="lat"
+                        value={sampleJsonData.location.coordinates.lat}
+                        x={55}
+                        y={480}
+                        delay={1.0}
+                        isExpanded={expandedNodes["location.coordinates.lat"]}
+                        onToggle={() => toggleNode("location.coordinates.lat")}
+                      />
+                      <ConnectionLine
+                        startX={40}
+                        startY={435}
+                        endX={55}
+                        endY={490}
+                        delay={0.9}
+                      />
+
+                      {/* Lng */}
+                      <Node
+                        label="lng"
+                        value={sampleJsonData.location.coordinates.lng}
+                        x={55}
+                        y={540}
+                        delay={1.1}
+                        isExpanded={expandedNodes["location.coordinates.lng"]}
+                        onToggle={() => toggleNode("location.coordinates.lng")}
+                      />
+                      <ConnectionLine
+                        startX={40}
+                        startY={435}
+                        endX={55}
+                        endY={550}
+                        delay={1.0}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+
+              {/* Employees */}
+              <Node
+                label="employees"
+                x={25}
+                y={120}
+                delay={1.2}
+                isArray={true}
+                isExpanded={expandedNodes["employees"]}
+                onToggle={() => toggleNode("employees")}
+              />
+              <ConnectionLine
+                startX={10}
+                startY={65}
+                endX={25}
+                endY={130}
+                delay={1.1}
+              />
+
+              {expandedNodes["employees"] && (
+                <>
+                  {/* Employee 0 */}
+                  <Node
+                    label="[0]"
+                    x={40}
+                    y={180}
+                    delay={1.3}
+                    isObject={true}
+                    isExpanded={expandedNodes["employees.0"]}
+                    onToggle={() => toggleNode("employees.0")}
+                  />
+                  <ConnectionLine
+                    startX={25}
+                    startY={135}
+                    endX={40}
+                    endY={190}
+                    delay={1.2}
+                  />
+
+                  {expandedNodes["employees.0"] && (
+                    <>
+                      {/* Employee 0 ID */}
+                      <Node
+                        label="id"
+                        value={sampleJsonData.employees[0].id}
+                        x={55}
+                        y={240}
+                        delay={1.4}
+                        isExpanded={expandedNodes["employees.0.id"]}
+                        onToggle={() => toggleNode("employees.0.id")}
+                      />
+                      <ConnectionLine
+                        startX={40}
+                        startY={195}
+                        endX={55}
+                        endY={250}
+                        delay={1.3}
+                      />
+
+                      {/* Employee 0 Name */}
+                      <Node
+                        label="name"
+                        value={sampleJsonData.employees[0].name}
+                        x={55}
+                        y={300}
+                        delay={1.5}
+                        isExpanded={expandedNodes["employees.0.name"]}
+                        onToggle={() => toggleNode("employees.0.name")}
+                      />
+                      <ConnectionLine
+                        startX={40}
+                        startY={195}
+                        endX={55}
+                        endY={310}
+                        delay={1.4}
+                      />
+
+                      {/* Employee 0 Role */}
+                      <Node
+                        label="role"
+                        value={sampleJsonData.employees[0].role}
+                        x={55}
+                        y={360}
+                        delay={1.6}
+                        isExpanded={expandedNodes["employees.0.role"]}
+                        onToggle={() => toggleNode("employees.0.role")}
+                      />
+                      <ConnectionLine
+                        startX={40}
+                        startY={195}
+                        endX={55}
+                        endY={370}
+                        delay={1.5}
+                      />
+
+                      {/* Employee 0 Skills */}
+                      <Node
+                        label="skills"
+                        x={55}
+                        y={420}
+                        delay={1.7}
+                        isArray={true}
+                        isExpanded={expandedNodes["employees.0.skills"]}
+                        onToggle={() => toggleNode("employees.0.skills")}
+                      />
+                      <ConnectionLine
+                        startX={40}
+                        startY={195}
+                        endX={55}
+                        endY={430}
+                        delay={1.6}
+                      />
+
+                      {expandedNodes["employees.0.skills"] && (
+                        <>
+                          {sampleJsonData.employees[0].skills.map(
+                            (skill, index) => (
+                              <React.Fragment key={index}>
+                                <Node
+                                  label={`[${index}]`}
+                                  value={skill}
+                                  x={70}
+                                  y={480 + index * 60}
+                                  delay={1.8 + index * 0.1}
+                                  isExpanded={true}
+                                  onToggle={() => {}}
+                                />
+                                <ConnectionLine
+                                  startX={55}
+                                  startY={435}
+                                  endX={70}
+                                  endY={490 + index * 60}
+                                  delay={1.7 + index * 0.1}
+                                />
+                              </React.Fragment>
+                            )
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
+
+                  {/* Employee 1 */}
+                  <Node
+                    label="[1]"
+                    x={40}
+                    y={480}
+                    delay={2.0}
+                    isObject={true}
+                    isExpanded={expandedNodes["employees.1"]}
+                    onToggle={() => toggleNode("employees.1")}
+                  />
+                  <ConnectionLine
+                    startX={25}
+                    startY={135}
+                    endX={40}
+                    endY={490}
+                    delay={1.9}
+                  />
+                </>
+              )}
+
+              {/* Products */}
+              <Node
+                label="products"
+                x={25}
+                y={300}
+                delay={2.1}
+                isArray={true}
+                isExpanded={expandedNodes["products"]}
+                onToggle={() => toggleNode("products")}
+              />
+              <ConnectionLine
+                startX={10}
+                startY={65}
+                endX={25}
+                endY={310}
+                delay={2.0}
+              />
+
+              {/* Active */}
+              <Node
+                label="active"
+                value={sampleJsonData.active}
+                x={25}
+                y={360}
+                delay={2.2}
+                isExpanded={expandedNodes["active"]}
+                onToggle={() => toggleNode("active")}
+              />
+              <ConnectionLine
+                startX={10}
+                startY={65}
+                endX={25}
+                endY={370}
+                delay={2.1}
+              />
+            </>
+          )}
+
+          {/* Interactive controls */}
+          <div className="absolute bottom-4 right-4 flex gap-3">
+            <motion.button
+              className="px-3 py-1.5 rounded-lg bg-slate-800 text-white text-sm hover:bg-slate-700 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                // Expand all nodes
+                const allExpanded: Record<string, boolean> = {};
+                Object.keys(expandedNodes).forEach((key) => {
+                  allExpanded[key] = true;
+                });
+                setExpandedNodes(allExpanded as typeof expandedNodes);
               }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                repeatType: "reverse",
+            >
+              Expand All
+            </motion.button>
+            <motion.button
+              className="px-3 py-1.5 rounded-lg bg-slate-800 text-white text-sm hover:bg-slate-700 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                // Collapse all nodes
+                const allCollapsed: Record<string, boolean> = {};
+                Object.keys(expandedNodes).forEach((key) => {
+                  allCollapsed[key] = false;
+                });
+                // Keep root expanded
+                allCollapsed["root"] = true;
+                setExpandedNodes(allCollapsed as typeof expandedNodes);
               }}
-            />
-            <motion.div
-              className="absolute -bottom-20 -left-20 w-60 h-60 bg-sky-500/10 rounded-full blur-xl"
-              animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.2, 0.4, 0.2],
-              }}
-              transition={{
-                duration: 10,
-                repeat: Infinity,
-                repeatType: "reverse",
-                delay: 1,
-              }}
-            />
+            >
+              Collapse All
+            </motion.button>
           </div>
 
-          {/* Code snippet panel */}
+          {/* Floating decorative elements */}
           <motion.div
-            className="bg-slate-800/70 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-lg lg:w-1/3 h-[600px] flex flex-col"
+            className="absolute -top-10 -right-10 w-40 h-40 bg-purple-500/10 rounded-full blur-xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              repeatType: "reverse",
+            }}
+          />
+          <motion.div
+            className="absolute -bottom-20 -left-20 w-60 h-60 bg-sky-500/10 rounded-full blur-xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              repeatType: "reverse",
+              delay: 1,
+            }}
+          />
+        </div>
+
+        {/* Code snippet */}
+        <div className="mt-12 max-w-3xl mx-auto">
+          <motion.div
+            className="bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <div className="flex items-center gap-2 px-4 py-2 bg-slate-800/90 border-b border-white/10">
+            <div className="flex items-center gap-2 px-4 py-2 bg-slate-800/50 border-b border-white/5">
               <div className="w-3 h-3 rounded-full bg-red-500"></div>
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
               <span className="ml-2 text-white/60 text-sm">data.json</span>
             </div>
-            <div className="overflow-auto flex-grow p-4">
-              <pre className="text-sm text-emerald-400">
-                <code>{JSON.stringify(sampleJsonData, null, 2)}</code>
-              </pre>
-            </div>
-            <div className="p-4 border-t border-white/10 bg-slate-800/50">
-              <p className="text-white/70 text-sm">
-                This JSON data is visualized in the interactive diagram on the left.
-                Try expanding and collapsing nodes to explore the structure.
-              </p>
-            </div>
+            <pre className="p-4 text-sm text-emerald-400 overflow-x-auto">
+              <code>{JSON.stringify(sampleJsonData, null, 2)}</code>
+            </pre>
           </motion.div>
         </div>
       </div>
