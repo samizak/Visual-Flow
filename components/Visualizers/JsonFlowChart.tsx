@@ -86,6 +86,7 @@ function JsonFlowChart({
     setDrawerOpen,
     selectedNodeData,
     selectedNodeLabel,
+    nodePath, // Get the nodePath from the hook
   } = useNodeClickHandler({ jsonData });
 
   if (isLoading) {
@@ -105,12 +106,13 @@ function JsonFlowChart({
         proOptions={proOptions}
       />
 
-      {/* Node Data Drawer */}
+      {/* Node Data Drawer - now with nodePath */}
       <NodeDataDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         nodeData={selectedNodeData}
         nodeLabel={selectedNodeLabel}
+        nodePath={nodePath} // Pass the nodePath to the drawer
       />
     </div>
   );
