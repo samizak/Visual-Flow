@@ -73,7 +73,11 @@ export default function Header({
             className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
             title={collapseLeftPanel ? "Expand Editor" : "Collapse Editor"}
           >
-            <PanelLeft className={`h-5 w-5 transition-transform duration-300 ${collapseLeftPanel ? 'rotate-180' : ''}`} />
+            <PanelLeft
+              className={`h-5 w-5 transition-transform duration-300 ${
+                collapseLeftPanel ? "rotate-180" : ""
+              }`}
+            />
           </Button>
 
           <div className="h-5 w-px bg-gray-600 mx-0.5"></div>
@@ -195,31 +199,37 @@ export default function Header({
                     (Coming soon)
                   </span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => setSettingsOpen(true)}
-                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
 
-        {/* Add Apply Changes button to the right side of the header */}
-        {onApplyChanges && (
+        <div className="flex items-center space-x-2">
+          {/* Settings button moved outside of dropdown */}
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            onClick={onApplyChanges}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white border-none hover:text-white transition-colors"
+            onClick={() => setSettingsOpen(true)}
+            className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
+            title="Settings"
           >
-            <Play className="mr-1 h-4 w-4" />
-            Apply Changes
+            <Settings className="mr-1 h-4 w-4" />
+            Settings
           </Button>
-        )}
+
+          {/* Apply Changes button */}
+          {onApplyChanges && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onApplyChanges}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white border-none hover:text-white transition-colors"
+            >
+              <Play className="mr-1 h-4 w-4" />
+              Apply Changes
+            </Button>
+          )}
+        </div>
       </div>
 
       <SettingsDialog
