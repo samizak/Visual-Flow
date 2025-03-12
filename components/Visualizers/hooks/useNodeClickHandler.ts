@@ -235,7 +235,7 @@ export function useNodeClickHandler({ jsonData }: UseNodeClickHandlerProps) {
         }
 
         // For non-array nodes, use the existing logic
-        let nodeKey = nodeData.label;
+        const nodeKey = nodeData.label;
 
         // Get the node value
         const nodeValue = findNodeValue(parsedJson, nodeKey);
@@ -265,7 +265,7 @@ export function useNodeClickHandler({ jsonData }: UseNodeClickHandlerProps) {
         setDrawerOpen(true);
       }
     },
-    [jsonData, findPathToNode]
+    [jsonData, findPathToNode, findNodeValue, handleArrayPath]
   );
 
   return {

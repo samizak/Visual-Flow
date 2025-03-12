@@ -252,7 +252,7 @@ export const useNodeInteractions = (
     const pathEdges = new Set<string>(); // Edges in the path from root to hovered node
 
     // Find all ancestors by traversing edges backwards
-    let currentNodes = [id];
+    const currentNodes = [id];
     let foundNewNodes = true;
 
     // Track the path from root to the hovered node
@@ -400,18 +400,14 @@ export const useNodeInteractions = (
 
   // Check if this node has outgoing edges (children)
   const hasOutgoingEdges = useCallback(() => {
-    // If we already know from the data
-    if (hasChildren !== undefined) return hasChildren;
-
-    // Otherwise check the edges
     const edges = getEdges();
     return edges.some((edge) => edge.source === id);
-  }, [id, getEdges, hasChildren]);
+  }, [id, getEdges]); // Keep id in the dependency array as it's used in the function
 
   // Toggle collapse/expand function for the main node
   const toggleNodeCollapse = useCallback(
     (e: React.MouseEvent) => {
-      e.stopPropagation(); // Prevent event from bubbling up
+      e.stopPropagation();
 
       const nodes = getNodes();
       const edges = getEdges();
@@ -438,6 +434,7 @@ export const useNodeInteractions = (
       findAllDescendants,
       updateNodesVisibility,
       updateEdgesVisibility,
+      setIsNodeCollapsed, // Add this missing dependency
     ]
   );
 
@@ -520,7 +517,6 @@ export const useNodeInteractions = (
       }
     },
     [
-      id,
       getNodes,
       getEdges,
       setNodes,

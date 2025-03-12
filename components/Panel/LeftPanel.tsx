@@ -1,5 +1,5 @@
 import Editor from "@monaco-editor/react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import JsonErrorMessage from "./JsonErrorMessage";
 import { Play } from "lucide-react";
 
@@ -87,26 +87,8 @@ export default function LeftPanel({
   // Add a state to track active resizing
   const [isResizing, setIsResizing] = useState(false);
 
-  // Handle mouse down to start resizing
-  const handleMouseDown = (e: React.MouseEvent) => {
-    resizingRef.current = true;
-    setIsResizing(true); // Set resizing state to true
-    startXRef.current = e.clientX;
-    startWidthRef.current = width;
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-  };
-
-  // Handle mouse up to stop resizing
-  const handleMouseUp = () => {
-    resizingRef.current = false;
-    setIsResizing(false); // Reset resizing state
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
-  };
-
-  // Handle mouse move to resize
-  const handleMouseMove = (e: MouseEvent) => {
+  // Handle mouse move to resize - also wrap in useCallback first
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!resizingRef.current) return;
 
     const containerWidth = document.body.clientWidth;
@@ -119,6 +101,24 @@ export default function LeftPanel({
       40
     );
     setWidth(newWidth);
+  }, []);
+
+  // Then update handleMouseUp to include handleMouseMove in dependencies
+  const handleMouseUp = useCallback(() => {
+    resizingRef.current = false;
+    setIsResizing(false); // Reset resizing state
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+  }, [handleMouseMove]);
+
+  // Handle mouse down to start resizing
+  const handleMouseDown = (e: React.MouseEvent) => {
+    resizingRef.current = true;
+    setIsResizing(true); // Set resizing state to true
+    startXRef.current = e.clientX;
+    startWidthRef.current = width;
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   // Clean up event listeners
@@ -127,22 +127,22 @@ export default function LeftPanel({
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, []);
+  }, [handleMouseMove, handleMouseUp]);
 
   return (
     <div
       className={`transition-all duration-300 ease-in-out overflow-hidden ${
-        collapseLeftPanel ? 'w-0 opacity-0' : ''
+        collapseLeftPanel ? "w-0 opacity-0" : ""
       }`}
-      style={{ 
-        width: collapseLeftPanel ? '0' : `${width}vw`,
-        maxWidth: collapseLeftPanel ? '0' : `${width}vw`
+      style={{
+        width: collapseLeftPanel ? "0" : `${width}vw`,
+        maxWidth: collapseLeftPanel ? "0" : `${width}vw`,
       }}
     >
       <div
         ref={panelRef}
         className={`relative h-screen flex flex-col border-r border-gray-700 overflow-hidden transition-opacity duration-300 ${
-          collapseLeftPanel ? 'opacity-0' : 'opacity-100'
+          collapseLeftPanel ? "opacity-0" : "opacity-100"
         }`}
         style={{ width: `${width}vw` }}
       >

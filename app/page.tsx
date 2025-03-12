@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { ArrowRight, FileJson, Code, Eye, Zap, Github } from "lucide-react";
 import { Button } from "../components/ui/button";
 import Link from "next/link";
@@ -18,14 +18,19 @@ export default function LandingPage() {
           <h1 className="text-2xl font-bold">Visual Flow</h1>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="https://github.com/yourusername/json-visualiser" target="_blank">
+          <Link
+            href="https://github.com/yourusername/json-visualiser"
+            target="_blank"
+          >
             <Button variant="ghost" size="sm" className="gap-2">
               <Github className="h-4 w-4" />
               GitHub
             </Button>
           </Link>
           <Link href="/app">
-            <Button className="bg-indigo-600 hover:bg-indigo-700">Launch App</Button>
+            <Button className="bg-indigo-600 hover:bg-indigo-700">
+              Launch App
+            </Button>
           </Link>
         </div>
       </header>
@@ -42,13 +47,13 @@ export default function LandingPage() {
             Transform JSON into Beautiful Visualizations
           </h1>
           <p className="text-xl text-gray-300 mb-10">
-            Instantly convert complex JSON data into intuitive, interactive flowcharts
-            that make your data easy to understand and navigate.
+            Instantly convert complex JSON data into intuitive, interactive
+            flowcharts that make your data easy to understand and navigate.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/app">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-indigo-600 hover:bg-indigo-700 text-lg px-8 py-6"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
@@ -128,13 +133,16 @@ export default function LandingPage() {
             </span>
           </h2>
           <p className="text-center text-gray-400 max-w-2xl mx-auto mb-10">
-            Watch how Visual Flow transforms complex JSON data into clear, navigable visualizations.
+            Watch how Visual Flow transforms complex JSON data into clear,
+            navigable visualizations.
           </p>
           <div className="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden shadow-2xl">
             <div className="aspect-video relative">
               {/* Replace with actual demo video or screenshot */}
               <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80">
-                <p className="text-gray-400">Demo visualization will appear here</p>
+                <p className="text-gray-400">
+                  Demo visualization will appear here
+                </p>
               </div>
             </div>
           </div>
@@ -144,12 +152,18 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-indigo-900/20 to-purple-900/20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to visualize your data?</h2>
+          <h2 className="text-3xl font-bold mb-6">
+            Ready to visualize your data?
+          </h2>
           <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-            Start transforming your JSON data into beautiful, interactive visualizations today.
+            Start transforming your JSON data into beautiful, interactive
+            visualizations today.
           </p>
           <Link href="/app">
-            <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-lg px-8 py-6">
+            <Button
+              size="lg"
+              className="bg-indigo-600 hover:bg-indigo-700 text-lg px-8 py-6"
+            >
               Launch Visual Flow
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>

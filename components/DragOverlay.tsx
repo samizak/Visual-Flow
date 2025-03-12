@@ -1,6 +1,6 @@
 import React from "react";
 import { FileJson, AlertCircle, FileX } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 
 interface DragOverlayProps {
   isVisible: boolean;

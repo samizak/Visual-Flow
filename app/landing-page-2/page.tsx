@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useScroll, useTransform, useInView } from "motion/react";
 import {
   FileJson,
   ChevronRight,
@@ -105,7 +105,9 @@ export default function LandingPageAlternative() {
                 <FileJson className="h-6 w-6 text-white" />
               </div>
             </div>
-            <span className="text-xl font-bold tracking-tight">Visual Flow</span>
+            <span className="text-xl font-bold tracking-tight">
+              Visual Flow
+            </span>
           </div>
 
           <div className="hidden md:flex items-center gap-8">
@@ -495,7 +497,7 @@ export default function LandingPageAlternative() {
                 viewport={{ once: true }}
               >
                 <div className="absolute -top-3 -left-3 text-4xl text-indigo-500 opacity-50">
-                  "
+                  &quot;
                 </div>
                 <p className="text-white/80 mb-6 relative z-10">
                   {testimonial.quote}

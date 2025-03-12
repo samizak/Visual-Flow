@@ -1,16 +1,9 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
-import { 
-  Braces, 
-  BarChart3, 
-  Share2, 
-  Zap, 
-  Shield, 
-  Layers 
-} from "lucide-react";
-import { 
+import { motion } from "motion/react";
+import { Braces, BarChart3, Share2, Zap, Shield, Layers } from "lucide-react";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -55,32 +48,38 @@ export function FeaturesSection() {
     {
       icon: <Braces className="h-6 w-6 text-indigo-400" />,
       title: "Smart JSON Parsing",
-      description: "Automatically parse and validate JSON data with intelligent error handling and suggestions.",
+      description:
+        "Automatically parse and validate JSON data with intelligent error handling and suggestions.",
     },
     {
       icon: <Layers className="h-6 w-6 text-indigo-400" />,
       title: "3D Visualization",
-      description: "Transform your JSON data into interactive 3D models that reveal structure and relationships.",
+      description:
+        "Transform your JSON data into interactive 3D models that reveal structure and relationships.",
     },
     {
       icon: <BarChart3 className="h-6 w-6 text-indigo-400" />,
       title: "Data Analysis",
-      description: "Gain insights with automatic schema detection and statistical analysis of your JSON data.",
+      description:
+        "Gain insights with automatic schema detection and statistical analysis of your JSON data.",
     },
     {
       icon: <Share2 className="h-6 w-6 text-indigo-400" />,
       title: "Easy Sharing",
-      description: "Share your visualizations with a simple link or export them as interactive HTML.",
+      description:
+        "Share your visualizations with a simple link or export them as interactive HTML.",
     },
     {
       icon: <Zap className="h-6 w-6 text-indigo-400" />,
       title: "Real-time Updates",
-      description: "See your visualization update in real-time as you edit your JSON data.",
+      description:
+        "See your visualization update in real-time as you edit your JSON data.",
     },
     {
       icon: <Shield className="h-6 w-6 text-indigo-400" />,
       title: "Privacy First",
-      description: "Your data never leaves your browser. All processing happens locally for maximum privacy.",
+      description:
+        "Your data never leaves your browser. All processing happens locally for maximum privacy.",
     },
   ];
 

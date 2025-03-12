@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Button } from "../../../components/ui/button";
 import {
   Tabs,
@@ -74,10 +74,10 @@ export default function DemoSection({
                           Interactive 3D Visualization
                         </h3>
                         <p className="text-white/70 mb-6">
-                          Visual Flow transforms your JSON data into an interactive 3D
-                          model that you can rotate, zoom, and explore from any
-                          angle. Discover relationships and hierarchies in your
-                          data like never before.
+                          Visual Flow transforms your JSON data into an
+                          interactive 3D model that you can rotate, zoom, and
+                          explore from any angle. Discover relationships and
+                          hierarchies in your data like never before.
                         </p>
                         <ul className="space-y-2 mb-6">
                           <li className="flex items-center gap-2">
@@ -124,8 +124,8 @@ export default function DemoSection({
                           Intelligent Analysis
                         </h3>
                         <p className="text-white/70 mb-6">
-                          Visual Flow automatically analyzes your JSON structure to
-                          identify patterns, detect schemas, and highlight
+                          Visual Flow automatically analyzes your JSON structure
+                          to identify patterns, detect schemas, and highlight
                           potential issues or optimizations.
                         </p>
                         <ul className="space-y-2 mb-6">

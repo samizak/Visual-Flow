@@ -8,6 +8,8 @@ import {
   NODE_MARGIN,
 } from "./jsonUtils";
 
+import dagre from "@dagrejs/dagre";
+
 // Define more specific interfaces for node properties
 interface NodeProperty {
   key: string;
@@ -138,7 +140,7 @@ export function convertJsonToGroupedFlow(
   // Apply dagre layout to position nodes
   function applyDagreLayout(nodes: Node[], edges: Edge[]): Node[] {
     // Import dagre dynamically to avoid SSR issues
-    const dagre = require("@dagrejs/dagre");
+    // const dagre = require("@dagrejs/dagre");
 
     // Create a new dagre graph
     const dagreGraph = new dagre.graphlib.Graph();

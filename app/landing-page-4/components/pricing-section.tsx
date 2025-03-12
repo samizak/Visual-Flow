@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Check } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import Link from "next/link";
@@ -138,7 +138,7 @@ export function PricingSection() {
               Simple, Transparent Pricing
             </h2>
             <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              Choose the plan that's right for you
+              Choose the plan that&apos;s right for you
             </p>
           </motion.div>
         </div>
