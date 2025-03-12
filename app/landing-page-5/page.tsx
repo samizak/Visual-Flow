@@ -6,7 +6,6 @@ import Hero from "./components/Hero";
 import Features from "./components/Features";
 import DemoSection from "./components/DemoSection";
 import Workflow from "./components/Workflow";
-import Testimonials from "./components/Testimonials";
 import Pricing from "./components/Pricing";
 import Cta from "./components/Cta";
 import Footer from "./components/Footer";
@@ -35,9 +34,6 @@ export default function LandingPage() {
 
       {/* Workflow section */}
       <Workflow />
-
-      {/* Testimonials */}
-      <Testimonials />
 
       {/* Pricing */}
       <Pricing />

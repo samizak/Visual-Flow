@@ -50,11 +50,11 @@ export default function Testimonials() {
   // Autoplay functionality
   useEffect(() => {
     if (!autoplay) return;
-    
+
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % testimonials.length);
     }, 5000);
-    
+
     return () => clearInterval(interval);
   }, [autoplay]);
 
@@ -63,7 +63,9 @@ export default function Testimonials() {
   const handleMouseLeave = () => setAutoplay(true);
 
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setActiveIndex(
+      (prev) => (prev - 1 + testimonials.length) % testimonials.length
+    );
   };
 
   const handleNext = () => {
@@ -89,44 +91,54 @@ export default function Testimonials() {
           </motion.div>
         </div>
 
-        <div 
+        <div
           className="max-w-4xl mx-auto relative"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <div className="overflow-hidden relative">
-            <div 
+            <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${activeIndex * 100}%)` }}
             >
               {testimonials.map((testimonial) => (
-                <div 
-                  key={testimonial.id} 
-                  className="w-full flex-shrink-0 px-4"
-                >
+                <div key={testimonial.id} className="w-full flex-shrink-0 px-4">
                   <div className="bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-xl p-8 shadow-xl">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="relative">
                         <div className="absolute -inset-1 bg-gradient-to-r from-sky-500 to-purple-500 rounded-full blur opacity-70"></div>
                         <div className="relative w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-xl font-bold text-white">
-                          {testimonial.name.split(' ').map(n => n[0]).join('')}
+                          {testimonial.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
                         </div>
                       </div>
                       <div>
-                        <h4 className="text-lg font-semibold">{testimonial.name}</h4>
-                        <p className="text-white/60 text-sm">{testimonial.role}</p>
+                        <h4 className="text-lg font-semibold">
+                          {testimonial.name}
+                        </h4>
+                        <p className="text-white/60 text-sm">
+                          {testimonial.role}
+                        </p>
                         <div className="flex mt-1">
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
                               size={16}
-                              className={i < testimonial.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-500"}
+                              className={
+                                i < testimonial.rating
+                                  ? "text-yellow-400 fill-yellow-400"
+                                  : "text-gray-500"
+                              }
                             />
                           ))}
                         </div>
                       </div>
                     </div>
-                    <p className="text-white/80 italic">"{testimonial.content}"</p>
+                    <p className="text-white/80 italic">
+                      &quot;{testimonial.content}&quot;
+                    </p>
                   </div>
                 </div>
               ))}
@@ -142,7 +154,7 @@ export default function Testimonials() {
           >
             <ChevronLeft size={20} />
           </motion.button>
-          
+
           <motion.button
             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 md:translate-x-10 w-10 h-10 rounded-full bg-slate-800/80 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors"
             whileHover={{ scale: 1.1 }}

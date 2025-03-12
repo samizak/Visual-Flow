@@ -85,25 +85,6 @@ export default function Hero({ scrollProgress }: HeroProps) {
                 </button>
               </Link>
             </motion.div>
-
-            <motion.div
-              className="flex items-center gap-4 text-sm text-white/60"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <div className="flex -space-x-2">
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-8 h-8 rounded-full bg-gradient-to-r from-sky-500 to-purple-500 border-2 border-slate-900 flex items-center justify-center text-xs font-bold"
-                  >
-                    {["JD", "MK", "AL", "TS"][i]}
-                  </div>
-                ))}
-              </div>
-              <span>Trusted by 12,500+ developers</span>
-            </motion.div>
           </div>
 
           <motion.div
@@ -125,21 +106,6 @@ export default function Hero({ scrollProgress }: HeroProps) {
               <pre className="font-mono text-sm text-emerald-400 overflow-x-auto">
                 <code>{displayedJson}</code>
               </pre>
-
-              <motion.div
-                className="absolute -bottom-3 -right-3 bg-gradient-to-r from-sky-500 to-purple-500 text-white text-xs px-3 py-1 rounded-full shadow-lg"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.5,
-                  delay: 3,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  repeatDelay: 5,
-                }}
-              >
-                Live data
-              </motion.div>
             </div>
 
             {/* Floating elements */}

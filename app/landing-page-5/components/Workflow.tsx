@@ -73,20 +73,20 @@ export default function Workflow() {
                 </div>
               )}
 
-              <div className="bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all duration-300 h-full">
+              <div className="bg-slate-800/70 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-white/20 hover:bg-slate-800/90 transition-all duration-300 h-full shadow-lg">
                 <div className="mb-4 relative inline-block">
                   <div
-                    className={`absolute inset-0 bg-gradient-to-r ${step.color} rounded-full blur-sm opacity-80`}
+                    className={`absolute inset-0 bg-gradient-to-r ${step.color} rounded-full blur-md opacity-90`}
                   ></div>
-                  <div className="relative bg-slate-900 p-3 rounded-full">
+                  <div className="relative bg-slate-800 p-3 rounded-full border border-white/10">
                     {step.icon}
                   </div>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-slate-900 rounded-full border border-white/10 flex items-center justify-center text-sm font-bold">
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-slate-800 rounded-full border border-white/10 flex items-center justify-center text-sm font-bold">
                     {index + 1}
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-                <p className="text-white/70">{step.description}</p>
+                <h3 className="text-xl font-semibold mb-3 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">{step.title}</h3>
+                <p className="text-white/80">{step.description}</p>
               </div>
             </motion.div>
           ))}

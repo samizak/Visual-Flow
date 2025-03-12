@@ -88,7 +88,9 @@ export default function Pricing() {
 
           {/* Billing toggle */}
           <div className="flex items-center justify-center mt-8 mb-12">
-            <span className={`mr-3 ${!annual ? "text-white" : "text-white/60"}`}>
+            <span
+              className={`mr-3 ${!annual ? "text-white" : "text-white/60"}`}
+            >
               Monthly
             </span>
             <button
@@ -102,7 +104,10 @@ export default function Pricing() {
               />
             </button>
             <span className={`ml-3 ${annual ? "text-white" : "text-white/60"}`}>
-              Yearly <span className="text-emerald-400 text-sm font-medium">Save 20%</span>
+              Yearly{" "}
+              <span className="text-emerald-400 text-sm font-medium">
+                Save 20%
+              </span>
             </span>
           </div>
         </div>
@@ -111,7 +116,7 @@ export default function Pricing() {
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
-              className={`relative bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-xl overflow-hidden ${
+              className={`relative bg-slate-800/70 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-lg ${
                 plan.popular ? "md:-mt-4 md:mb-4" : ""
               }`}
               initial={{ opacity: 0, y: 20 }}
@@ -121,49 +126,49 @@ export default function Pricing() {
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
               {plan.popular && (
-                <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs font-bold py-1 text-center">
+                <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs font-bold py-1.5 text-center">
                   MOST POPULAR
                 </div>
               )}
-              
+
               <div className="p-6 md:p-8">
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <p className="text-white/60 mb-6">{plan.description}</p>
-                
+                <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">{plan.name}</h3>
+                <p className="text-white/70 mb-6">{plan.description}</p>
+
                 <div className="mb-6">
-                  <span className="text-4xl font-bold">
+                  <span className="text-4xl font-bold bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
                     ${annual ? plan.price.yearly / 12 : plan.price.monthly}
                   </span>
-                  <span className="text-white/60 ml-2">
-                    /month
-                  </span>
+                  <span className="text-white/70 ml-2">/month</span>
                   {annual && (
-                    <div className="text-sm text-white/60 mt-1">
+                    <div className="text-sm text-white/70 mt-1">
                       Billed annually (${plan.price.yearly}/year)
                     </div>
                   )}
                 </div>
-                
-                <button className={`w-full py-3 rounded-lg bg-gradient-to-r ${plan.color} text-white font-medium mb-8 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300`}>
+
+                <button
+                  className={`w-full py-3 rounded-lg bg-gradient-to-r ${plan.color} text-white font-medium mb-8 hover:shadow-lg hover:shadow-${plan.color.split(' ')[1]}/30 transition-all duration-300 border border-white/10`}
+                >
                   {plan.cta}
                 </button>
-                
+
                 <div className="space-y-4">
-                  <p className="font-medium">What's included:</p>
+                  <p className="font-medium text-white/90">What&apos;s included:</p>
                   {plan.features.map((feature) => (
                     <div key={feature} className="flex items-start">
                       <Check className="h-5 w-5 text-emerald-400 mr-3 mt-0.5 flex-shrink-0" />
                       <span className="text-white/80">{feature}</span>
                     </div>
                   ))}
-                  
+
                   {plan.notIncluded.length > 0 && (
                     <>
-                      <p className="font-medium mt-6">Not included:</p>
+                      <p className="font-medium mt-6 text-white/90">Not included:</p>
                       {plan.notIncluded.map((feature) => (
                         <div key={feature} className="flex items-start">
                           <X className="h-5 w-5 text-rose-400 mr-3 mt-0.5 flex-shrink-0" />
-                          <span className="text-white/60">{feature}</span>
+                          <span className="text-white/70">{feature}</span>
                         </div>
                       ))}
                     </>

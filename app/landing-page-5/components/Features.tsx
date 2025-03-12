@@ -79,7 +79,7 @@ export default function Features() {
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              className="bg-slate-900/50 backdrop-blur-sm border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all duration-300"
+              className="bg-slate-800/70 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:border-white/20 hover:bg-slate-800/90 transition-all duration-300 shadow-lg"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -87,13 +87,13 @@ export default function Features() {
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
               <div className="mb-4 relative inline-block">
-                <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} rounded-lg blur-sm opacity-80`}></div>
-                <div className="relative bg-slate-900 p-3 rounded-lg">
+                <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} rounded-lg blur-md opacity-90`}></div>
+                <div className="relative bg-slate-800 p-3 rounded-lg border border-white/10">
                   {feature.icon}
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-              <p className="text-white/70">{feature.description}</p>
+              <h3 className="text-xl font-semibold mb-3 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">{feature.title}</h3>
+              <p className="text-white/80">{feature.description}</p>
             </motion.div>
           ))}
         </div>
