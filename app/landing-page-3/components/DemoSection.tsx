@@ -10,6 +10,7 @@ import {
   TabsTrigger,
 } from "../../../components/ui/tabs";
 import CodeEditor from "./CodeEditor";
+import ImagePopup from "./ImagePopup";
 
 interface DemoSectionProps {
   LocalScene: React.ComponentType;
@@ -21,6 +22,20 @@ export default function DemoSection({
   sampleJson,
 }: DemoSectionProps) {
   const [activeTab, setActiveTab] = useState("visualize");
+  const [showImagePopup, setShowImagePopup] = useState(false);
+
+  // Disable scrolling when popup is open
+  React.useEffect(() => {
+    if (showImagePopup) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showImagePopup]);
 
   return (
     <section id="demo" className="py-12 md:py-20 relative z-10">
@@ -52,57 +67,84 @@ export default function DemoSection({
             className="w-full"
             onValueChange={setActiveTab}
           >
-            <TabsList className="grid grid-cols-3 mb-6 md:mb-8 w-full max-w-md mx-auto bg-black/30 p-1 rounded-full border border-white/10 backdrop-blur-sm relative overflow-hidden">
-              <div 
+            <TabsList className="grid grid-cols-3 mb-6 md:mb-8 w-full max-w-md mx-auto bg-black/30 p-1 rounded-full border border-white/10 backdrop-blur-sm relative overflow-hidden shadow-[0_0_15px_rgba(6,182,212,0.15)] ring-1 ring-white/5">
+              <div
                 className="absolute h-full bg-gradient-to-r from-cyan-500 to-teal-400 rounded-full transition-all duration-300 ease-out shadow-lg shadow-cyan-500/20"
                 style={{
-                  width: '33.333%',
-                  transform: `translateX(${activeTab === 'visualize' ? '0%' : activeTab === 'analyze' ? '100%' : '200%'})`,
+                  width: "33.333%",
+                  transform: `translateX(${
+                    activeTab === "visualize"
+                      ? "0%"
+                      : activeTab === "analyze"
+                      ? "100%"
+                      : "200%"
+                  })`,
                 }}
               />
-              <TabsTrigger 
-                value="visualize" 
-                className="rounded-full px-4 py-2 z-10 transition-all duration-200 data-[state=active]:text-white data-[state=active]:font-medium hover:text-cyan-200 flex items-center justify-center gap-1.5 group"
+              <TabsTrigger
+                value="visualize"
+                className="rounded-full px-4 py-2 z-10 transition-all duration-200 text-white/90 data-[state=active]:text-white data-[state=active]:font-medium hover:text-cyan-200 flex items-center justify-center gap-1.5 group cursor-pointer"
               >
-                <span className="relative flex items-center gap-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 transition-transform group-hover:scale-110 group-data-[state=active]:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
+                <span className="relative flex items-center justify-center gap-1.5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-3.5 w-3.5 transition-transform group-hover:scale-110 text-cyan-300 group-data-[state=active]:text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                    />
                   </svg>
                   <span>Visualize</span>
-                  <span className={`absolute -bottom-0.5 left-1/2 h-0.5 bg-cyan-200 transition-all duration-300 ease-out ${activeTab === 'visualize' ? 'w-full -translate-x-1/2' : 'w-0 -translate-x-1/2'}`} style={{
-                    transitionDelay: activeTab === 'visualize' ? '0.1s' : '0s',
-                    transformOrigin: 'center'
-                  }}></span>
                 </span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="analyze" 
-                className="rounded-full px-4 py-2 z-10 transition-all duration-200 data-[state=active]:text-white data-[state=active]:font-medium hover:text-cyan-200 flex items-center justify-center gap-1.5 group"
+              <TabsTrigger
+                value="analyze"
+                className="rounded-full px-4 py-2 z-10 transition-all duration-200 text-white/90 data-[state=active]:text-white data-[state=active]:font-medium hover:text-cyan-200 flex items-center justify-center gap-1.5 group cursor-pointer"
               >
-                <span className="relative flex items-center gap-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 transition-transform group-hover:scale-110 group-data-[state=active]:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <span className="relative flex items-center justify-center gap-1.5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-3.5 w-3.5 transition-transform group-hover:scale-110 text-cyan-300 group-data-[state=active]:text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
                   </svg>
                   <span>Analyze</span>
-                  <span className={`absolute -bottom-0.5 left-1/2 h-0.5 bg-cyan-200 transition-all duration-300 ease-out ${activeTab === 'analyze' ? 'w-full -translate-x-1/2' : 'w-0 -translate-x-1/2'}`} style={{
-                    transitionDelay: activeTab === 'analyze' ? '0.1s' : '0s',
-                    transformOrigin: 'center'
-                  }}></span>
                 </span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="share" 
-                className="rounded-full px-4 py-2 z-10 transition-all duration-200 data-[state=active]:text-white data-[state=active]:font-medium hover:text-cyan-200 flex items-center justify-center gap-1.5 group"
+              <TabsTrigger
+                value="share"
+                className="rounded-full px-4 py-2 z-10 transition-all duration-200 text-white/90 data-[state=active]:text-white data-[state=active]:font-medium hover:text-cyan-200 flex items-center justify-center gap-1.5 group cursor-pointer"
               >
-                <span className="relative flex items-center gap-1.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 transition-transform group-hover:scale-110 group-data-[state=active]:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                <span className="relative flex items-center justify-center gap-1.5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-3.5 w-3.5 transition-transform group-hover:scale-110 text-cyan-300 group-data-[state=active]:text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                    />
                   </svg>
                   <span>Share</span>
-                  <span className={`absolute -bottom-0.5 left-1/2 h-0.5 bg-cyan-200 transition-all duration-300 ease-out ${activeTab === 'share' ? 'w-full -translate-x-1/2' : 'w-0 -translate-x-1/2'}`} style={{
-                    transitionDelay: activeTab === 'share' ? '0.1s' : '0s',
-                    transformOrigin: 'center'
-                  }}></span>
                 </span>
               </TabsTrigger>
             </TabsList>
@@ -158,8 +200,22 @@ export default function DemoSection({
                       <div className="relative">
                         <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-30"></div>
                         <div className="relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-black">
-                          <div className="h-full w-full">
-                            <LocalScene />
+                          <div 
+                            className="h-full w-full overflow-hidden cursor-pointer group"
+                            onClick={() => setShowImagePopup(true)}
+                          >
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
+                              <div className="bg-white/10 backdrop-blur-sm p-2 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                </svg>
+                              </div>
+                            </div>
+                            <img
+                              src="/demo.jpg"
+                              alt="JSON Visualization Demo"
+                              className="w-full h-full object-cover object-[-10px_center] transition-transform duration-700 ease-in-out group-hover:scale-110"
+                            />
                           </div>
                         </div>
                       </div>
@@ -278,6 +334,14 @@ export default function DemoSection({
           </Tabs>
         </div>
       </div>
+
+      {/* Replace the existing Image Popup Overlay with this: */}
+      <ImagePopup 
+        isOpen={showImagePopup}
+        onClose={() => setShowImagePopup(false)}
+        imageSrc="/demo.jpg"
+        imageAlt="JSON Visualization Demo Full View"
+      />
     </section>
   );
 }
