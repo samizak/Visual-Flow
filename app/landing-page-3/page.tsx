@@ -8,6 +8,7 @@ import DemoSection from "./components/DemoSection";
 import FeaturesSection from "./components/FeaturesSection";
 import WorkflowSection from "./components/WorkflowSection";
 import PricingSection from "./components/PricingSection";
+import CtaSection from "./components/CtaSection";
 import Scene from "./components/Scene";
 
 // Sample JSON for the interactive demo
@@ -40,6 +41,7 @@ export default function LandingPageThree() {
       <DemoSection LocalScene={Scene} sampleJson={sampleJson} />
       <WorkflowSection />
       <PricingSection />
+      <CtaSection />
       <Footer />
     </div>
   );
