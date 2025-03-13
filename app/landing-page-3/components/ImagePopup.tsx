@@ -72,7 +72,7 @@ export default function ImagePopup({
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:bg-black/70 transition-colors z-10"
+              className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:bg-black/70 transition-colors z-10  cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 onClose();
@@ -97,7 +97,7 @@ export default function ImagePopup({
             {/* Navigation arrows */}
             {showNavigation && onPrev && (
               <button
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-3 rounded-full text-white hover:bg-black/70 transition-colors z-10"
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-3 rounded-full text-white hover:bg-black/70 transition-colors z-10 cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   onPrev();
@@ -122,7 +122,7 @@ export default function ImagePopup({
 
             {showNavigation && onNext && (
               <button
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-3 rounded-full text-white hover:bg-black/70 transition-colors z-10"
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-3 rounded-full text-white hover:bg-black/70 transition-colors z-10 cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   onNext();

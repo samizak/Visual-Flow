@@ -25,7 +25,6 @@ export default function DemoSection({
   const [showImagePopup, setShowImagePopup] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Demo images for the visualization tab
   const demoImages = [
     { src: "/demos/demo.jpg", alt: "JSON Visualization" },
     { src: "/demos/demo2.jpg", alt: "Node Highlighting" },
@@ -180,41 +179,162 @@ export default function DemoSection({
                   <TabsContent value="visualize" className="mt-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-start md:items-center">
                       <div>
-                        <h3 className="text-2xl font-bold mb-4">
-                          Interactive 3D Visualization
-                        </h3>
-                        <p className="text-white/70 mb-6">
-                          Visual Flow transforms your JSON data into an
-                          interactive 3D model that you can rotate, zoom, and
-                          explore from any angle. Discover relationships and
-                          hierarchies in your data like never before.
-                        </p>
-                        <ul className="space-y-2 mb-6">
-                          <li className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
-                              <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                            </div>
-                            <span className="text-white/70">
-                              Intuitive node-based visualization
-                            </span>
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
-                              <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                            </div>
-                            <span className="text-white/70">
-                              Interactive 3D navigation
-                            </span>
-                          </li>
-                          <li className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
-                              <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                            </div>
-                            <span className="text-white/70">
-                              Color-coded data types
-                            </span>
-                          </li>
-                        </ul>
+                        {currentImageIndex === 0 && (
+                          <>
+                            <h3 className="text-2xl font-bold mb-4">
+                              JSON Visualization
+                            </h3>
+                            <p className="text-white/70 mb-6">
+                              Visual Flow transforms complex JSON data into clear, 
+                              intuitive visual representations. Easily understand 
+                              the structure, relationships, and hierarchy of your 
+                              data without parsing through raw code.
+                            </p>
+                            <ul className="space-y-2 mb-6">
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  Clear node-based visualization
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  Intuitive data structure mapping
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  Simplified data exploration
+                                </span>
+                              </li>
+                            </ul>
+                          </>
+                        )}
+
+                        {currentImageIndex === 1 && (
+                          <>
+                            <h3 className="text-2xl font-bold mb-4">
+                              Intelligent Node Highlighting
+                            </h3>
+                            <p className="text-white/70 mb-6">
+                              Easily identify and focus on specific nodes within complex JSON structures. 
+                              Our highlighting feature makes it simple to track relationships and 
+                              understand data connections at a glance.
+                            </p>
+                            <ul className="space-y-2 mb-6">
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  Highlight connected nodes
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  Track data relationships visually
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  Focus on specific data paths
+                                </span>
+                              </li>
+                            </ul>
+                          </>
+                        )}
+
+                        {currentImageIndex === 2 && (
+                          <>
+                            <h3 className="text-2xl font-bold mb-4">
+                              Detailed Node Information
+                            </h3>
+                            <p className="text-white/70 mb-6">
+                              Inspect the raw JSON data for any node with a simple click. 
+                              Get immediate access to values, types, and metadata without 
+                              losing context of the overall structure.
+                            </p>
+                            <ul className="space-y-2 mb-6">
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  One-click data inspection
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  View raw JSON values and types
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  Copy node paths and values
+                                </span>
+                              </li>
+                            </ul>
+                          </>
+                        )}
+
+                        {currentImageIndex === 3 && (
+                          <>
+                            <h3 className="text-2xl font-bold mb-4">
+                              Real-Time Error Detection
+                            </h3>
+                            <p className="text-white/70 mb-6">
+                              Catch JSON syntax errors and structural issues as you type. 
+                              Visual Flow provides immediate feedback with clear error 
+                              highlighting and helpful suggestions for fixes.
+                            </p>
+                            <ul className="space-y-2 mb-6">
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  Instant syntax validation
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  Visual error indicators
+                                </span>
+                              </li>
+                              <li className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                </div>
+                                <span className="text-white/70">
+                                  Suggested error corrections
+                                </span>
+                              </li>
+                            </ul>
+                          </>
+                        )}
                       </div>
                       <div className="relative">
                         <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-30"></div>
@@ -258,7 +378,7 @@ export default function DemoSection({
 
                             {/* Navigation arrows */}
                             <button
-                              className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:bg-black/70 transition-colors z-20"
+                              className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:bg-black/70 transition-colors z-20 cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 prevImage();
@@ -280,7 +400,7 @@ export default function DemoSection({
                               </svg>
                             </button>
                             <button
-                              className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:bg-black/70 transition-colors z-20"
+                              className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:bg-black/70 transition-colors z-20 cursor-pointer"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 nextImage();
