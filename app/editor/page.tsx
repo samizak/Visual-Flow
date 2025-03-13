@@ -10,11 +10,18 @@ import { useJsonOperations } from "../../hooks/useJsonOperations";
 import { useFileOperations } from "../../hooks/useFileOperations";
 import { useDragAndDrop } from "../../hooks/useDragAndDrop";
 import { useMouseInteractions } from "../../hooks/useMouseInteractions";
+import { handleJsonImport, handleImageImport } from '../../utils/importHandlers';
+import OcrProcessingStatus from '../../components/OCR/OcrProcessingStatus';
 
 export default function Home() {
   const [nodeCount, setNodeCount] = useState(0);
   const [collapseLeftPanel, setCollapseLeftPanel] = useState(false);
   const [edgeType, setEdgeType] = useState<string>("default");
+  
+  // Add OCR-related state variables
+  const [isOcrProcessing, setIsOcrProcessing] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState<number | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Add a separate state for visualization JSON
   const [visualizationJson, setVisualizationJson] = useState<string>("");
@@ -108,6 +115,18 @@ export default function Home() {
         onImport={importFile}
         edgeStyle={edgeType}
         onEdgeStyleChange={(style) => setEdgeType(style)}
+        onImportJson={() => handleJsonImport(setJsonData, setIsLoading)}
+        onImportImage={() => handleImageImport(
+          setJsonData, 
+          setIsOcrProcessing,
+          setOcrProgress
+        )}
+      />
+
+      {/* Add the OCR processing status component */}
+      <OcrProcessingStatus 
+        isProcessing={isOcrProcessing} 
+        progress={ocrProgress} 
       />
 
       <div className="flex flex-1 overflow-hidden">

@@ -1,7 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import SettingsDialog from "./SettingsDialog";
 
-// Import the new components
 import PanelToggle from "./HeaderComponents/PanelToggle";
 import FileMenu from "./HeaderComponents/FileMenu";
 import EditMenu from "./HeaderComponents/EditMenu";
@@ -16,6 +15,8 @@ interface HeaderProps {
   onTogglePanel?: () => void;
   onSave?: () => void;
   onImport?: () => void;
+  onImportJson?: () => void;
+  onImportImage?: () => void;
   edgeStyle?: string;
   onEdgeStyleChange: (style: string) => void;
   onFileLoad?: (content: string) => void;
@@ -30,29 +31,38 @@ export default function Header({
   onTogglePanel,
   onSave,
   onImport,
+  onImportJson,
+  onImportImage,
   edgeStyle,
   onEdgeStyleChange,
-  onFileLoad,
   onApplyChanges,
   collapseLeftPanel = false,
 }: HeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
     <header className="bg-[#1e1e1e] border-b border-gray-700 py-1 px-2 relative">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <PanelToggle 
-            onTogglePanel={onTogglePanel} 
-            collapseLeftPanel={collapseLeftPanel} 
+          <PanelToggle
+            onTogglePanel={onTogglePanel}
+            collapseLeftPanel={collapseLeftPanel}
           />
 
           <div className="h-5 w-px bg-gray-600 mx-0.5"></div>
 
           <div className="flex items-center space-x-1 pl-2">
-            <FileMenu onSave={onSave} onImport={onImport} />
-            <EditMenu onFormat={onFormat} onMinimize={onMinimize} onCopy={onCopy} />
+            <FileMenu 
+              onSave={onSave} 
+              onImport={onImport}
+              onImportJson={onImportJson}
+              onImportImage={onImportImage}
+            />
+            <EditMenu
+              onFormat={onFormat}
+              onMinimize={onMinimize}
+              onCopy={onCopy}
+            />
             <ViewMenu onApplyChanges={onApplyChanges} />
           </div>
         </div>
