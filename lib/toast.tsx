@@ -57,5 +57,29 @@ export function errorToast(message: string, options?: any) {
   );
 }
 
+// Info toast with consistent styling
+export function infoToast(message: string, options?: any) {
+  return sonnerToast.custom(
+    () => (
+      <div className="flex items-center w-full">
+        <div className="flex items-center gap-3 w-full">
+          <div className="bg-blue-500/20 p-2 rounded-full flex-shrink-0">
+            <AlertCircle className="h-5 w-5 text-blue-500" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-medium text-white">Info</h3>
+            <p className="text-sm text-gray-300 mt-1">{message}</p>
+          </div>
+        </div>
+      </div>
+    ),
+    {
+      ...baseToastOptions,
+      ...options,
+      className: `${baseToastOptions.className} border-blue-800/30 bg-[#1a2027]`,
+    }
+  );
+}
+
 // Re-export the original toast for other use cases
 export const toast = sonnerToast;
