@@ -1,5 +1,11 @@
 import React from "react";
-import { FileIcon, Save, Upload, FileJson, Image as ImageIcon } from "lucide-react";
+import {
+  FileIcon,
+  Save,
+  Upload,
+  FileJson,
+  Image as ImageIcon,
+} from "lucide-react";
 import { Button } from "../../ui/button";
 import {
   DropdownMenu,
@@ -20,11 +26,11 @@ interface FileMenuProps {
   onImportImage?: () => void;
 }
 
-export default function FileMenu({ 
-  onSave, 
+export default function FileMenu({
+  onSave,
   onImport,
   onImportJson,
-  onImportImage 
+  onImportImage,
 }: FileMenuProps) {
   // Handle general import (fallback)
   const handleImportClick = () => {
@@ -69,26 +75,26 @@ export default function FileMenu({
           onClick={onSave}
           className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
         >
-          <Save className="mr-2 h-4 w-4" />
+          <Save className="h-4 w-4" />
           <span>Save</span>
         </DropdownMenuItem>
-        
+
         {/* Import submenu with JSON and Image options */}
-        {(onImportJson || onImportImage) ? (
+        {onImportJson || onImportImage ? (
           <DropdownMenuSub>
             <DropdownMenuSubTrigger className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
               <Upload className="mr-2 h-4 w-4" />
               <span>Import</span>
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent className="bg-[#1e1e1e] border border-gray-700 shadow-lg">
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={handleImportJsonClick}
                 className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
               >
                 <FileJson className="mr-2 h-4 w-4" />
                 <span>Import JSON</span>
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={handleImportImageClick}
                 className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
               >
