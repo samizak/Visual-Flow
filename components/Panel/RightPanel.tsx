@@ -1,5 +1,13 @@
 import JsonFlowChart from "../Visualizers/JsonFlowChart";
-import { Box, Braces, Brackets, Type } from "lucide-react"; // Import icons
+import {
+  Box,
+  Braces,
+  Brackets,
+  Type,
+  FileJson,
+  ArrowRight,
+  Network,
+} from "lucide-react"; // Added FileJson and ArrowRight icons
 import { Dispatch, SetStateAction, useState, useMemo } from "react"; // Add useMemo
 
 // In RightPanel.tsx
@@ -83,23 +91,20 @@ export default function RightPanel({
           ) : (
             <div className="flex items-center justify-center h-full text-gray-400">
               <div className="text-center">
-                <svg
-                  className="w-16 h-16 mx-auto mb-4 text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                  />
-                </svg>
+                <FileJson className="w-16 h-16 mx-auto mb-4 text-gray-500" />
                 <p className="text-lg">Enter JSON in the editor</p>
                 <p className="text-sm mt-2 max-w-md text-gray-500">
-                  Visualize your JSON data in a hierarchical tree structure
+                  Visualize your JSON data as interactive node diagrams
                 </p>
+                <div className="mt-4 flex items-center justify-center text-gray-500">
+                  <div className="flex items-center px-3 py-1.5 bg-gray-800/50 rounded-md border border-gray-700">
+                    <FileJson className="h-4 w-4 text-indigo-400" />
+                    <span className="mx-2">JSON</span>
+                    <ArrowRight className="mx-2 w-4 h-4 text-indigo-400" />
+                    <Network className="h-4 w-4 text-indigo-400" />
+                    <span className="mx-2">Flow Chart</span>
+                  </div>
+                </div>
               </div>
             </div>
           )}
