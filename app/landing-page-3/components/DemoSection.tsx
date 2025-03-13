@@ -23,19 +23,38 @@ export default function DemoSection({
 }: DemoSectionProps) {
   const [activeTab, setActiveTab] = useState("visualize");
   const [showImagePopup, setShowImagePopup] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Demo images for the visualization tab
+  const demoImages = [
+    { src: "/demos/demo.jpg", alt: "JSON Visualization" },
+    { src: "/demos/demo2.jpg", alt: "Node Highlighting" },
+    { src: "/demos/demo3.jpg", alt: "Node JSON Data" },
+    { src: "/demos/demo4.jpg", alt: "Real-Time error detection" },
+  ];
 
   // Disable scrolling when popup is open
   React.useEffect(() => {
     if (showImagePopup) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
-    
+
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, [showImagePopup]);
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % demoImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + demoImages.length) % demoImages.length
+    );
+  };
 
   return (
     <section id="demo" className="py-12 md:py-20 relative z-10">
@@ -200,22 +219,93 @@ export default function DemoSection({
                       <div className="relative">
                         <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-30"></div>
                         <div className="relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-black">
-                          <div 
+                          <div
                             className="h-full w-full overflow-hidden cursor-pointer group"
                             onClick={() => setShowImagePopup(true)}
                           >
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
                               <div className="bg-white/10 backdrop-blur-sm p-2 rounded-full">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-6 w-6 text-white"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                                  />
                                 </svg>
                               </div>
                             </div>
-                            <img
-                              src="/demo.jpg"
-                              alt="JSON Visualization Demo"
-                              className="w-full h-full object-cover object-[-10px_center] transition-transform duration-700 ease-in-out group-hover:scale-110"
-                            />
+
+                            {/* Image carousel */}
+                            <AnimatePresence mode="wait">
+                              <motion.img
+                                key={currentImageIndex}
+                                src={demoImages[currentImageIndex].src}
+                                alt={demoImages[currentImageIndex].alt}
+                                className="w-full h-full object-cover object-[-10px_center] transition-transform duration-700 ease-in-out group-hover:scale-110"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                              />
+                            </AnimatePresence>
+
+                            {/* Navigation arrows */}
+                            <button
+                              className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:bg-black/70 transition-colors z-20"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                prevImage();
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15 19l-7-7 7-7"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:bg-black/70 transition-colors z-20"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                nextImage();
+                              }}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 5l7 7-7 7"
+                                />
+                              </svg>
+                            </button>
+
+                            {/* Image counter */}
+                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full text-white text-xs z-20">
+                              {currentImageIndex + 1} / {demoImages.length}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -335,12 +425,17 @@ export default function DemoSection({
         </div>
       </div>
 
-      {/* Replace the existing Image Popup Overlay with this: */}
-      <ImagePopup 
+      {/* Image Popup Overlay */}
+      <ImagePopup
         isOpen={showImagePopup}
         onClose={() => setShowImagePopup(false)}
-        imageSrc="/demo.jpg"
-        imageAlt="JSON Visualization Demo Full View"
+        imageSrc={demoImages[currentImageIndex].src}
+        imageAlt={demoImages[currentImageIndex].alt}
+        onNext={nextImage}
+        onPrev={prevImage}
+        showNavigation={true}
+        currentIndex={currentImageIndex}
+        totalImages={demoImages.length}
       />
     </section>
   );
