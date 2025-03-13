@@ -1,30 +1,14 @@
 import React, { useState, useRef } from "react";
-import { Button } from "../ui/button";
-import {
-  PanelLeft,
-  FileIcon,
-  Eye,
-  Copy,
-  FileCode,
-  Minimize,
-  Save,
-  Upload,
-  LayoutGrid,
-  Layers,
-  Settings,
-  Play,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import SettingsDialog from "./SettingsDialog";
 
-// Add to the interface
+// Import the new components
+import PanelToggle from "./HeaderComponents/PanelToggle";
+import FileMenu from "./HeaderComponents/FileMenu";
+import EditMenu from "./HeaderComponents/EditMenu";
+import ViewMenu from "./HeaderComponents/ViewMenu";
+import SettingsButton from "./HeaderComponents/SettingsButton";
+import ApplyChangesButton from "./HeaderComponents/ApplyChangesButton";
+
 interface HeaderProps {
   onFormat?: () => void;
   onMinimize?: () => void;
@@ -36,7 +20,7 @@ interface HeaderProps {
   onEdgeStyleChange: (style: string) => void;
   onFileLoad?: (content: string) => void;
   onApplyChanges?: () => void;
-  collapseLeftPanel?: boolean; // Add this prop
+  collapseLeftPanel?: boolean;
 }
 
 export default function Header({
@@ -50,185 +34,32 @@ export default function Header({
   onEdgeStyleChange,
   onFileLoad,
   onApplyChanges,
-  collapseLeftPanel = false, // Add default value
+  collapseLeftPanel = false,
 }: HeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Trigger file input click
-  const handleImportClick = () => {
-    if (onImport) {
-      onImport();
-    }
-  };
 
   return (
     <header className="bg-[#1e1e1e] border-b border-gray-700 py-1 px-2 relative">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onTogglePanel}
-            className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
-            title={collapseLeftPanel ? "Expand Editor" : "Collapse Editor"}
-          >
-            <PanelLeft
-              className={`h-5 w-5 transition-transform duration-300 ${
-                collapseLeftPanel ? "rotate-180" : ""
-              }`}
-            />
-          </Button>
+          <PanelToggle 
+            onTogglePanel={onTogglePanel} 
+            collapseLeftPanel={collapseLeftPanel} 
+          />
 
           <div className="h-5 w-px bg-gray-600 mx-0.5"></div>
 
           <div className="flex items-center space-x-1 pl-2">
-            {/* File dropdown menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors select-none"
-                >
-                  <FileIcon className="mr-1 h-4 w-4" />
-                  File
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50">
-                <DropdownMenuLabel>File Options</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={onSave}
-                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  <span>Save</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleImportClick}
-                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
-                >
-                  <Upload className="mr-2 h-4 w-4" />
-                  <span>Import</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Edit dropdown menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors select-none"
-                >
-                  <FileCode className="mr-1 h-4 w-4" />
-                  Edit
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50">
-                <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={onFormat}
-                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
-                >
-                  <FileCode className="mr-2 h-4 w-4" />
-                  <span>Format JSON</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={onMinimize}
-                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
-                >
-                  <Minimize className="mr-2 h-4 w-4" />
-                  <span>Minimize JSON</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={onCopy}
-                  className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
-                >
-                  <Copy className="mr-2 h-4 w-4" />
-                  <span>Copy JSON</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* View dropdown menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors select-none"
-                >
-                  <Eye className="mr-1 h-4 w-4" />
-                  View
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50">
-                <DropdownMenuLabel>View Options</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {onApplyChanges && (
-                  <DropdownMenuItem
-                    onClick={onApplyChanges}
-                    className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
-                  >
-                    <Play className="mr-2 h-4 w-4" />
-                    <span>Apply Changes</span>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
-                  <LayoutGrid className="mr-2 h-4 w-4" />
-                  <span>Diagram View</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="opacity-50 cursor-not-allowed inline-flex whitespace-nowrap text-xs"
-                  title="3D View coming soon"
-                  disabled
-                >
-                  <Layers className="mr-2 h-4 w-4" />
-                  <span>3D Node View</span>
-                  <span className="ml-2 text-xs text-gray-500">
-                    (Coming soon)
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="opacity-50 cursor-not-allowed inline-flex whitespace-nowrap text-xs">
-                  <span>Tree View</span>
-                  <span className="ml-2 text-xs text-gray-500">
-                    (Coming soon)
-                  </span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <FileMenu onSave={onSave} onImport={onImport} />
+            <EditMenu onFormat={onFormat} onMinimize={onMinimize} onCopy={onCopy} />
+            <ViewMenu onApplyChanges={onApplyChanges} />
           </div>
         </div>
 
         <div className="flex items-center space-x-2">
-          {/* Settings button moved outside of dropdown */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSettingsOpen(true)}
-            className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
-            title="Settings"
-          >
-            <Settings className="mr-1 h-4 w-4" />
-            Settings
-          </Button>
-
-          {/* Apply Changes button */}
-          {onApplyChanges && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onApplyChanges}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white border-none hover:text-white transition-colors"
-            >
-              <Play className="mr-1 h-4 w-4" />
-              Apply Changes
-            </Button>
-          )}
+          <SettingsButton onClick={() => setSettingsOpen(true)} />
+          <ApplyChangesButton onClick={onApplyChanges} />
         </div>
       </div>
 
