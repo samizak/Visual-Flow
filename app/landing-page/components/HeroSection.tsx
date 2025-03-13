@@ -114,7 +114,7 @@ export default function HeroSection({ LocalScene }: HeroSectionProps) {
             >
               <Lock className="h-4 w-4" />
               <span>
-                No account required. Your data never leaves your browser.
+                Start for free, no account required. Sign up to unlock premium features.
               </span>
             </motion.div>
           </div>

@@ -21,11 +21,14 @@ export default function CtaSection() {
             Ready to Transform Your JSON Experience?
           </h2>
           <p className="text-xl text-white/70 mb-8 max-w-2xl mx-auto">
-            Start visualizing your data today with our powerful, intuitive tools.
-            No credit card required.
+            Start visualizing your data today with our powerful, intuitive
+            tools. No credit card required.
           </p>
           <Link href="/editor">
-            <Button size="lg" className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white border-0 h-12 px-8">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white border-0 h-12 px-8 cursor-pointer"
+            >
               Get Started Now
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

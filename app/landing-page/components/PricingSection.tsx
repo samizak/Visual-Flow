@@ -149,7 +149,7 @@ export default function PricingSection() {
 
                 <Link href="/editor" className="mt-auto">
                   <Button
-                    className={`w-full ${
+                    className={`w-full cursor-pointer ${
                       plan.popular
                         ? "bg-indigo-500 hover:bg-indigo-600"
                         : "bg-slate-700 hover:bg-slate-600"
