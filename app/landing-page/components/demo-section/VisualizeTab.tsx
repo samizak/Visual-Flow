@@ -21,7 +21,8 @@ export default function VisualizeTab({
   const featureData = [
     {
       title: "JSON Visualization",
-      description: "Visual Flow transforms complex JSON data into clear, intuitive visual representations. Easily understand the structure, relationships, and hierarchy of your data without parsing through raw code.",
+      description:
+        "Visual Flow transforms complex JSON data into clear, intuitive visual representations. Easily understand the structure, relationships, and hierarchy of your data without parsing through raw code.",
       features: [
         { text: "Clear node-based visualization" },
         { text: "Intuitive data structure mapping" },
@@ -30,7 +31,8 @@ export default function VisualizeTab({
     },
     {
       title: "Intelligent Node Highlighting",
-      description: "Easily identify and focus on specific nodes within complex JSON structures. Our highlighting feature makes it simple to track relationships and understand data connections at a glance.",
+      description:
+        "Easily identify and focus on specific nodes within complex JSON structures. Our highlighting feature makes it simple to track relationships and understand data connections at a glance.",
       features: [
         { text: "Highlight connected nodes" },
         { text: "Track data relationships visually" },
@@ -39,7 +41,8 @@ export default function VisualizeTab({
     },
     {
       title: "Detailed Node Information",
-      description: "Inspect the raw JSON data for any node with a simple click. Get immediate access to values, types, and metadata without losing context of the overall structure.",
+      description:
+        "Inspect the raw JSON data for any node with a simple click. Get immediate access to values, types, and metadata without losing context of the overall structure.",
       features: [
         { text: "One-click data inspection" },
         { text: "View raw JSON values and types" },
@@ -48,7 +51,8 @@ export default function VisualizeTab({
     },
     {
       title: "Real-Time Error Detection",
-      description: "Catch JSON syntax errors and structural issues as you type. Visual Flow provides immediate feedback with clear error highlighting and helpful suggestions for fixes.",
+      description:
+        "Catch JSON syntax errors and structural issues as you type. Visual Flow provides immediate feedback with clear error highlighting and helpful suggestions for fixes.",
       features: [
         { text: "Instant syntax validation" },
         { text: "Visual error indicators" },
@@ -66,13 +70,15 @@ export default function VisualizeTab({
           features={featureData[currentImageIndex].features}
         />
       </div>
-      <ImageCarousel
-        images={demoImages}
-        currentIndex={currentImageIndex}
-        onPrev={onPrevImage}
-        onNext={onNextImage}
-        onOpenPopup={onOpenPopup}
-      />
+      <div>
+        <ImageCarousel
+          images={demoImages}
+          currentIndex={currentImageIndex}
+          onPrev={onPrevImage}
+          onNext={onNextImage}
+          onOpenPopup={onOpenPopup}
+        />
+      </div>
     </div>
   );
 }

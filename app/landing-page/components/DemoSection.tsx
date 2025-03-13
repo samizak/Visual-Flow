@@ -99,9 +99,7 @@ export default function DemoSection({
                 className="rounded-full px-4 py-2 z-10 transition-all duration-200 text-white/90 data-[state=active]:text-white data-[state=active]:font-medium hover:text-cyan-200 flex items-center justify-center gap-1.5 group cursor-pointer"
               >
                 <span className="relative flex items-center justify-center gap-1.5">
-                  <LineChart 
-                    className="h-3.5 w-3.5 transition-transform group-hover:scale-110 text-cyan-300 group-data-[state=active]:text-white"
-                  />
+                  <LineChart className="h-3.5 w-3.5 transition-transform group-hover:scale-110 text-cyan-300 group-data-[state=active]:text-white" />
                   <span>Visualize</span>
                 </span>
               </TabsTrigger>
@@ -110,9 +108,7 @@ export default function DemoSection({
                 className="rounded-full px-4 py-2 z-10 transition-all duration-200 text-white/90 data-[state=active]:text-white data-[state=active]:font-medium hover:text-cyan-200 flex items-center justify-center gap-1.5 group cursor-pointer"
               >
                 <span className="relative flex items-center justify-center gap-1.5">
-                  <BarChart2 
-                    className="h-3.5 w-3.5 transition-transform group-hover:scale-110 text-cyan-300 group-data-[state=active]:text-white"
-                  />
+                  <BarChart2 className="h-3.5 w-3.5 transition-transform group-hover:scale-110 text-cyan-300 group-data-[state=active]:text-white" />
                   <span>Analyze</span>
                 </span>
               </TabsTrigger>
@@ -121,15 +117,13 @@ export default function DemoSection({
                 className="rounded-full px-4 py-2 z-10 transition-all duration-200 text-white/90 data-[state=active]:text-white data-[state=active]:font-medium hover:text-cyan-200 flex items-center justify-center gap-1.5 group cursor-pointer"
               >
                 <span className="relative flex items-center justify-center gap-1.5">
-                  <Share2 
-                    className="h-3.5 w-3.5 transition-transform group-hover:scale-110 text-cyan-300 group-data-[state=active]:text-white"
-                  />
+                  <Share2 className="h-3.5 w-3.5 transition-transform group-hover:scale-110 text-cyan-300 group-data-[state=active]:text-white" />
                   <span>Share</span>
                 </span>
               </TabsTrigger>
             </TabsList>
 
-            <TabContent 
+            <TabContent
               activeTab={activeTab}
               currentImageIndex={currentImageIndex}
               demoImages={demoImages}

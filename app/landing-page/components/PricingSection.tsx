@@ -104,9 +104,9 @@ export default function PricingSection() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true, margin: "-100px" }}
             >
-              {plan.popular && (
-                <div className="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                  RECOMMENDED
+              {isYearly && plan.popular && (
+                <div className="absolute top-0 right-0 z-20 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                  SAVE 20%
                 </div>
               )}
               <div className="p-8 bg-slate-800/50 backdrop-blur-sm h-full flex flex-col">

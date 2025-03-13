@@ -15,11 +15,13 @@ export default function Footer() {
                   <FileJson className="h-6 w-6 text-white" />
                 </div>
               </div>
-              <span className="text-xl font-bold tracking-tight">Visual Flow</span>
+              <span className="text-xl font-bold tracking-tight">
+                Visual Flow
+              </span>
             </div>
             <p className="text-white/60 max-w-md mb-6">
-              Transform complex JSON data into beautiful, interactive 3D
-              visualizations that bring your data to life.
+              Transform complex JSON into clear visuals instantly. Explore and
+              analyze your data with powerful interactive tools.
             </p>
             <div className="flex gap-4">
               <Link

@@ -68,8 +68,8 @@ export default function HeroSection({ LocalScene }: HeroSectionProps) {
                 </span>
               </h1>
               <p className="mt-6 text-xl text-white/70 leading-relaxed">
-                Transform complex JSON structures into beautiful, interactive 3D
-                visualizations that bring your data to life.
+                Transform complex JSON into clear visuals instantly. Explore and
+                analyze your data with powerful interactive tools.
               </p>
             </motion.div>
 
@@ -82,7 +82,7 @@ export default function HeroSection({ LocalScene }: HeroSectionProps) {
               <Link href="/editor">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white border-0 h-12 px-8"
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white border-0 h-12 px-8 cursor-pointer"
                 >
                   Start Visualizing
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -92,7 +92,14 @@ export default function HeroSection({ LocalScene }: HeroSectionProps) {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="border-white/20 text-white hover:bg-white/10 h-12 px-8"
+                  className="border-white/20 text-white hover:bg-white/10 h-12 px-8 cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById("demo")?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
                 >
                   See Demo
                 </Button>
@@ -116,7 +123,7 @@ export default function HeroSection({ LocalScene }: HeroSectionProps) {
             className="lg:w-1/2 h-[400px] relative"
             style={{ opacity, scale }}
           >
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative h-full flex items-center justify-center">
               <motion.div
                 className="w-full max-w-md bg-slate-800/70 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-xl"
                 initial={{ y: 20, opacity: 0 }}

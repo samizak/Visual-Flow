@@ -1,5 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { ZoomIn, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface DemoImage {
   src: string;
@@ -31,20 +32,7 @@ export default function ImageCarousel({
         >
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
             <div className="bg-white/10 backdrop-blur-sm p-2 rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-                />
-              </svg>
+              <ZoomIn className="h-6 w-6 text-white" />
             </div>
           </div>
 
@@ -54,7 +42,11 @@ export default function ImageCarousel({
               key={currentIndex}
               src={images[currentIndex].src}
               alt={images[currentIndex].alt}
-              className="w-full h-full object-cover object-[-10px_center] transition-transform duration-700 ease-in-out group-hover:scale-110"
+              className={`w-full h-full object-cover ${
+                currentIndex === 2
+                  ? "object-[-260px_center]"
+                  : "object-[-10px_center]"
+              } transition-transform duration-700 ease-in-out group-hover:scale-110`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -70,20 +62,7 @@ export default function ImageCarousel({
               onPrev();
             }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 backdrop-blur-sm p-2 rounded-full text-white hover:bg-black/70 transition-colors z-20 cursor-pointer"
@@ -92,20 +71,7 @@ export default function ImageCarousel({
               onNext();
             }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            <ChevronRight className="h-5 w-5" />
           </button>
 
           {/* Image counter */}
