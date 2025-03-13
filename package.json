@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",
+    "@google/generative-ai": "^0.24.0",
     "@icons-pack/react-simple-icons": "^12.2.0",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-avatar": "^1.1.3",
