@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/main.css";
 import { Toaster } from "../components/ui/sonner";
+import { SupabaseProvider } from '../components/Auth/SupabaseProvider'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,32 +21,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-        <Toaster
-          position="bottom-center"
-          closeButton
-          richColors
-          theme="dark"
-          toastOptions={{
-            className: "border border-gray-700 rounded-lg shadow-lg",
-            style: {
-              padding: "12px 16px",
-              backgroundColor: "#1e1e1e",
-              color: "#ffffff",
-              fontSize: "14px",
-            },
-            duration: 2000,
-          }}
-        />
+      <body>
+        <SupabaseProvider>
+          {children}
+        </SupabaseProvider>
       </body>
     </html>
-  );
+  )
 }

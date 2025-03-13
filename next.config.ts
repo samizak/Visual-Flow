@@ -1,7 +1,10 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // ... other config
+  experimental: {
+    // ... other experimental options
+    esmExternals: true,
+  },
+}
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-export default nextConfig;
+export default nextConfig
