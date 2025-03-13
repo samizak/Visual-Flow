@@ -26,6 +26,32 @@
   box-shadow: 0 0 0 2px #b87333, 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
+/* Search panel styling */
+.search-panel {
+  margin: 10px;
+}
+
+.search-panel input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Pulse animation for search results */
+@keyframes pulse-highlight {
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+  }
+}
+
+.react-flow.dimmed .react-flow__node.highlight .grouped-node-container {
+  animation: pulse-highlight 2s infinite;
+}
+
 /* Dragging optimizations */
 .react-flow__node.dragging,
 .react-flow__node.dragging * {
@@ -166,4 +192,45 @@ div.hover-row.status-bar {
   .grouped-node[data-type="root"]
   .grouped-node-container {
   box-shadow: 0 0 0 2px #6b46c1, 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Yellow highlight for search matches - targeting the property elements */
+.grouped-node-property.search-match-property {
+  background-color: rgba(255, 215, 0, 0.2) !important;
+  border-left: 3px solid gold !important;
+  transition: all 0.3s ease;
+}
+
+/* Stronger highlight when hovering over a matching property */
+.grouped-node-property.search-match-property:hover {
+  background-color: rgba(255, 215, 0, 0.3) !important;
+}
+
+/* Add a subtle pulse animation for search matches */
+@keyframes search-pulse-border {
+  0% {
+    border-left-color: rgba(255, 215, 0, 0.5);
+  }
+  50% {
+    border-left-color: rgba(255, 215, 0, 1);
+  }
+  100% {
+    border-left-color: rgba(255, 215, 0, 0.5);
+  }
+}
+
+.grouped-node-property.search-match-property {
+  animation: search-pulse-border 2s infinite;
+}
+
+/* Remove the previous container highlight when hovering */
+.react-flow__node.search-match:hover .grouped-node-container {
+  background-color: inherit;
+  border: 2px solid #3a506b;
+}
+
+/* Stronger highlight when both search match and hover */
+.react-flow__node.search-match:hover .grouped-node-container {
+  background-color: rgba(255, 255, 0, 0.25);
+  border: 1px solid rgba(255, 255, 0, 0.7);
 }
