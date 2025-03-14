@@ -22,15 +22,12 @@ export default function Home() {
   const [edgeType, setEdgeType] = useState<string>("default");
   const [showGrid, setShowGrid] = useState(true);
 
-  // Add OCR-related state variables
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
   const [ocrProgress, setOcrProgress] = useState<number | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Add a separate state for visualization JSON
   const [visualizationJson, setVisualizationJson] = useState<string>("");
 
-  // Custom hooks
   const {
     jsonData,
     setJsonData,
@@ -92,7 +89,6 @@ export default function Home() {
 
   const { mainRef, handleMouseDown } = useMouseInteractions();
 
-  // Add handler for grid toggle
   const handleToggleGrid = (show: boolean) => {
     setShowGrid(show);
   };
@@ -153,8 +149,8 @@ export default function Home() {
           setNodeCount={setNodeCount}
           nodeCount={nodeCount}
           edgeType={edgeType}
-          showGrid={showGrid} // Pass showGrid state to RightPanel
-          onToggleGrid={handleToggleGrid} // Pass toggle handler
+          showGrid={showGrid}
+          onToggleGrid={handleToggleGrid}
         />
       </div>
 

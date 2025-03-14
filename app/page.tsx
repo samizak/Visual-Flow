@@ -11,7 +11,6 @@ import PricingSection from "./landing-page/components/PricingSection";
 import CtaSection from "./landing-page/components/CtaSection";
 import Scene from "./landing-page/components/Scene";
 
-// Sample JSON for the interactive demo
 const sampleJson = {
   app: "Visual Flow",
   version: "2.0",

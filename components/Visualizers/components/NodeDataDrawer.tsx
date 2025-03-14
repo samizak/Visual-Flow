@@ -18,7 +18,6 @@ interface NodeDataDrawerProps {
   onClose: () => void;
   nodeData: any;
   nodeLabel: string;
-  // We'll need to add a new prop for the path data
   nodePath?: Array<{ id: string; label: string; data: any }>;
 }
 
@@ -27,12 +26,10 @@ export default function NodeDataDrawer({
   onClose,
   nodeData,
   nodeLabel,
-  nodePath = [], // Default to empty array if not provided
+  nodePath = [],
 }: NodeDataDrawerProps) {
-  // Add state to toggle between JSON view and Path view
   const [viewMode, setViewMode] = useState<"json" | "path">("json");
 
-  // Format the JSON data for display
   const formattedData = JSON.stringify(nodeData, null, 2);
 
   // Handle copy to clipboard
@@ -132,14 +129,14 @@ export default function NodeDataDrawer({
                   {/* View toggle buttons with sliding animation */}
                   <div className="flex bg-gray-800/50 rounded-md p-0.5 mr-2 relative">
                     {/* Sliding background */}
-                    <div 
+                    <div
                       className={`absolute top-0.5 bottom-0.5 rounded transition-all duration-200 ease-in-out bg-indigo-600 z-0 ${
-                        viewMode === "json" 
-                          ? "left-0.5 right-[calc(50%+0.5px)]" 
+                        viewMode === "json"
+                          ? "left-0.5 right-[calc(50%+0.5px)]"
                           : "left-[calc(50%+0.5px)] right-0.5"
                       }`}
                     />
-                    
+
                     {/* JSON Button */}
                     <Button
                       size="sm"
@@ -155,7 +152,7 @@ export default function NodeDataDrawer({
                       <Code size={14} className="mr-1" />
                       JSON
                     </Button>
-                    
+
                     {/* Path Button */}
                     <Button
                       size="sm"

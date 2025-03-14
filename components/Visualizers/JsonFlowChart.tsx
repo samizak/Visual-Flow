@@ -1,50 +1,23 @@
-import { useCallback, useEffect, useState, useRef } from "react";
-import {
-  ReactFlow,
-  Controls,
-  Background,
-  useNodesState,
-  useEdgesState,
-  ConnectionLineType,
-  BackgroundVariant,
-  Panel,
-  useReactFlow,
-  ReactFlowProvider,
-  Node,
-} from "@xyflow/react";
+import { useNodesState, useEdgesState, ReactFlowProvider } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-// Remove the conflicting import and use only the local interface
-// import { JsonFlowChartProps } from "./types/jsonFlowTypes";
 import GroupedNode from "./components/GroupedNode";
 import SchemaNode from "./components/SchemaNode";
-import { convertJsonToGroupedFlow } from "./utils/jsonGroupedFlowUtils";
 import NodeDataDrawer from "./components/NodeDataDrawer";
-import { AnyARecord } from "node:dns";
 import FlowChartDisplay from "./components/FlowChartDisplay";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { useJsonFlowData } from "./hooks/useJsonFlowData";
 import { useNodeClickHandler } from "./hooks/useNodeClickHandler";
 
-// Define the node types for ReactFlow
 const nodeTypes = {
   grouped: GroupedNode,
   schema: SchemaNode,
-};
-
-// Define custom styles for controls
-const controlsStyle = {
-  background: "#1e1e1e",
-  borderRadius: "6px",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3)",
-  border: "1px solid #333",
 };
 
 const proOptions = {
   hideAttribution: true,
 };
 
-// Define the interface for the component props
 interface JsonFlowChartProps {
   jsonData: string;
   edgeType?: string;
@@ -68,14 +41,10 @@ export default function JsonFlowChart({
   edgeType = "default",
   showGrid = true,
   onNodeCountChange,
-  isValidJson = true, // Set default value
+  isValidJson = true,
 }: JsonFlowChartProps) {
-  // Explicitly type the nodes and edges state
   const [nodes, setNodes, onNodesChange]: any = useNodesState([]);
   const [edges, setEdges, onEdgesChange]: any = useEdgesState([]);
-
-  // Remove the duplicate isValidJson state declaration
-  // const [isValidJson, setIsValidJson] = useState(initialIsValidJson);
 
   // Use our custom hooks for data handling and node click handling
   const { isLoading } = useJsonFlowData({
@@ -133,5 +102,4 @@ export default function JsonFlowChart({
   );
 }
 
-// Export the provider wrapper for use elsewhere
 export { JsonFlowChartWithProvider };

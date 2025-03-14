@@ -11,11 +11,10 @@ import {
   OnEdgesChange,
   ProOptions,
   Panel,
-  NodeTypes, // Add NodeTypes import
+  NodeTypes,
 } from "@xyflow/react";
 import { Search } from "lucide-react";
 
-// Add showGrid to the props interface (this should be at the top of the file)
 interface FlowChartDisplayProps {
   nodes: Node[];
   edges: Edge[];
@@ -25,7 +24,7 @@ interface FlowChartDisplayProps {
   onNodeClick?: (event: React.MouseEvent, node: Node) => void;
   controlsStyle?: React.CSSProperties;
   proOptions?: ProOptions;
-  showGrid?: boolean; // Add this line
+  showGrid?: boolean;
 }
 
 const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
@@ -37,7 +36,7 @@ const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
   onNodeClick,
   controlsStyle,
   proOptions,
-  showGrid = true, // Default value for showGrid
+  showGrid = true,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -72,37 +71,39 @@ const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
     // Find and highlight matching nodes and their specific properties
     nodes.forEach((node: any) => {
       const nodeElement = document.querySelector(`[data-id="${node.id}"]`);
-      
+
       // Check if node data contains the search term
       const nodeData = node.data;
       const nodeLabel = nodeData.label?.toLowerCase() || "";
       const nodeProperties = nodeData.properties || [];
-      
+
       let hasMatch = false;
-      
+
       // Check if the node label matches
       if (nodeLabel.includes(lowerTerm)) {
         hasMatch = true;
       }
-      
+
       // Find all property elements in this node
-      const propertyElements = nodeElement?.querySelectorAll(".grouped-node-property");
-      
+      const propertyElements = nodeElement?.querySelectorAll(
+        ".grouped-node-property"
+      );
+
       // Check each property for matches
       nodeProperties.forEach((prop: any, index: number) => {
         const propKey = prop.key?.toLowerCase() || "";
         const propValue = String(prop.value).toLowerCase();
-        
+
         if (propKey.includes(lowerTerm) || propValue.includes(lowerTerm)) {
           hasMatch = true;
-          
+
           // If we found property elements, highlight the matching one
           if (propertyElements && propertyElements[index]) {
             propertyElements[index].classList.add("search-match-property");
           }
         }
       });
-      
+
       // Add highlight class to the node if any match was found
       if (hasMatch) {
         nodeElement?.classList.add("highlight");
@@ -125,7 +126,7 @@ const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
       nodeElement?.classList.remove("highlight");
       nodeElement?.classList.remove("search-match");
     });
-    
+
     // Remove highlighting from all property elements
     document.querySelectorAll(".search-match-property").forEach((element) => {
       element.classList.remove("search-match-property");
@@ -145,9 +146,11 @@ const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
       proOptions={proOptions}
     >
       {/* Only render Background component when showGrid is true */}
-      {showGrid && <Background variant={BackgroundVariant.Dots} gap={12} size={1} />}
+      {showGrid && (
+        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+      )}
       <Controls style={controlsStyle} />
-      
+
       {/* Search panel */}
       <Panel position="top-right" className="search-panel">
         {isSearchOpen ? (

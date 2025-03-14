@@ -17,7 +17,7 @@ import {
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { successToast } from "../../lib/toast";
-import { Grid, LineChart } from "lucide-react"; // Import icons
+import { Grid, LineChart } from "lucide-react";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -36,9 +36,8 @@ export default function SettingsDialog({
   showGrid = true,
   onToggleGrid,
 }: SettingsDialogProps) {
-  // Add local state to track grid display value
   const [gridValue, setGridValue] = useState(showGrid ? "true" : "false");
-  
+
   // Update local state when props change
   useEffect(() => {
     setGridValue(showGrid ? "true" : "false");
@@ -132,10 +131,7 @@ export default function SettingsDialog({
               Display Grid
             </Label>
             <div className="col-span-3">
-              <Select
-                value={gridValue}
-                onValueChange={handleGridDisplayChange}
-              >
+              <Select value={gridValue} onValueChange={handleGridDisplayChange}>
                 <SelectTrigger
                   className="w-full bg-[#2d2d2d] border-gray-700 text-white focus:ring-offset-0 focus:ring-gray-500"
                   id="grid-display"
