@@ -16,12 +16,15 @@ import {
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { successToast } from "../../lib/toast";
+import { Grid, LineChart } from "lucide-react"; // Import icons
 
 interface SettingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   edgeStyle?: string;
   onEdgeStyleChange: (style: string) => void;
+  showGrid?: boolean;
+  onToggleGrid?: (show: boolean) => void;
 }
 
 export default function SettingsDialog({
@@ -29,11 +32,23 @@ export default function SettingsDialog({
   onOpenChange,
   edgeStyle = "default",
   onEdgeStyleChange,
+  showGrid = true,
+  onToggleGrid,
 }: SettingsDialogProps) {
   const handleEdgeStyleChange = (value: string) => {
     if (value !== edgeStyle) {
       onEdgeStyleChange(value);
       successToast("Style successfully changed");
+    }
+  };
+
+  const handleGridDisplayChange = (value: string) => {
+    if (onToggleGrid) {
+      const showGridValue = value === "true";
+      if (showGridValue !== showGrid) {
+        onToggleGrid(showGridValue);
+        successToast(`Grid display ${showGridValue ? "enabled" : "disabled"}`);
+      }
     }
   };
 
@@ -57,15 +72,15 @@ export default function SettingsDialog({
         </DialogHeader>
         <div className="py-4 space-y-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="edge-style" className="text-right">
+            <Label
+              htmlFor="edge-style"
+              className="text-left flex items-center gap-2"
+            >
+              <LineChart className="h-4 w-4" />
               Edge Style
             </Label>
             <div className="col-span-3">
-              <Select
-                value={edgeStyle}
-                onValueChange={handleEdgeStyleChange}
-                // Remove defaultValue as it can conflict with the value prop
-              >
+              <Select value={edgeStyle} onValueChange={handleEdgeStyleChange}>
                 <SelectTrigger
                   className="w-full bg-[#2d2d2d] border-gray-700 text-white focus:ring-offset-0 focus:ring-gray-500"
                   id="edge-style"
@@ -89,6 +104,49 @@ export default function SettingsDialog({
                     className="focus:bg-gray-700 focus:text-white"
                   >
                     Bezier
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Grid Display Setting */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label
+              htmlFor="grid-display"
+              className="text-left flex items-center gap-2"
+            >
+              <Grid className="h-4 w-4" />
+              Display Grid
+            </Label>
+            <div className="col-span-3">
+              <Select
+                value={showGrid ? "true" : "false"}
+                onValueChange={handleGridDisplayChange}
+              >
+                <SelectTrigger
+                  className="w-full bg-[#2d2d2d] border-gray-700 text-white focus:ring-offset-0 focus:ring-gray-500"
+                  id="grid-display"
+                >
+                  <SelectValue
+                    placeholder={showGrid ? "Enabled" : "Disabled"}
+                  />
+                </SelectTrigger>
+                <SelectContent
+                  className="bg-[#2d2d2d] border-gray-700 text-white"
+                  position="popper"
+                >
+                  <SelectItem
+                    value="true"
+                    className="focus:bg-gray-700 focus:text-white"
+                  >
+                    Enabled
+                  </SelectItem>
+                  <SelectItem
+                    value="false"
+                    className="focus:bg-gray-700 focus:text-white"
+                  >
+                    Disabled
                   </SelectItem>
                 </SelectContent>
               </Select>
