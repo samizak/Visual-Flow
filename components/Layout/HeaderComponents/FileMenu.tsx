@@ -23,6 +23,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "../../ui/dropdown-menu";
+import PremiumFeatureWrapper from "../../PremiumFeatures/PremiumFeatureWrapper";
 
 // Update the FileMenu props interface to include export handlers
 interface FileMenuProps {
@@ -30,24 +31,23 @@ interface FileMenuProps {
   onImport?: () => void;
   onImportJson?: () => void;
   onImportImage?: () => void;
-  // Add these new props
   onExportPng?: () => void;
   onExportJpg?: () => void;
   onExportSvg?: () => void;
+  isPremiumUser?: boolean;
+  onUpgradeClick?: () => void;
 }
-
-// In the return statement, let's update the Export submenu section
-// to enable the image export options
 
 export default function FileMenu({
   onSave,
   onImport,
   onImportJson,
   onImportImage,
-  // Add these new props
   onExportPng,
   onExportJpg,
   onExportSvg,
+  isPremiumUser = false,
+  onUpgradeClick,
 }: FileMenuProps) {
   // Handle general import (fallback)
   const handleImportClick = () => {
@@ -68,31 +68,38 @@ export default function FileMenu({
 
   // Handle Image import
   const handleImportImageClick = () => {
-    if (onImportImage) {
+    if (isPremiumUser && onImportImage) {
       onImportImage();
+    } else if (onUpgradeClick) {
+      onUpgradeClick();
     }
   };
 
-  // Add these handlers to the FileMenu component
+  // Export handlers
   const handleExportPngClick = () => {
-    if (onExportPng) {
+    if (isPremiumUser && onExportPng) {
       onExportPng();
+    } else if (onUpgradeClick) {
+      onUpgradeClick();
     }
   };
 
   const handleExportJpgClick = () => {
-    if (onExportJpg) {
+    if (isPremiumUser && onExportJpg) {
       onExportJpg();
+    } else if (onUpgradeClick) {
+      onUpgradeClick();
     }
   };
 
   const handleExportSvgClick = () => {
-    if (onExportSvg) {
+    if (isPremiumUser && onExportSvg) {
       onExportSvg();
+    } else if (onUpgradeClick) {
+      onUpgradeClick();
     }
   };
 
-  // In the return statement, update the Export submenu
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -129,89 +136,89 @@ export default function FileMenu({
                 className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
               >
                 <FileJson className="mr-2 h-4 w-4" />
-                <span>Import JSON</span>
+                <span>JSON File</span>
               </DropdownMenuItem>
+
+              {/* Wrap Image import with premium feature wrapper */}
               <DropdownMenuItem
                 onClick={handleImportImageClick}
                 className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
               >
-                <ImageIcon className="mr-2 h-4 w-4" />
-                <span>Import Image</span>
+                {isPremiumUser ? (
+                  <>
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    <span>Image (OCR)</span>
+                  </>
+                ) : (
+                  <PremiumFeatureWrapper
+                    isPremiumUser={isPremiumUser}
+                    featureName="Image (OCR)"
+                    onUpgradeClick={onUpgradeClick}
+                  >
+                    <div className="flex items-center">
+                      <ImageIcon className="mr-2 h-4 w-4" />
+                      <span>Image (OCR)</span>
+                    </div>
+                  </PremiumFeatureWrapper>
+                )}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-        ) : (
-          <DropdownMenuItem
-            onClick={handleImportClick}
-            className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
-          >
-            <Upload className="mr-2 h-4 w-4" />
-            <span>Import</span>
-          </DropdownMenuItem>
-        )}
+        ) : null}
 
-        {/* Export submenu with various export options */}
+        {/* Export submenu with image format options */}
         <DropdownMenuSub>
           <DropdownMenuSubTrigger className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
             <Download className="mr-2 h-4 w-4" />
             <span>Export</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="bg-[#1e1e1e] border border-gray-700 shadow-lg">
-            <DropdownMenuLabel className="text-xs text-gray-400">
-              Images
-            </DropdownMenuLabel>
-
-            {/* Enable PNG export */}
-            <DropdownMenuItem
-              onClick={handleExportPngClick}
-              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
-            >
-              <FileImage className="mr-2 h-4 w-4" />
-              <span>Export as PNG</span>
-            </DropdownMenuItem>
-
+            {/* JPG export - premium only */}
             <DropdownMenuItem
               onClick={handleExportJpgClick}
               className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
             >
-              <FileImage className="mr-2 h-4 w-4" />
-              <span>Export as JPG</span>
+              {isPremiumUser ? (
+                <>
+                  <FileImage className="mr-2 h-4 w-4" />
+                  <span>JPG Image</span>
+                </>
+              ) : (
+                <PremiumFeatureWrapper
+                  isPremiumUser={isPremiumUser}
+                  featureName="JPG Image"
+                  onUpgradeClick={onUpgradeClick}
+                >
+                  <div className="flex items-center">
+                    <FileImage className="mr-2 h-4 w-4" />
+                    <span>JPG Image</span>
+                  </div>
+                </PremiumFeatureWrapper>
+              )}
             </DropdownMenuItem>
 
+            {/* SVG export - premium only */}
             <DropdownMenuItem
               onClick={handleExportSvgClick}
               className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
             >
-              <FileImage className="mr-2 h-4 w-4" />
-              <span>Export as SVG</span>
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-xs text-gray-400">
-              Data
-            </DropdownMenuLabel>
-
-            {/* Keep these disabled for now */}
-            <DropdownMenuItem
-              disabled
-              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
-            >
-              <FileSpreadsheet className="mr-2 h-4 w-4" />
-              <span>Export to Excel</span>
-              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">
-                Coming Soon
-              </span>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              disabled
-              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
-            >
-              <FileText className="mr-2 h-4 w-4" />
-              <span>Export as CSV</span>
-              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">
-                Coming Soon
-              </span>
+              {isPremiumUser ? (
+                <>
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>SVG Vector</span>
+                </>
+              ) : (
+                <PremiumFeatureWrapper
+                  isPremiumUser={isPremiumUser}
+                  featureName="SVG Vector"
+                  onUpgradeClick={onUpgradeClick}
+                >
+                  <div className="flex items-center">
+                    <FileText className="mr-2 h-4 w-4" />
+                    <span>SVG Vector</span>
+                  </div>
+                </PremiumFeatureWrapper>
+              )}
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
