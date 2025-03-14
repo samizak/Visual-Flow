@@ -8,6 +8,7 @@ import { SignInForm } from "./SignInForm";
 import { SignUpForm } from "./SignUpForm";
 import { AuthTabs } from "./AuthTabs";
 import { VisualSide } from "./VisualSide";
+import { useRouter } from 'next/navigation';
 
 export function AuthForm() {
   const [isClient, setIsClient] = useState(false);
@@ -17,7 +18,9 @@ export function AuthForm() {
   const [message, setMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("signin");
+  const { theme } = useTheme();
   const [supabase, setSupabase] = useState<any>(null);
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
@@ -45,6 +48,28 @@ export function AuthForm() {
       setMessage(error.message);
     } else {
       setMessage("Check your email for the confirmation link");
+      // Store user data in Supabase
+      try {
+        const { data: user } = await supabase.auth.getUser();
+        if (user) {
+          // Create a profile record in your profiles table
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([
+              { 
+                id: user.user.id, 
+                email: email,
+                created_at: new Date().toISOString(),
+              }
+            ]);
+            
+          if (profileError) {
+            console.error("Error creating profile:", profileError);
+          }
+        }
+      } catch (err) {
+        console.error("Error storing user data:", err);
+      }
     }
   };
 
@@ -55,7 +80,7 @@ export function AuthForm() {
     setLoading(true);
     setMessage(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -64,6 +89,9 @@ export function AuthForm() {
 
     if (error) {
       setMessage(error.message);
+    } else if (data.user) {
+      // Redirect to dashboard on successful login
+      router.push('/');
     }
   };
 
