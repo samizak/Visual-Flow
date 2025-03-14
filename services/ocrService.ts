@@ -63,7 +63,8 @@ export async function extractTextFromImage(imageFile: File): Promise<string> {
 
     return result.response.text();
   } catch (error) {
-    console.error("Gemini processing error:", error);
+    // This is a fatal error - log it as it's likely a bug or API issue
+    console.error("Gemini API error:", error);
     throw new Error("Failed to extract text from image using Gemini");
   }
 }
@@ -75,6 +76,7 @@ export async function parseJsonFromText(text: string): Promise<any> {
 
     // Check if we have the expected structure
     if (!jsonObject.hasOwnProperty("extracted_json")) {
+      // This is an expected error condition - don't log to console
       throw new Error(
         "Invalid response format: missing 'extracted_json' property"
       );
@@ -82,7 +84,12 @@ export async function parseJsonFromText(text: string): Promise<any> {
 
     // Check if there's an error reported from the OCR service
     if (jsonObject.hasOwnProperty("error")) {
-      throw new Error(`OCR service error: ${jsonObject.error}`);
+      // These are expected errors from the OCR process - don't log to console
+      if (jsonObject.error === "no text found") {
+        throw new Error("OCR service error: Unable to detect any text in the provided image. Please ensure the image contains clear, readable text.");
+      } else {
+        throw new Error(`OCR service error: ${jsonObject.error}`);
+      }
     }
 
     const fixedInnerJsonString = jsonObject.extracted_json.replace(
@@ -94,12 +101,22 @@ export async function parseJsonFromText(text: string): Promise<any> {
       const parsedJson = JSON.parse(fixedInnerJsonString);
       return JSON.stringify(parsedJson, null, 2);
     } catch (innerError) {
+      // This is an expected error - don't log to console
       throw new Error(
         `Invalid JSON in extracted content: ${(innerError as Error).message}`
       );
     }
   } catch (error) {
-    console.error("JSON parsing error:", error);
+    // Only log unexpected errors that aren't part of the known error types
+    const errorMessage = (error as Error).message;
+    
+    // Don't log expected errors
+    if (!errorMessage.includes("OCR service error") && 
+        !errorMessage.includes("Invalid response format") &&
+        !errorMessage.includes("Invalid JSON in extracted content")) {
+      console.error("Unexpected JSON parsing error:", error);
+    }
+    
     // Return the error message instead of an empty object
     throw error;
   }

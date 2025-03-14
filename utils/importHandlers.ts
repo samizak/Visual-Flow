@@ -97,14 +97,17 @@ export const handleImageImport = (
           userFriendlyMessage = errorMessage.replace("OCR service error: ", "");
         } else if (errorMessage.includes("Invalid JSON in extracted content")) {
           userFriendlyMessage = "Found text in the image, but it's not valid JSON.";
+        } else {
+          // Only log unexpected errors
+          console.error("Unexpected OCR error:", parseError);
         }
         
         errorToast(userFriendlyMessage);
       }
     } catch (error) {
-      // Handle general errors (like network issues or API failures)
+      // This is likely a fatal error with the API or network - log it
+      console.error("Fatal image processing error:", error);
       errorToast("Could not process the image. Please try again.");
-      console.error("Image processing error:", error);
     } finally {
       setIsLoading(false);
       if (progressInterval) {

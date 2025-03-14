@@ -73,13 +73,26 @@ export function useJsonOperations() {
   }, [jsonData]);
 
   const saveJson = useCallback(() => {
-    const blob = new Blob([jsonData], { type: "application/json" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "data.json";
-    link.click();
-    URL.revokeObjectURL(link.href);
-    successToast("JSON saved to file");
+    // Check if JSON data is empty or only contains whitespace
+    if (!jsonData || !jsonData.trim()) {
+      errorToast("Cannot save empty JSON");
+      return;
+    }
+    
+    // Check if JSON is valid before saving
+    try {
+      JSON.parse(jsonData);
+      
+      const blob = new Blob([jsonData], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "data.json";
+      link.click();
+      URL.revokeObjectURL(link.href);
+      successToast("JSON saved to file");
+    } catch (e) {
+      errorToast("Cannot save invalid JSON");
+    }
   }, [jsonData]);
 
   return {
