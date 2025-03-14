@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/main.css";
 import { Toaster } from "../components/ui/sonner";
-import { SupabaseProvider } from '../components/Auth/SupabaseProvider'
+import { SupabaseProvider } from "../components/Auth/SupabaseProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,15 +22,14 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
       <body>
-        <SupabaseProvider>
-          {children}
-        </SupabaseProvider>
+        <SupabaseProvider>{children}</SupabaseProvider>
+        <Toaster />
       </body>
     </html>
-  )
+  );
 }
