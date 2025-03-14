@@ -213,24 +213,6 @@ export default function LeftPanel({
             }`}
           ></div>
         </div>
-
-        {/* Apply Changes button at the bottom of the panel */}
-        {onApplyChanges && (
-          <div className="p-2 border-t border-gray-700 bg-[#252525]">
-            <button
-              onClick={onApplyChanges}
-              disabled={!isValidJson}
-              className={`w-full py-1.5 px-3 rounded-md flex items-center justify-center gap-2 text-sm font-medium transition-colors ${
-                isValidJson
-                  ? "bg-indigo-600 hover:bg-indigo-700 text-white"
-                  : "bg-gray-700 text-gray-400 cursor-not-allowed"
-              }`}
-            >
-              <Play className="h-4 w-4" />
-              Apply Changes
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
