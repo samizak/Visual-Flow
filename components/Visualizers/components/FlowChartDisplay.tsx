@@ -14,6 +14,8 @@ import {
   NodeTypes,
 } from "@xyflow/react";
 import { Search } from "lucide-react";
+import FlowChartLegend from "./FlowChartLegend";
+import { NodeTypeColors } from "../types/jsonFlowTypes";
 
 interface FlowChartDisplayProps {
   nodes: Node[];
@@ -26,6 +28,15 @@ interface FlowChartDisplayProps {
   proOptions?: ProOptions;
   showGrid?: boolean;
 }
+
+const nodeTypeColors: NodeTypeColors = {
+  string: "#9333ea",
+  number: "#eab308",
+  boolean: "#ef4444",
+  object: "#3b82f6",
+  array: "#22c55e",
+  null: "#6b7280",
+};
 
 const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
   nodes,
@@ -147,7 +158,12 @@ const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
     >
       {/* Only render Background component when showGrid is true */}
       {showGrid && (
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+        <Background
+          variant={BackgroundVariant.Lines}
+          gap={100}
+          size={0.5}
+          color="rgba(255, 255, 255, 0.05)"
+        />
       )}
       <Controls style={controlsStyle} />
 
@@ -184,6 +200,9 @@ const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
           </button>
         )}
       </Panel>
+
+      {/* Add the legend in the top-left corner */}
+      <FlowChartLegend nodeTypes={nodeTypeColors} />
     </ReactFlow>
   );
 };
