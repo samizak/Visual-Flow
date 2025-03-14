@@ -5,6 +5,11 @@ import {
   Upload,
   FileJson,
   Image as ImageIcon,
+  Download,
+  FileImage,
+  FileSpreadsheet,
+  FileText,
+  File as FilePdf,
 } from "lucide-react";
 import { Button } from "../../ui/button";
 import {
@@ -24,6 +29,12 @@ interface FileMenuProps {
   onImport?: () => void;
   onImportJson?: () => void;
   onImportImage?: () => void;
+  onExportPng?: () => void;
+  onExportJpg?: () => void;
+  onExportSvg?: () => void;
+  onExportExcel?: () => void;
+  onExportPdf?: () => void;
+  onExportCsv?: () => void;
 }
 
 export default function FileMenu({
@@ -31,6 +42,12 @@ export default function FileMenu({
   onImport,
   onImportJson,
   onImportImage,
+  onExportPng,
+  onExportJpg,
+  onExportSvg,
+  onExportExcel,
+  onExportPdf,
+  onExportCsv,
 }: FileMenuProps) {
   // Handle general import (fallback)
   const handleImportClick = () => {
@@ -112,6 +129,73 @@ export default function FileMenu({
             <span>Import</span>
           </DropdownMenuItem>
         )}
+
+        {/* Export submenu with various export options */}
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
+            <Download className="mr-2 h-4 w-4" />
+            <span>Export</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="bg-[#1e1e1e] border border-gray-700 shadow-lg">
+            <DropdownMenuLabel className="text-xs text-gray-400">
+              Images
+            </DropdownMenuLabel>
+            <DropdownMenuItem
+              disabled
+              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
+            >
+              <FileImage className="mr-2 h-4 w-4" />
+              <span>Export as PNG</span>
+              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              disabled
+              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
+            >
+              <FileImage className="mr-2 h-4 w-4" />
+              <span>Export as JPG</span>
+              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              disabled
+              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
+            >
+              <FileImage className="mr-2 h-4 w-4" />
+              <span>Export as SVG</span>
+              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-xs text-gray-400">
+              Data
+            </DropdownMenuLabel>
+
+            <DropdownMenuItem
+              disabled
+              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
+            >
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              <span>Export to Excel</span>
+              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              disabled
+              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              <span>Export as CSV</span>
+              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              disabled
+              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
+            >
+              <FilePdf className="mr-2 h-4 w-4" />
+              <span>Export as PDF</span>
+              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
+            </DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
       </DropdownMenuContent>
     </DropdownMenu>
   );
