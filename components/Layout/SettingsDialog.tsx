@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from "../ui/dialog";
 import {
   Select,
@@ -35,6 +36,14 @@ export default function SettingsDialog({
   showGrid = true,
   onToggleGrid,
 }: SettingsDialogProps) {
+  // Add local state to track grid display value
+  const [gridValue, setGridValue] = useState(showGrid ? "true" : "false");
+  
+  // Update local state when props change
+  useEffect(() => {
+    setGridValue(showGrid ? "true" : "false");
+  }, [showGrid]);
+
   const handleEdgeStyleChange = (value: string) => {
     if (value !== edgeStyle) {
       onEdgeStyleChange(value);
@@ -44,6 +53,7 @@ export default function SettingsDialog({
 
   const handleGridDisplayChange = (value: string) => {
     if (onToggleGrid) {
+      setGridValue(value); // Update local state immediately
       const showGridValue = value === "true";
       if (showGridValue !== showGrid) {
         onToggleGrid(showGridValue);
@@ -69,8 +79,10 @@ export default function SettingsDialog({
       <DialogContent className="bg-[#1e1e1e] border border-gray-700 text-white">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
+          <DialogDescription className="" />
         </DialogHeader>
         <div className="py-4 space-y-4">
+          {/* Edge Style Setting - No changes needed here */}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label
               htmlFor="edge-style"
@@ -110,7 +122,7 @@ export default function SettingsDialog({
             </div>
           </div>
 
-          {/* Grid Display Setting */}
+          {/* Grid Display Setting - Updated to use local state */}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label
               htmlFor="grid-display"
@@ -121,7 +133,7 @@ export default function SettingsDialog({
             </Label>
             <div className="col-span-3">
               <Select
-                value={showGrid ? "true" : "false"}
+                value={gridValue}
                 onValueChange={handleGridDisplayChange}
               >
                 <SelectTrigger
@@ -129,7 +141,7 @@ export default function SettingsDialog({
                   id="grid-display"
                 >
                   <SelectValue
-                    placeholder={showGrid ? "Enabled" : "Disabled"}
+                    placeholder={gridValue === "true" ? "Enabled" : "Disabled"}
                   />
                 </SelectTrigger>
                 <SelectContent

@@ -11,18 +11,21 @@ import {
   OnEdgesChange,
   ProOptions,
   Panel,
+  NodeTypes, // Add NodeTypes import
 } from "@xyflow/react";
 import { Search } from "lucide-react";
 
+// Add showGrid to the props interface (this should be at the top of the file)
 interface FlowChartDisplayProps {
   nodes: Node[];
   edges: Edge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
-  nodeTypes: Record<string, React.ComponentType<any>>;
-  onNodeClick: (event: React.MouseEvent, node: Node) => void;
-  controlsStyle: React.CSSProperties;
-  proOptions: ProOptions;
+  nodeTypes: NodeTypes;
+  onNodeClick?: (event: React.MouseEvent, node: Node) => void;
+  controlsStyle?: React.CSSProperties;
+  proOptions?: ProOptions;
+  showGrid?: boolean; // Add this line
 }
 
 const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
@@ -34,6 +37,7 @@ const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
   onNodeClick,
   controlsStyle,
   proOptions,
+  showGrid = true, // Default value for showGrid
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -136,23 +140,16 @@ const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
       onEdgesChange={onEdgesChange}
       nodeTypes={nodeTypes}
       onNodeClick={onNodeClick}
-      fitView
-      fitViewOptions={{ padding: 0.2 }}
-      minZoom={0.1}
-      maxZoom={2}
-      proOptions={proOptions}
       connectionLineType={ConnectionLineType.SmoothStep}
+      fitView
+      proOptions={proOptions}
     >
+      {/* Only render Background component when showGrid is true */}
+      {showGrid && <Background variant={BackgroundVariant.Dots} gap={12} size={1} />}
       <Controls style={controlsStyle} />
-      <Background
-        variant={BackgroundVariant.Dots}
-        gap={12}
-        size={1}
-        color="#333"
-      />
-
-      {/* Search Panel - Moved to bottom left, next to Controls */}
-      <Panel position="bottom-left" className="search-panel ml-[60px]">
+      
+      {/* Search panel */}
+      <Panel position="top-right" className="search-panel">
         {isSearchOpen ? (
           <div className="flex items-center bg-[#1e1e1e] border border-gray-700 rounded-md overflow-hidden shadow-lg">
             <input

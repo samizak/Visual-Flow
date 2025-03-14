@@ -14,7 +14,8 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-import { JsonFlowChartProps } from "./types/jsonFlowTypes";
+// Remove the conflicting import and use only the local interface
+// import { JsonFlowChartProps } from "./types/jsonFlowTypes";
 import GroupedNode from "./components/GroupedNode";
 import SchemaNode from "./components/SchemaNode";
 import { convertJsonToGroupedFlow } from "./utils/jsonGroupedFlowUtils";
@@ -43,13 +44,17 @@ const proOptions = {
   hideAttribution: true,
 };
 
+// Define the interface for the component props
+interface JsonFlowChartProps {
+  jsonData: string;
+  edgeType?: string;
+  showGrid?: boolean;
+  onNodeCountChange?: (count: number) => void;
+  isValidJson?: boolean;
+}
+
 // Create a wrapper component that includes the ReactFlowProvider
-export default function JsonFlowChartWithProvider(
-  props: JsonFlowChartProps & {
-    onNodeCountChange?: (count: number) => void;
-    isValidJson?: boolean;
-  }
-) {
+function JsonFlowChartWithProvider(props: JsonFlowChartProps) {
   return (
     <ReactFlowProvider>
       <JsonFlowChart {...props} />
@@ -57,28 +62,34 @@ export default function JsonFlowChartWithProvider(
   );
 }
 
-// The actual component implementation
-function JsonFlowChart({
+// The main component
+export default function JsonFlowChart({
   jsonData,
+  edgeType = "default",
+  showGrid = true,
   onNodeCountChange,
-  isValidJson = true,
-  edgeType = "smoothstep",
-}: JsonFlowChartProps & { onNodeCountChange?: (count: number) => void } & {
-  isValidJson?: boolean;
-}) {
+  isValidJson = true, // Set default value
+}: JsonFlowChartProps) {
   // Explicitly type the nodes and edges state
   const [nodes, setNodes, onNodesChange]: any = useNodesState([]);
   const [edges, setEdges, onEdgesChange]: any = useEdgesState([]);
+
+  // Remove the duplicate isValidJson state declaration
+  // const [isValidJson, setIsValidJson] = useState(initialIsValidJson);
 
   // Use our custom hooks for data handling and node click handling
   const { isLoading } = useJsonFlowData({
     jsonData,
     edgeType,
-    isValidJson,
+    isValidJson, // Use the prop directly
     onNodeCountChange,
     setNodes,
     setEdges,
   });
+
+  // Create functions to pass to the hook
+  const getNodesFunc = () => nodes;
+  const getEdgesFunc = () => edges;
 
   const {
     onNodeClick,
@@ -86,8 +97,12 @@ function JsonFlowChart({
     setDrawerOpen,
     selectedNodeData,
     selectedNodeLabel,
-    nodePath, // Get the nodePath from the hook
-  } = useNodeClickHandler({ jsonData });
+    nodePath,
+  } = useNodeClickHandler({
+    jsonData,
+    getNodes: getNodesFunc,
+    getEdges: getEdgesFunc,
+  });
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -102,18 +117,21 @@ function JsonFlowChart({
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         onNodeClick={onNodeClick}
-        controlsStyle={controlsStyle}
         proOptions={proOptions}
+        showGrid={showGrid}
       />
 
-      {/* Node Data Drawer - now with nodePath */}
+      {/* Node Data Drawer */}
       <NodeDataDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         nodeData={selectedNodeData}
         nodeLabel={selectedNodeLabel}
-        nodePath={nodePath} // Pass the nodePath to the drawer
+        nodePath={nodePath}
       />
     </div>
   );
 }
+
+// Export the provider wrapper for use elsewhere
+export { JsonFlowChartWithProvider };

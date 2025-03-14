@@ -8,23 +8,28 @@ import {
   ArrowRight,
   Network,
 } from "lucide-react"; // Added FileJson and ArrowRight icons
-import { Dispatch, SetStateAction, useState, useMemo } from "react"; // Add useMemo
+import { useMemo } from "react";
+import { useState } from "react"; // Make sure useState is imported
 
 // In RightPanel.tsx
 export default function RightPanel({
   jsonData,
-  parsedData, // Add this prop
+  parsedData,
   isValidJson,
   setNodeCount,
   nodeCount,
   edgeType,
+  showGrid = true, // Add showGrid prop with default value
+  onToggleGrid, // Add onToggleGrid prop
 }: {
   jsonData: string;
-  parsedData?: any; // Optional pre-parsed data
+  parsedData?: any;
   isValidJson: boolean;
   setNodeCount: (count: number) => void;
   nodeCount: number;
   edgeType: string;
+  showGrid?: boolean; // Add to type definition
+  onToggleGrid?: (show: boolean) => void; // Add to type definition
 }) {
   // Add state for selected path
   const [selectedPath, setSelectedPath] = useState<string[]>([]);
@@ -54,39 +59,11 @@ export default function RightPanel({
             <>
               <JsonFlowChart
                 jsonData={jsonData}
-                isValidJson={isValidJson}
-                onNodeCountChange={setNodeCount}
                 edgeType={edgeType}
+                showGrid={showGrid} // Pass showGrid prop
+                onNodeCountChange={setNodeCount}
+                isValidJson={isValidJson}
               />
-              {/* Legend overlay with icons */}
-              <div className="absolute top-4 left-4 bg-[#1e1e1e] bg-opacity-80 p-2 rounded-md shadow-md">
-                <div className="flex flex-col space-y-2">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-[#6b46c1] mr-1.5 rounded-sm"></div>
-                    <span className="text-gray-300 text-xs flex items-center">
-                      <Box size={14} className="mr-1" /> Root
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-[#3a506b] mr-1.5 rounded-sm"></div>
-                    <span className="text-gray-300 text-xs flex items-center">
-                      <Braces size={14} className="mr-1" /> Objects
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-[#b87333] mr-1.5 rounded-sm"></div>
-                    <span className="text-gray-300 text-xs flex items-center">
-                      <Brackets size={14} className="mr-1" /> Arrays
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-[#2e7d32] mr-1.5 rounded-sm"></div>
-                    <span className="text-gray-300 text-xs flex items-center">
-                      <Type size={14} className="mr-1" /> Primitives
-                    </span>
-                  </div>
-                </div>
-              </div>
             </>
           ) : (
             <div className="flex items-center justify-center h-full text-gray-400">

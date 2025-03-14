@@ -5,6 +5,7 @@ export interface JsonFlowChartProps {
   jsonData: string;
   onNodeCountChange?: (count: number) => void;
   edgeType?: string;
+  showGrid?: boolean; // Add this property
 }
 
 export interface FlowChartLegendProps {

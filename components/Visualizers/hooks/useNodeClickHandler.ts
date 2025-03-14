@@ -4,19 +4,31 @@ import { useReactFlow } from "@xyflow/react";
 
 interface UseNodeClickHandlerProps {
   jsonData: string;
+  getNodes?: () => Node[];
+  getEdges?: () => any[];
 }
 
-export function useNodeClickHandler({ jsonData }: UseNodeClickHandlerProps) {
+export function useNodeClickHandler({ 
+  jsonData,
+  getNodes: externalGetNodes,
+  getEdges: externalGetEdges
+}: UseNodeClickHandlerProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedNodeData, setSelectedNodeData] = useState<Record<string, any>>(
-    {}
-  );
+  const [selectedNodeData, setSelectedNodeData] = useState<Record<string, any>>({});
   const [selectedNodeLabel, setSelectedNodeLabel] = useState("");
-  const [nodePath, setNodePath] = useState<
-    Array<{ id: string; label: string; data: any }>
-  >([]);
+  const [nodePath, setNodePath] = useState<Array<{ id: string; label: string; data: any }>>([]);
 
-  const { getNodes, getEdges } = useReactFlow();
+  // Try to use the React Flow context if available, otherwise use the provided functions
+  let reactFlowInstance: { getNodes: () => Node[]; getEdges: () => any[] } | null = null;
+  
+  try {
+    reactFlowInstance = useReactFlow();
+  } catch (error) {
+    // If useReactFlow fails, we'll use the external functions
+  }
+
+  const getNodesFunc = reactFlowInstance?.getNodes || externalGetNodes || (() => []);
+  const getEdgesFunc = reactFlowInstance?.getEdges || externalGetEdges || (() => []);
 
   const findNodeValue = useCallback((obj: any, key: string): any => {
     // Direct property match
@@ -129,11 +141,11 @@ export function useNodeClickHandler({ jsonData }: UseNodeClickHandlerProps) {
   // New function to find path from root to selected node
   const findPathToNode = useCallback(
     (nodeId: string) => {
-      const nodes = getNodes();
-      const edges = getEdges();
+      const nodes = getNodesFunc();
+      const edges = getEdgesFunc();
 
       // Start with the target node
-      const targetNode = nodes.find((node) => node.id === nodeId);
+      const targetNode = nodes.find((node: Node) => node.id === nodeId);
       if (!targetNode) return [];
 
       const path: Array<{ id: string; label: string; data: any }> = [];
@@ -150,7 +162,7 @@ export function useNodeClickHandler({ jsonData }: UseNodeClickHandlerProps) {
       while (currentNodeId) {
         // Find edges where this node is the target
         const incomingEdge = edges.find(
-          (edge) => edge.target === currentNodeId
+          (edge: any) => edge.target === currentNodeId
         );
 
         // If no incoming edge, we've reached the root or an orphaned node
@@ -158,7 +170,7 @@ export function useNodeClickHandler({ jsonData }: UseNodeClickHandlerProps) {
 
         // Get the source node
         const sourceNodeId = incomingEdge.source;
-        const sourceNode = nodes.find((node) => node.id === sourceNodeId);
+        const sourceNode = nodes.find((node: any) => node.id === sourceNodeId);
 
         if (sourceNode) {
           // Add this node to the beginning of our path
@@ -178,7 +190,7 @@ export function useNodeClickHandler({ jsonData }: UseNodeClickHandlerProps) {
 
       return path;
     },
-    [getNodes, getEdges]
+    [getNodesFunc, getEdgesFunc]
   );
 
   // Modify the onNodeClick handler to also collect path data
@@ -274,6 +286,6 @@ export function useNodeClickHandler({ jsonData }: UseNodeClickHandlerProps) {
     setDrawerOpen,
     selectedNodeData,
     selectedNodeLabel,
-    nodePath, // Add the nodePath to the return value
+    nodePath,
   };
 }

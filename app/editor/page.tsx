@@ -10,14 +10,18 @@ import { useJsonOperations } from "../../hooks/useJsonOperations";
 import { useFileOperations } from "../../hooks/useFileOperations";
 import { useDragAndDrop } from "../../hooks/useDragAndDrop";
 import { useMouseInteractions } from "../../hooks/useMouseInteractions";
-import { handleJsonImport, handleImageImport } from '../../utils/importHandlers';
-import OcrProcessingStatus from '../../components/OCR/OcrProcessingStatus';
+import {
+  handleJsonImport,
+  handleImageImport,
+} from "../../utils/importHandlers";
+import OcrProcessingStatus from "../../components/OCR/OcrProcessingStatus";
 
 export default function Home() {
   const [nodeCount, setNodeCount] = useState(0);
   const [collapseLeftPanel, setCollapseLeftPanel] = useState(false);
   const [edgeType, setEdgeType] = useState<string>("default");
-  
+  const [showGrid, setShowGrid] = useState(true);
+
   // Add OCR-related state variables
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
   const [ocrProgress, setOcrProgress] = useState<number | undefined>(undefined);
@@ -88,6 +92,11 @@ export default function Home() {
 
   const { mainRef, handleMouseDown } = useMouseInteractions();
 
+  // Add handler for grid toggle
+  const handleToggleGrid = (show: boolean) => {
+    setShowGrid(show);
+  };
+
   return (
     <main
       ref={mainRef}
@@ -116,17 +125,17 @@ export default function Home() {
         edgeStyle={edgeType}
         onEdgeStyleChange={(style) => setEdgeType(style)}
         onImportJson={() => handleJsonImport(setJsonData, setIsLoading)}
-        onImportImage={() => handleImageImport(
-          setJsonData, 
-          setIsOcrProcessing,
-          setOcrProgress
-        )}
+        onImportImage={() =>
+          handleImageImport(setJsonData, setIsOcrProcessing, setOcrProgress)
+        }
+        showGrid={showGrid}
+        onToggleGrid={handleToggleGrid}
       />
 
       {/* Add the OCR processing status component */}
-      <OcrProcessingStatus 
-        isProcessing={isOcrProcessing} 
-        progress={ocrProgress} 
+      <OcrProcessingStatus
+        isProcessing={isOcrProcessing}
+        progress={ocrProgress}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -144,10 +153,8 @@ export default function Home() {
           setNodeCount={setNodeCount}
           nodeCount={nodeCount}
           edgeType={edgeType}
-          // Remove the JSON.parse from here to avoid errors during rendering
-          parsedData={
-            isValidJson && visualizationJson ? visualizationJson : null
-          }
+          showGrid={showGrid} // Pass showGrid state to RightPanel
+          onToggleGrid={handleToggleGrid} // Pass toggle handler
         />
       </div>
 
