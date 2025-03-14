@@ -1,26 +1,12 @@
 import JsonFlowChart from "../Visualizers/JsonFlowChart";
-import {
-  Box,
-  Braces,
-  Brackets,
-  Type,
-  FileJson,
-  ArrowRight,
-  Network,
-} from "lucide-react"; // Added FileJson and ArrowRight icons
-import { useMemo } from "react";
-import { useState } from "react"; // Make sure useState is imported
+import { FileJson, ArrowRight, Network } from "lucide-react";
 
-// In RightPanel.tsx
 export default function RightPanel({
   jsonData,
-  parsedData,
   isValidJson,
   setNodeCount,
-  nodeCount,
   edgeType,
-  showGrid = true, // Add showGrid prop with default value
-  onToggleGrid, // Add onToggleGrid prop
+  showGrid = true,
 }: {
   jsonData: string;
   parsedData?: any;
@@ -28,29 +14,9 @@ export default function RightPanel({
   setNodeCount: (count: number) => void;
   nodeCount: number;
   edgeType: string;
-  showGrid?: boolean; // Add to type definition
-  onToggleGrid?: (show: boolean) => void; // Add to type definition
+  showGrid?: boolean;
+  onToggleGrid?: (show: boolean) => void;
 }) {
-  // Add state for selected path
-  const [selectedPath, setSelectedPath] = useState<string[]>([]);
-
-  // Use the pre-parsed data if available, otherwise parse it here
-  const data = useMemo(() => {
-    if (parsedData) return parsedData;
-    if (!jsonData || !isValidJson) return null;
-    try {
-      return JSON.parse(jsonData);
-    } catch (e) {
-      return null;
-    }
-  }, [jsonData, isValidJson, parsedData]);
-
-  // Add export ready function
-  const onExportReady = (exportFn: () => void) => {
-    // This function will be called when the chart is ready to export
-    // You can store the exportFn in state or call it directly if needed
-  };
-
   return (
     <div className="flex-1 flex flex-col border-l border-gray-700">
       <div className="flex-grow relative">
@@ -60,7 +26,7 @@ export default function RightPanel({
               <JsonFlowChart
                 jsonData={jsonData}
                 edgeType={edgeType}
-                showGrid={showGrid} // Pass showGrid prop
+                showGrid={showGrid}
                 onNodeCountChange={setNodeCount}
                 isValidJson={isValidJson}
               />
