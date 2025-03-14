@@ -141,7 +141,7 @@ export function SignInForm({
         <div className="pt-2">
           <Button
             type="submit"
-            className="w-full h-11 font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition-all duration-200 cursor-pointer"
+            className="w-full h-11 font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-500 dark:to-purple-500 dark:hover:from-blue-600 dark:hover:to-purple-600 rounded-xl transition-all duration-200 shadow-md cursor-pointer"
             disabled={loading}
           >
             {loading ? (
