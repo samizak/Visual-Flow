@@ -2,12 +2,14 @@ import {
   extractTextFromImage,
   parseJsonFromText,
 } from "../services/ocrService";
-import { successToast, errorToast, infoToast } from "../lib/toast"; // Add infoToast import
+import { successToast, errorToast, infoToast } from "../lib/toast";
+import { validateJsonAgainstFreeLimits } from "../constants/limits";
 
 // Handler for importing JSON files
 export const handleJsonImport = (
   setJsonContent: (content: string) => void,
-  setIsLoading?: (loading: boolean) => void
+  setIsLoading?: (loading: boolean) => void,
+  isPremiumUser: boolean = false
 ) => {
   const input = document.createElement("input");
   input.type = "file";
@@ -21,8 +23,21 @@ export const handleJsonImport = (
 
     try {
       const text = await file.text();
-      // Validate JSON
-      JSON.parse(text); // This will throw if invalid
+      
+      // For free users, check against limits using the shared validation function
+      if (!isPremiumUser) {
+        const validation = validateJsonAgainstFreeLimits(text, isPremiumUser);
+        if (!validation.isValid) {
+          // Only add "Upgrade for more!" if it's not a format error
+          const errorMessage = validation.isFormatError 
+            ? validation.message 
+            : `${validation.message}. Upgrade for more!`;
+            
+          errorToast(errorMessage || "Error validating JSON");
+          if (setIsLoading) setIsLoading(false);
+          return;
+        }
+      }
 
       // Update editor state with the JSON content
       setJsonContent(text);
@@ -42,7 +57,8 @@ export const handleJsonImport = (
 export const handleImageImport = (
   setJsonContent: (content: string) => void,
   setIsLoading: (loading: boolean) => void,
-  setOcrProgress?: (progress: number | undefined) => void
+  setOcrProgress?: (progress: number | undefined) => void,
+  isPremiumUser: boolean = false
 ) => {
   const input = document.createElement("input");
   input.type = "file";
@@ -81,6 +97,22 @@ export const handleImageImport = (
       try {
         // Try to parse JSON from the extracted text
         const jsonData = await parseJsonFromText(extractedText);
+        
+        // For free users, check against limits
+        if (!isPremiumUser) {
+          const validation = validateJsonAgainstFreeLimits(jsonData, isPremiumUser);
+          if (!validation.isValid) {
+            // Only add "Upgrade for more!" if it's not a format error
+            const errorMessage = validation.isFormatError 
+              ? validation.message 
+              : `${validation.message}. Upgrade for more!`;
+              
+            errorToast(errorMessage || "Error validating JSON");
+            if (setOcrProgress) setOcrProgress(100);
+            return;
+          }
+        }
+        
         setJsonContent(jsonData);
 
         if (setOcrProgress) setOcrProgress(100);

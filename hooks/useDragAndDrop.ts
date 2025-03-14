@@ -1,10 +1,13 @@
 import { useState, useRef, useCallback } from "react";
+import { infoToast, errorToast } from "../lib/toast";
+import { validateJsonAgainstFreeLimits } from "../constants/limits";
 
 interface UseDragAndDropProps {
   onFilesDrop: (files: FileList) => void;
+  isPremiumUser?: boolean;
 }
 
-export function useDragAndDrop({ onFilesDrop }: UseDragAndDropProps) {
+export function useDragAndDrop({ onFilesDrop, isPremiumUser = false }: UseDragAndDropProps) {
   const [isFileDragging, setIsFileDragging] = useState(false);
   const [dragError, setDragError] = useState<string | null>(null);
   const dragCounterRef = useRef(0);
@@ -49,22 +52,84 @@ export function useDragAndDrop({ onFilesDrop }: UseDragAndDropProps) {
     }
   }, []);
 
+  // Check if the JSON content exceeds free user limits
+  const checkFreeLimits = useCallback(async (file: File): Promise<{ isValid: boolean; message?: string }> => {
+    // Premium users bypass all checks
+    if (isPremiumUser) {
+      return { isValid: true };
+    }
+    
+    try {
+      // Read the file content
+      const content = await file.text();
+      
+      // Use the shared validation function
+      const validation = validateJsonAgainstFreeLimits(content, isPremiumUser);
+      
+      return {
+        isValid: validation.isValid,
+        message: validation.message
+      };
+    } catch (e) {
+      return { isValid: false, message: "Error reading file" };
+    }
+  }, [isPremiumUser]);
+
   const handleDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>) => {
+    async (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.stopPropagation();
-
-      // Reset counter and state
+      
       dragCounterRef.current = 0;
       setIsFileDragging(false);
-      setDragError(null);
-
+      
       const files = e.dataTransfer.files;
-      if (files.length) {
-        onFilesDrop(files);
+      
+      if (files && files.length > 0) {
+        // Check if it's a JSON file
+        if (files[0].type === "application/json" || files[0].name.endsWith('.json')) {
+          // For free users, check file against limits
+          if (!isPremiumUser) {
+            const { isValid, message } = await checkFreeLimits(files[0]);
+            
+            if (!isValid) {
+              setDragError(message || "Error processing file");
+              
+              try {
+                // Try to parse the file to check if it's valid JSON
+                const content = await files[0].text();
+                JSON.parse(content); // This will throw if invalid
+                
+                // If we get here, it's valid JSON but exceeds limits
+                // Change from infoToast to errorToast for limit exceeded messages
+                errorToast(`${message}. Upgrade for more!`);
+              } catch (e) {
+                // It's an invalid JSON format error
+                errorToast(message || "Invalid JSON format");
+              }
+              
+              // Auto-hide the error after 3 seconds
+              setTimeout(() => {
+                setDragError(null);
+              }, 3000);
+              
+              return;
+            }
+          }
+          
+          // If we get here, the file is valid for the user's plan
+          onFilesDrop(files);
+        } else {
+          setDragError("Only JSON files are supported");
+          errorToast("Only JSON files are supported");
+          // Auto-hide the error after 3 seconds
+          setTimeout(() => {
+            setDragError(null);
+          }, 3000);
+        }
       }
     },
-    [onFilesDrop]
+    [onFilesDrop, isPremiumUser, checkFreeLimits]
   );
 
   return {
