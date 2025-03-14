@@ -213,16 +213,6 @@ export default function FileMenu({
                 Coming Soon
               </span>
             </DropdownMenuItem>
-            <DropdownMenuItem
-              disabled
-              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
-            >
-              <FilePdf className="mr-2 h-4 w-4" />
-              <span>Export as PDF</span>
-              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">
-                Coming Soon
-              </span>
-            </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
       </DropdownMenuContent>
