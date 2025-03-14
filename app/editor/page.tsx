@@ -15,6 +15,11 @@ import {
   handleImageImport,
 } from "../../utils/importHandlers";
 import OcrProcessingStatus from "../../components/OCR/OcrProcessingStatus";
+import {
+  exportAsPng,
+  exportAsJpeg,
+  exportAsSvg,
+} from "../../utils/exportHandlers";
 
 export default function Home() {
   const [nodeCount, setNodeCount] = useState(0);
@@ -110,7 +115,6 @@ export default function Home() {
       onDrop={handleDrop}
     >
       <DragOverlay isVisible={isFileDragging} error={dragError} />
-
       <Header
         onFormat={formatJson}
         onMinimize={minimizeJson}
@@ -126,14 +130,16 @@ export default function Home() {
         }
         showGrid={showGrid}
         onToggleGrid={handleToggleGrid}
+        onExportPng={() => exportAsPng()}
+        onExportJpg={() => exportAsJpeg()}
+        onExportSvg={() => exportAsSvg()}
+        onApplyChanges={applyChangesToVisualization}
       />
-
       {/* Add the OCR processing status component */}
       <OcrProcessingStatus
         isProcessing={isOcrProcessing}
         progress={ocrProgress}
       />
-
       <div className="flex flex-1 overflow-hidden">
         <LeftPanel
           jsonInput={jsonData}
@@ -153,7 +159,6 @@ export default function Home() {
           onToggleGrid={handleToggleGrid}
         />
       </div>
-
       <Footer isValidJson={isValidJson} nodeCount={nodeCount} />
     </main>
   );

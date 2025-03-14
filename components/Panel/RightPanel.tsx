@@ -1,5 +1,8 @@
 import JsonFlowChart from "../Visualizers/JsonFlowChart";
 import { FileJson, ArrowRight, Network } from "lucide-react";
+import { useCallback } from "react";
+// Import ReactFlowInstance type
+import { ReactFlowInstance } from "reactflow";
 
 export default function RightPanel({
   jsonData,
@@ -7,6 +10,7 @@ export default function RightPanel({
   setNodeCount,
   edgeType,
   showGrid = true,
+  onToggleGrid,
 }: {
   jsonData: string;
   parsedData?: any;
@@ -17,6 +21,12 @@ export default function RightPanel({
   showGrid?: boolean;
   onToggleGrid?: (show: boolean) => void;
 }) {
+  // Add the onInit callback inside the component
+  const onInit = useCallback((reactFlowInstance: ReactFlowInstance) => {
+    // Store the instance globally for access in export functions
+    (window as any).reactFlowInstance = reactFlowInstance;
+  }, []);
+
   return (
     <div className="flex-1 flex flex-col border-l border-gray-700">
       <div className="flex-grow relative">
@@ -29,6 +39,7 @@ export default function RightPanel({
                 showGrid={showGrid}
                 onNodeCountChange={setNodeCount}
                 isValidJson={isValidJson}
+                onInit={onInit} // Pass the onInit callback to JsonFlowChart
               />
             </>
           ) : (

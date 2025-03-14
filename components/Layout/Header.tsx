@@ -7,24 +7,34 @@ import FileMenu from "./HeaderComponents/FileMenu";
 import EditMenu from "./HeaderComponents/EditMenu";
 import ViewMenu from "./HeaderComponents/ViewMenu";
 import SettingsButton from "./HeaderComponents/SettingsButton";
-import ApplyChangesButton from "./HeaderComponents/ApplyChangesButton";
 
+// Add these imports at the top of the file
+import {
+  exportAsPng,
+  exportAsJpeg,
+  exportAsSvg,
+} from "../../utils/exportHandlers";
+
+// Update the Header component props interface to include export handlers
 interface HeaderProps {
-  onFormat?: () => void;
-  onMinimize?: () => void;
-  onCopy?: () => void;
-  onTogglePanel?: () => void;
-  onSave?: () => void;
-  onImport?: () => void;
-  onImportJson?: () => void;
-  onImportImage?: () => void;
-  edgeStyle?: string;
-  showGrid?: boolean;
+  onFormat: () => void;
+  onMinimize: () => void;
+  onCopy: () => void;
+  onTogglePanel: () => void;
+  onSave: () => void;
+  onImport: () => void;
+  onImportJson: () => void;
+  onImportImage: () => void;
+  edgeStyle: string;
   onEdgeStyleChange: (style: string) => void;
-  onToggleGrid?: (showGrid: boolean) => void;
-  onFileLoad?: (content: string) => void;
+  showGrid: boolean;
+  onToggleGrid: (show: boolean) => void;
+  // Add these new props
+  onExportPng?: () => void;
+  onExportJpg?: () => void;
+  onExportSvg?: () => void;
+  // Add missing prop
   onApplyChanges?: () => void;
-  collapseLeftPanel?: boolean;
 }
 
 export default function Header({
@@ -37,11 +47,15 @@ export default function Header({
   onImportJson,
   onImportImage,
   edgeStyle,
-  showGrid,
   onEdgeStyleChange,
+  showGrid,
   onToggleGrid,
-  onApplyChanges,
-  collapseLeftPanel = false,
+  // Add these new props with default implementations
+  onExportPng,
+  onExportJpg,
+  onExportSvg,
+  // Add missing prop with default value
+  onApplyChanges = () => {},
 }: HeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [pricingOpen, setPricingOpen] = useState(false);
@@ -52,7 +66,8 @@ export default function Header({
         <div className="flex items-center space-x-2">
           <PanelToggle
             onTogglePanel={onTogglePanel}
-            collapseLeftPanel={collapseLeftPanel}
+            // Fix: Remove collapseLeftPanel prop or pass it correctly
+            // collapseLeftPanel={collapseLeftPanel}
           />
 
           <div className="h-5 w-px bg-gray-600 mx-0.5"></div>
@@ -63,6 +78,9 @@ export default function Header({
               onImport={onImport}
               onImportJson={onImportJson}
               onImportImage={onImportImage}
+              onExportPng={onExportPng}
+              onExportJpg={onExportJpg}
+              onExportSvg={onExportSvg}
             />
             <EditMenu
               onFormat={onFormat}
@@ -98,7 +116,6 @@ export default function Header({
             showGrid={showGrid}
             onToggleGrid={onToggleGrid}
           />
-          <ApplyChangesButton onClick={onApplyChanges} />
         </div>
       </div>
 

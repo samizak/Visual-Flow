@@ -8,6 +8,7 @@ import FlowChartDisplay from "./components/FlowChartDisplay";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { useJsonFlowData } from "./hooks/useJsonFlowData";
 import { useNodeClickHandler } from "./hooks/useNodeClickHandler";
+import { ReactFlowInstance } from "reactflow";
 
 const nodeTypes = {
   grouped: GroupedNode,
@@ -20,10 +21,11 @@ const proOptions = {
 
 interface JsonFlowChartProps {
   jsonData: string;
-  edgeType?: string;
+  edgeType: string;
   showGrid?: boolean;
   onNodeCountChange?: (count: number) => void;
-  isValidJson?: boolean;
+  isValidJson: boolean;
+  onInit?: (instance: ReactFlowInstance) => void; // Add this line
 }
 
 // Create a wrapper component that includes the ReactFlowProvider

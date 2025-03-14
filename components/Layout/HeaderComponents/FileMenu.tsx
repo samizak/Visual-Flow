@@ -24,30 +24,30 @@ import {
   DropdownMenuSubTrigger,
 } from "../../ui/dropdown-menu";
 
+// Update the FileMenu props interface to include export handlers
 interface FileMenuProps {
   onSave?: () => void;
   onImport?: () => void;
   onImportJson?: () => void;
   onImportImage?: () => void;
+  // Add these new props
   onExportPng?: () => void;
   onExportJpg?: () => void;
   onExportSvg?: () => void;
-  onExportExcel?: () => void;
-  onExportPdf?: () => void;
-  onExportCsv?: () => void;
 }
+
+// In the return statement, let's update the Export submenu section
+// to enable the image export options
 
 export default function FileMenu({
   onSave,
   onImport,
   onImportJson,
   onImportImage,
+  // Add these new props
   onExportPng,
   onExportJpg,
   onExportSvg,
-  onExportExcel,
-  onExportPdf,
-  onExportCsv,
 }: FileMenuProps) {
   // Handle general import (fallback)
   const handleImportClick = () => {
@@ -73,6 +73,26 @@ export default function FileMenu({
     }
   };
 
+  // Add these handlers to the FileMenu component
+  const handleExportPngClick = () => {
+    if (onExportPng) {
+      onExportPng();
+    }
+  };
+
+  const handleExportJpgClick = () => {
+    if (onExportJpg) {
+      onExportJpg();
+    }
+  };
+
+  const handleExportSvgClick = () => {
+    if (onExportSvg) {
+      onExportSvg();
+    }
+  };
+
+  // In the return statement, update the Export submenu
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -140,29 +160,30 @@ export default function FileMenu({
             <DropdownMenuLabel className="text-xs text-gray-400">
               Images
             </DropdownMenuLabel>
+
+            {/* Enable PNG export */}
             <DropdownMenuItem
-              disabled
-              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
+              onClick={handleExportPngClick}
+              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
             >
               <FileImage className="mr-2 h-4 w-4" />
               <span>Export as PNG</span>
-              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
             </DropdownMenuItem>
+
             <DropdownMenuItem
-              disabled
-              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
+              onClick={handleExportJpgClick}
+              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
             >
               <FileImage className="mr-2 h-4 w-4" />
               <span>Export as JPG</span>
-              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
             </DropdownMenuItem>
+
             <DropdownMenuItem
-              disabled
-              className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
+              onClick={handleExportSvgClick}
+              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
             >
               <FileImage className="mr-2 h-4 w-4" />
               <span>Export as SVG</span>
-              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
@@ -170,21 +191,27 @@ export default function FileMenu({
               Data
             </DropdownMenuLabel>
 
+            {/* Keep these disabled for now */}
             <DropdownMenuItem
               disabled
               className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
             >
               <FileSpreadsheet className="mr-2 h-4 w-4" />
               <span>Export to Excel</span>
-              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
+              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">
+                Coming Soon
+              </span>
             </DropdownMenuItem>
+
             <DropdownMenuItem
               disabled
               className="cursor-not-allowed opacity-60 hover:bg-transparent text-gray-400"
             >
               <FileText className="mr-2 h-4 w-4" />
               <span>Export as CSV</span>
-              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
+              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">
+                Coming Soon
+              </span>
             </DropdownMenuItem>
             <DropdownMenuItem
               disabled
@@ -192,7 +219,9 @@ export default function FileMenu({
             >
               <FilePdf className="mr-2 h-4 w-4" />
               <span>Export as PDF</span>
-              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">Coming Soon</span>
+              <span className="ml-2 text-xs bg-gray-700 px-1.5 py-0.5 rounded text-gray-300">
+                Coming Soon
+              </span>
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
