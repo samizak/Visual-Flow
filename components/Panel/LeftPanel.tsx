@@ -3,20 +3,18 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import JsonErrorMessage from "./JsonErrorMessage";
 import { Play } from "lucide-react";
 import { storageService } from "../../utils/storageService";
+import { useJsonStore } from "../../store/useJsonStore";
 
-export default function LeftPanel({
-  jsonInput,
-  setJsonInput,
-  collapseLeftPanel,
-  isValidJson = true,
-  onApplyChanges,
-}: {
-  jsonInput: any;
-  setJsonInput: any;
-  collapseLeftPanel: boolean;
-  isValidJson?: boolean;
-  onApplyChanges?: () => void;
-}) {
+export default function LeftPanel() {
+  // Use the Zustand store instead of props
+  const {
+    jsonData,
+    setJsonData,
+    collapseLeftPanel,
+    isValidJson,
+    applyChangesToVisualization,
+  } = useJsonStore();
+
   const [width, setWidth] = useState(20);
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
   const resizingRef = useRef(false);
@@ -24,7 +22,7 @@ export default function LeftPanel({
   const startWidthRef = useRef(0);
   const panelRef = useRef<HTMLDivElement>(null);
   const placeholderRef = useRef<HTMLDivElement>(null);
-  
+
   // Add a state to track if we should show the placeholder
   const [showPlaceholder, setShowPlaceholder] = useState(true);
 
@@ -51,31 +49,33 @@ export default function LeftPanel({
     // Function to check if we have content
     const checkForContent = () => {
       // Check direct jsonInput prop
-      if (jsonInput && jsonInput.trim() !== "") {
+      if (jsonData && jsonData.trim() !== "") {
         setShowPlaceholder(false);
         return;
       }
-      
+
       // If no direct jsonInput, check localStorage
       const storedData = storageService.getJsonData();
-      if (storedData && storedData.content && storedData.content.trim() !== "") {
+      if (
+        storedData &&
+        storedData.content &&
+        storedData.content.trim() !== ""
+      ) {
         setShowPlaceholder(false);
         return;
       }
-      
+
       // No content found, show placeholder
       setShowPlaceholder(true);
     };
-    
+
     // Run the check
     checkForContent();
-  }, [jsonInput]);
+  }, [jsonData]);
 
   // Handle editor content change
   const handleEditorChange = (value: string | undefined) => {
-    if (setJsonInput) {
-      setJsonInput(value || "");
-    }
+    setJsonData(value || "");
 
     // Update placeholder visibility based on content
     updatePlaceholderVisibility(value);
@@ -104,21 +104,25 @@ export default function LeftPanel({
     }
 
     // Check again for content when editor mounts
-    if (jsonInput && jsonInput.trim() !== "") {
+    if (jsonData && jsonData.trim() !== "") {
       setShowPlaceholder(false);
     } else {
       // Double-check localStorage directly
       const storedData = storageService.getJsonData();
-      if (storedData && storedData.content && storedData.content.trim() !== "") {
+      if (
+        storedData &&
+        storedData.content &&
+        storedData.content.trim() !== ""
+      ) {
         setShowPlaceholder(false);
       }
     }
   };
 
-  // Add effect to update placeholder when jsonInput changes
+  // Add effect to update placeholder when jsonData changes
   useEffect(() => {
-    updatePlaceholderVisibility(jsonInput);
-  }, [jsonInput]);
+    updatePlaceholderVisibility(jsonData);
+  }, [jsonData]);
 
   // Add a state to track active resizing
   const [isResizing, setIsResizing] = useState(false);
@@ -183,7 +187,7 @@ export default function LeftPanel({
         style={{ width: `${width}vw` }}
       >
         <JsonErrorMessage
-          isVisible={!isValidJson && jsonInput !== "" && isEditorLoaded}
+          isVisible={!isValidJson && jsonData !== "" && isEditorLoaded}
         />
 
         <div className="flex-grow relative overflow-hidden">
@@ -201,7 +205,7 @@ export default function LeftPanel({
             width="100%"
             theme="vs-dark"
             defaultLanguage="json"
-            value={jsonInput}
+            value={jsonData}
             onChange={handleEditorChange}
             options={
               {
@@ -223,18 +227,31 @@ export default function LeftPanel({
               <h3 className="text-md font-medium mb-2">Paste your JSON here</h3>
               <pre className="opacity-70 font-mono">
                 {`{
-  "example": "value",
-  "numbers": 123,
-  "boolean": true,
-  "array": [1, 2, 3],
-  "nested": {
-    "key": "value"
-  }
-}`}
+      "example": "value",
+      "numbers": 123,
+      "boolean": true,
+      "array": [1, 2, 3],
+      "nested": {
+        "key": "value"
+      }
+    }`}
               </pre>
             </div>
           )}
         </div>
+
+        {/* Apply Changes button */}
+        {isValidJson && jsonData && jsonData.trim() !== "" && (
+          <div className="p-2 border-t border-gray-700 bg-gray-800">
+            <button
+              onClick={applyChangesToVisualization}
+              className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition-colors"
+            >
+              <Play size={16} />
+              <span>Apply Changes</span>
+            </button>
+          </div>
+        )}
 
         {/* Resize handle */}
         <div

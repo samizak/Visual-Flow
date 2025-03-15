@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import LeftPanel from "../../components/Panel/LeftPanel";
 import Footer from "../../components/Layout/Footer";
 import RightPanel from "../../components/Panel/RightPanel";
@@ -20,50 +20,56 @@ import {
   exportAsJpeg,
   exportAsSvg,
 } from "../../utils/exportHandlers";
-// Remove duplicate useEffect import
 import { storageService } from "../../utils/storageService";
-// Add SettingsDialog import
 import SettingsDialog from "../../components/Layout/SettingsDialog";
+import { useJsonStore } from "../../store/useJsonStore";
 
 export default function Home() {
-  const [nodeCount, setNodeCount] = useState(0);
-  const [collapseLeftPanel, setCollapseLeftPanel] = useState(false);
-  const [edgeType, setEdgeType] = useState<string>("default");
-  const [showGrid, setShowGrid] = useState(true);
-  // Add missing state for settings dialog
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-
-  const [isOcrProcessing, setIsOcrProcessing] = useState(false);
-  const [ocrProgress, setOcrProgress] = useState<number | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [visualizationJson, setVisualizationJson] = useState<string>("");
-
+  // Use the Zustand store
   const {
     jsonData,
     setJsonData,
+    visualizationJson,
+    setVisualizationJson,
     isValidJson,
-    formatJson,
-    minimizeJson,
-    copyJson,
-    saveJson,
-  } = useJsonOperations();
+    nodeCount,
+    setNodeCount,
+    collapseLeftPanel,
+    toggleLeftPanel,
+    edgeType,
+    setEdgeType,
+    showGrid,
+    setShowGrid,
+    isSettingsOpen,
+    setIsSettingsOpen,
+    isOcrProcessing,
+    setOcrProcessing,
+    ocrProgress,
+    setOcrProgress,
+    isLoading,
+    setIsLoading,
+    applyChangesToVisualization,
+  } = useJsonStore();
 
-  // Load saved JSON data when component mounts
-  // In the useEffect for loading settings
+  const { formatJson, minimizeJson, copyJson, saveJson } = useJsonOperations();
+
+  // Track the last parsed JSON to avoid unnecessary updates
+  const lastParsedJsonRef = useRef<any>(null);
+
+  // Load saved settings when component mounts
   useEffect(() => {
     // Load all settings at once
     const savedSettings = storageService.getSettings();
-    
+
     // Apply settings
     if (savedSettings.edgeStyle) {
       setEdgeType(savedSettings.edgeStyle);
     }
-    
+
     if (savedSettings.showGrid !== undefined) {
       setShowGrid(savedSettings.showGrid);
     }
-    
+
     // Load JSON content if auto-save is enabled
     if (savedSettings.autoSaveEnabled) {
       const jsonContent = storageService.getJsonData();
@@ -73,15 +79,7 @@ export default function Home() {
         setVisualizationJson(jsonContent.content);
       }
     }
-  }, [setJsonData]);
-
-  // Save settings when they change
-  useEffect(() => {
-    storageService.saveSettings({
-      edgeStyle: edgeType, // Fix variable name
-      showGrid,
-    });
-  }, [edgeType, showGrid]); // Fix variable name in dependency array
+  }, [setJsonData, setEdgeType, setShowGrid, setVisualizationJson]);
 
   // Auto-save JSON data when it changes
   useEffect(() => {
@@ -95,16 +93,6 @@ export default function Home() {
       return () => clearTimeout(debounceTimer);
     }
   }, [jsonData, isValidJson]);
-
-  // Update visualization JSON only when JSON is valid and user explicitly applies changes
-  const applyChangesToVisualization = () => {
-    if (isValidJson && jsonData.trim()) {
-      setVisualizationJson(jsonData);
-    }
-  };
-
-  // Track the last parsed JSON to avoid unnecessary updates
-  const lastParsedJsonRef = useRef<any>(null);
 
   // Update visualization JSON when JSON content changes semantically
   useEffect(() => {
@@ -127,7 +115,7 @@ export default function Home() {
         // If parsing fails, don't update
       }
     }
-  }, [isValidJson, jsonData]);
+  }, [isValidJson, jsonData, setVisualizationJson]);
 
   const { handleFiles, importFile } = useFileOperations({
     setJsonData,
@@ -147,19 +135,16 @@ export default function Home() {
 
   const { mainRef, handleMouseDown } = useMouseInteractions();
 
-  // Update your edge style handler
+  // Handle edge style change
   const handleEdgeStyleChange = (style: string) => {
     setEdgeType(style);
-    storageService.saveSettings({ edgeStyle: style });
   };
 
-  // Update your grid toggle handler
+  // Handle grid toggle
   const handleToggleGrid = (show: boolean) => {
     setShowGrid(show);
-    storageService.saveSettings({ showGrid: show });
   };
 
-  // Move the SettingsDialog component into the return statement
   return (
     <main
       ref={mainRef}
@@ -181,14 +166,14 @@ export default function Home() {
         onFormat={formatJson}
         onMinimize={minimizeJson}
         onCopy={copyJson}
-        onTogglePanel={() => setCollapseLeftPanel(!collapseLeftPanel)}
+        onTogglePanel={toggleLeftPanel}
         onSave={saveJson}
         onImport={importFile}
         edgeStyle={edgeType}
-        onEdgeStyleChange={(style) => setEdgeType(style)}
+        onEdgeStyleChange={handleEdgeStyleChange}
         onImportJson={() => handleJsonImport(setJsonData, setIsLoading)}
         onImportImage={() =>
-          handleImageImport(setJsonData, setIsOcrProcessing, setOcrProgress)
+          handleImageImport(setJsonData, setOcrProcessing, setOcrProgress)
         }
         showGrid={showGrid}
         onToggleGrid={handleToggleGrid}
@@ -199,7 +184,6 @@ export default function Home() {
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
-      {/* Add SettingsDialog component here */}
       <SettingsDialog
         open={isSettingsOpen}
         onOpenChange={setIsSettingsOpen}
@@ -209,29 +193,13 @@ export default function Home() {
         onToggleGrid={handleToggleGrid}
       />
 
-      {/* Add the OCR processing status component */}
       <OcrProcessingStatus
         isProcessing={isOcrProcessing}
         progress={ocrProgress}
       />
       <div className="flex flex-1 overflow-hidden">
-        <LeftPanel
-          jsonInput={jsonData}
-          setJsonInput={setJsonData}
-          collapseLeftPanel={collapseLeftPanel}
-          isValidJson={isValidJson}
-          onApplyChanges={applyChangesToVisualization}
-        />
-
-        <RightPanel
-          jsonData={visualizationJson}
-          isValidJson={isValidJson && !!visualizationJson}
-          setNodeCount={setNodeCount}
-          nodeCount={nodeCount}
-          edgeType={edgeType}
-          showGrid={showGrid}
-          onToggleGrid={handleToggleGrid}
-        />
+        <LeftPanel />
+        <RightPanel />
       </div>
       <Footer isValidJson={isValidJson} nodeCount={nodeCount} />
     </main>
