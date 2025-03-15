@@ -65,7 +65,7 @@ export function VisualSide() {
         });
       }
     }, 20);
-    
+
     return () => clearInterval(animationCycle);
   }, [typing, jsonIndex, currentJson.length]);
 
@@ -73,26 +73,35 @@ export function VisualSide() {
   const visibleJson = currentJson.substring(0, visibleChars);
 
   return (
-    <div className="hidden lg:block lg:w-1/2 relative overflow-hidden" 
-         style={{ 
-           background: "linear-gradient(135deg, #6366f1 0%, #4338ca 50%, #7e22ce 100%)",
-           backgroundSize: "200% 200%",
-         }}>
+    <div
+      className="hidden lg:block lg:w-1/2 relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(135deg, #6366f1 0%, #4338ca 50%, #7e22ce 100%)",
+        backgroundSize: "200% 200%",
+      }}
+    >
       {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-15 mix-blend-soft-light"></div>
-      
+      {/* <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-15 mix-blend-soft-light"></div> */}
+
       {/* Animated gradient overlay with inline animation */}
-      <div className="absolute inset-0" 
-           style={{ 
-             background: "linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(0, 0, 0, 0) 50%, rgba(168, 85, 247, 0.2) 100%)",
-             animation: "moveGradient 8s ease infinite",
-           }}></div>
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(0, 0, 0, 0) 50%, rgba(168, 85, 247, 0.2) 100%)",
+          animation: "moveGradient 8s ease infinite",
+        }}
+      ></div>
 
       {/* Using flex layout for better responsive positioning */}
       <div className="relative h-full flex flex-col justify-center items-center gap-6 px-8">
         {/* Slogan */}
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-white mb-1" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
+          <h2
+            className="text-3xl font-bold text-white mb-1"
+            style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)" }}
+          >
             Visualize. Understand. Create.
           </h2>
           <p className="text-blue-100 text-lg">
@@ -126,22 +135,44 @@ export function VisualSide() {
       </div>
 
       {/* Enhanced glow effects with inline animations */}
-      <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-400 opacity-20 blur-3xl"
-           style={{ animation: "pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}></div>
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-fuchsia-500 opacity-20 blur-3xl"
-           style={{ animation: "pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite", animationDelay: "1.5s" }}></div>
-      <div className="absolute top-1/2 left-1/4 w-64 h-64 rounded-full bg-indigo-300 opacity-10 blur-3xl"
-           style={{ animation: "pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite", animationDelay: "0.7s" }}></div>
-      
+      <div
+        className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-400 opacity-20 blur-3xl"
+        style={{ animation: "pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite" }}
+      ></div>
+      <div
+        className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-fuchsia-500 opacity-20 blur-3xl"
+        style={{
+          animation: "pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+          animationDelay: "1.5s",
+        }}
+      ></div>
+      <div
+        className="absolute top-1/2 left-1/4 w-64 h-64 rounded-full bg-indigo-300 opacity-10 blur-3xl"
+        style={{
+          animation: "pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+          animationDelay: "0.7s",
+        }}
+      ></div>
+
       {/* Add CSS animations directly in the component */}
       <style jsx>{`
         @keyframes moveGradient {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
+          0%,
+          100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
         }
         @keyframes pulse {
-          0%, 100% { opacity: 0.2; }
-          50% { opacity: 0.1; }
+          0%,
+          100% {
+            opacity: 0.2;
+          }
+          50% {
+            opacity: 0.1;
+          }
         }
       `}</style>
     </div>
