@@ -11,7 +11,7 @@ import {
   FileText,
   File as FilePdf,
 } from "lucide-react";
-import { Button } from "../../ui/button";
+import { Button } from "../../../../../components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,19 +22,19 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "../../ui/dropdown-menu";
-import { useJsonStore } from "../../../store/useJsonStore";
-import { useFileOperations } from "../../../hooks/useFileOperations";
+} from "../../../../../components/ui/dropdown-menu";
+import { useJsonStore } from "../../../../../store/useJsonStore";
+import { useFileOperations } from "../../../../../hooks/useFileOperations";
 import {
   handleJsonImport,
   handleImageImport,
-} from "../../../utils/importHandlers";
+} from "../../../../../utils/importHandlers";
 import {
   exportAsPng,
   exportAsJpeg,
   exportAsSvg,
-} from "../../../utils/exportHandlers";
-import { successToast, errorToast } from "../../../lib/toast";
+} from "../../../../../utils/exportHandlers";
+import { successToast, errorToast } from "../../../../../lib/toast";
 
 interface FileMenuProps {
   onUpgradeClick?: (featureName: string) => void;

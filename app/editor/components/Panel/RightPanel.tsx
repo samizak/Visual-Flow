@@ -1,6 +1,6 @@
 import React from "react";
 import JsonFlowChart from "../Visualizers/JsonFlowChart";
-import { useJsonStore } from "../../store/useJsonStore";
+import { useJsonStore } from "../../../../store/useJsonStore";
 import { FileJson, ArrowRight, Network } from "lucide-react";
 
 export default function RightPanel() {

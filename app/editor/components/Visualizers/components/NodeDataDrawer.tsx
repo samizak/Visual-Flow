@@ -1,5 +1,5 @@
 import { Copy, X, FileJson, GitBranch, Code } from "lucide-react";
-import { successToast, errorToast } from "../../../lib/toast";
+import { successToast, errorToast } from "../../../../../lib/toast";
 import {
   Drawer,
   DrawerContent,
@@ -7,10 +7,10 @@ import {
   DrawerTitle,
   DrawerClose,
   DrawerDescription,
-} from "../../ui/drawer";
+} from "../../../../../components/ui/drawer";
 import Editor from "@monaco-editor/react";
 import { Fragment, useState } from "react";
-import { Button } from "../../ui/button";
+import { Button } from "../../../../../components/ui/button";
 import React from "react";
 
 interface NodeDataDrawerProps {

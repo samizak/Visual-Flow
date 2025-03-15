@@ -1,6 +1,6 @@
 import React from "react";
 import { FileCode, Minimize, Copy } from "lucide-react";
-import { Button } from "../../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,25 +8,20 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
-import { useJsonStore } from "../../../store/useJsonStore";
-import { useJsonOperations } from "../../../hooks/useJsonOperations";
+} from "@/components/ui/dropdown-menu";
+import { useJsonStore } from "@/store/useJsonStore";
+
+import { successToast, errorToast } from "@/lib/toast";
 
 export default function EditMenu() {
-  // Get the JSON data from the Zustand store
   const { jsonData, setJsonData } = useJsonStore();
-  
-  // Create a custom version of the operations that uses the store data
+
   const handleFormatJson = () => {
     try {
       if (jsonData.trim()) {
         const parsedJson = JSON.parse(jsonData);
         const formattedJson = JSON.stringify(parsedJson, null, 2);
-        
-        // Update the store with the formatted JSON
         setJsonData(formattedJson);
-        
-        // Show success toast
         successToast("JSON formatted successfully");
       } else {
         errorToast("No JSON to format");
@@ -35,16 +30,16 @@ export default function EditMenu() {
       errorToast("Cannot format invalid JSON");
     }
   };
-  
+
   const handleMinimizeJson = () => {
     try {
       if (jsonData.trim()) {
         const parsedJson = JSON.parse(jsonData);
         const minimizedJson = JSON.stringify(parsedJson);
-        
+
         // Update the store with the minimized JSON
         setJsonData(minimizedJson);
-        
+
         // Show success toast
         successToast("JSON minimized successfully");
       } else {
@@ -54,7 +49,7 @@ export default function EditMenu() {
       errorToast("Cannot minimize invalid JSON");
     }
   };
-  
+
   const handleCopyJson = () => {
     try {
       if (jsonData.trim()) {
@@ -108,6 +103,3 @@ export default function EditMenu() {
     </DropdownMenu>
   );
 }
-
-// Import toast functions
-import { successToast, errorToast } from "../../../lib/toast";

@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import LeftPanel from "../../components/Panel/LeftPanel";
-import Footer from "../../components/Layout/Footer";
-import RightPanel from "../../components/Panel/RightPanel";
-import Header from "../../components/Layout/Header";
+import LeftPanel from "./components/Panel/LeftPanel";
+import Footer from "./components/Layout/Footer";
+import RightPanel from "./components/Panel/RightPanel";
+import Header from "./components/Layout/Header";
 import DragOverlay from "../../components/DragOverlay";
 import { useFileOperations } from "../../hooks/useFileOperations";
 import { useDragAndDrop } from "../../hooks/useDragAndDrop";
 import { useMouseInteractions } from "../../hooks/useMouseInteractions";
 import OcrProcessingStatus from "../../components/OCR/OcrProcessingStatus";
 import { storageService } from "../../utils/storageService";
-import SettingsDialog from "../../components/Layout/SettingsDialog";
+import SettingsDialog from "./components/Layout/SettingsDialog";
 import { useJsonStore } from "../../store/useJsonStore";
 
 export default function Home() {

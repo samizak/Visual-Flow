@@ -1,7 +1,11 @@
 import React, { useState } from "react";
-import { useSupabase } from "../../components/Auth/SupabaseProvider";
+import { useSupabase } from "../../../../components/Auth/SupabaseProvider";
 import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../../../components/ui/avatar";
 import { useTheme } from "next-themes";
 import {
   DropdownMenu,
@@ -9,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../../../components/ui/dropdown-menu";
 import {
   User,
   LogOut,
@@ -19,15 +23,15 @@ import {
   Sun,
   Star,
 } from "lucide-react";
-import { createClient } from "../../utils/superbase/client";
+import { createClient } from "../../../../utils/superbase/client";
 import SettingsDialog from "./SettingsDialog";
-import { useJsonStore } from "../../store/useJsonStore";
+import { useJsonStore } from "../../../../store/useJsonStore";
 
 import PanelToggle from "./HeaderComponents/PanelToggle";
 import FileMenu from "./HeaderComponents/FileMenu";
 import EditMenu from "./HeaderComponents/EditMenu";
 import ViewMenu from "./HeaderComponents/ViewMenu";
-import UpgradeModal from "../PremiumFeatures/UpgradeModal";
+import UpgradeModal from "../../../../components/PremiumFeatures/UpgradeModal";
 
 export default function Header() {
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);

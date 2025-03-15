@@ -2,8 +2,8 @@ import Editor from "@monaco-editor/react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import JsonErrorMessage from "./JsonErrorMessage";
 import { Play } from "lucide-react";
-import { storageService } from "../../utils/storageService";
-import { useJsonStore } from "../../store/useJsonStore";
+import { storageService } from "../../../../utils/storageService";
+import { useJsonStore } from "../../../../store/useJsonStore";
 
 export default function LeftPanel() {
   // Use the Zustand store instead of props

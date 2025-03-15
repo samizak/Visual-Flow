@@ -1,7 +1,7 @@
 import React from "react";
 import { Settings } from "lucide-react";
-import { Button } from "../../ui/button";
-import { useJsonStore } from "../../../store/useJsonStore";
+import { Button } from "../../../../../components/ui/button";
+import { useJsonStore } from "../../../../../store/useJsonStore";
 
 export default function SettingsButton() {
   const { setIsSettingsOpen } = useJsonStore();
