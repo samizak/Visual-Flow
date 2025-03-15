@@ -1,22 +1,21 @@
 import React from "react";
 import { Settings } from "lucide-react";
 import { Button } from "../../ui/button";
+import { useJsonStore } from "../../../store/useJsonStore";
 
-interface SettingsButtonProps {
-  onClick: () => void;
-}
+export default function SettingsButton() {
+  // Use the Zustand store directly
+  const { setIsSettingsOpen } = useJsonStore();
 
-export default function SettingsButton({ onClick }: SettingsButtonProps) {
   return (
     <Button
       variant="ghost"
-      size="sm"
-      onClick={onClick}
-      className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors"
+      size="icon"
+      onClick={() => setIsSettingsOpen(true)}
       title="Settings"
+      className="text-gray-300 hover:text-white hover:bg-gray-800"
     >
-      <Settings className="mr-1 h-4 w-4" />
-      Settings
+      <Settings size={18} />
     </Button>
   );
 }

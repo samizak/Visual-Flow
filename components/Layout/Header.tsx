@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import SettingsDialog from "./SettingsDialog";
 
 import PanelToggle from "./HeaderComponents/PanelToggle";
 import FileMenu from "./HeaderComponents/FileMenu";
@@ -8,53 +7,7 @@ import ViewMenu from "./HeaderComponents/ViewMenu";
 import SettingsButton from "./HeaderComponents/SettingsButton";
 import UpgradeModal from "../PremiumFeatures/UpgradeModal";
 
-// Update the Header component props interface to include export handlers
-interface HeaderProps {
-  onFormat: () => void;
-  onMinimize: () => void;
-  onCopy: () => void;
-  onTogglePanel: () => void;
-  onSave: () => void;
-  onImport: () => void;
-  onImportJson: () => void;
-  onImportImage: () => void;
-  edgeStyle: string;
-  onEdgeStyleChange: (style: string) => void;
-  showGrid: boolean;
-  onToggleGrid: (show: boolean) => void;
-  // Add these new props
-  onExportPng?: () => void;
-  onExportJpg?: () => void;
-  onExportSvg?: () => void;
-  // Add missing prop
-  onApplyChanges?: () => void;
-  // Add isPremiumUser prop
-  isPremiumUser?: boolean;
-  // Add onOpenSettings prop
-  onOpenSettings?: () => void;
-}
-
-export default function Header({
-  onFormat,
-  onMinimize,
-  onCopy,
-  onTogglePanel,
-  onSave,
-  onImport,
-  onImportJson,
-  onImportImage,
-  edgeStyle,
-  onEdgeStyleChange,
-  showGrid,
-  onToggleGrid,
-  onExportPng,
-  onExportJpg,
-  onExportSvg,
-  onApplyChanges = () => {},
-  isPremiumUser = false,
-  onOpenSettings, // Add this parameter
-}: HeaderProps) {
-  const [settingsOpen, setSettingsOpen] = useState(false);
+export default function Header() {
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const [currentFeature, setCurrentFeature] = useState<string | undefined>(
     undefined
@@ -74,28 +27,14 @@ export default function Header({
     <header className="bg-[#1e1e1e] border-b border-gray-700 py-1 px-2 relative">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <PanelToggle onTogglePanel={onTogglePanel} />
+          <PanelToggle />
 
           <div className="h-5 w-px bg-gray-600 mx-0.5"></div>
 
           <div className="flex items-center space-x-1 pl-2">
-            <FileMenu
-              onSave={onSave}
-              onImport={onImport}
-              onImportJson={onImportJson}
-              onImportImage={onImportImage}
-              onExportPng={onExportPng}
-              onExportJpg={onExportJpg}
-              onExportSvg={onExportSvg}
-              isPremiumUser={isPremiumUser}
-              onUpgradeClick={handleUpgradeClick}
-            />
-            <EditMenu
-              onFormat={onFormat}
-              onMinimize={onMinimize}
-              onCopy={onCopy}
-            />
-            <ViewMenu onApplyChanges={onApplyChanges} />
+            <FileMenu onUpgradeClick={handleUpgradeClick} />
+            <EditMenu />
+            <ViewMenu />
           </div>
         </div>
 
@@ -118,30 +57,10 @@ export default function Header({
             </svg>
             Upgrade to Pro
           </button>
-          {/* Update the SettingsButton to use the new prop */}
-          <SettingsButton 
-            onClick={onOpenSettings || (() => setSettingsOpen(true))} 
-          />
-          
-          <SettingsDialog
-            open={settingsOpen}
-            onOpenChange={setSettingsOpen}
-            edgeStyle={edgeStyle}
-            onEdgeStyleChange={onEdgeStyleChange}
-            showGrid={showGrid}
-            onToggleGrid={onToggleGrid}
-          />
+
+          <SettingsButton />
         </div>
       </div>
-
-      <SettingsDialog
-        open={settingsOpen}
-        onOpenChange={setSettingsOpen}
-        edgeStyle={edgeStyle}
-        onEdgeStyleChange={onEdgeStyleChange}
-        showGrid={showGrid}
-        onToggleGrid={onToggleGrid}
-      />
 
       {/* Add the upgrade modal */}
       <UpgradeModal

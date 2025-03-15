@@ -9,14 +9,65 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
+import { useJsonStore } from "../../../store/useJsonStore";
+import { useJsonOperations } from "../../../hooks/useJsonOperations";
 
-interface EditMenuProps {
-  onFormat?: () => void;
-  onMinimize?: () => void;
-  onCopy?: () => void;
-}
+export default function EditMenu() {
+  // Get the JSON data from the Zustand store
+  const { jsonData, setJsonData } = useJsonStore();
+  
+  // Create a custom version of the operations that uses the store data
+  const handleFormatJson = () => {
+    try {
+      if (jsonData.trim()) {
+        const parsedJson = JSON.parse(jsonData);
+        const formattedJson = JSON.stringify(parsedJson, null, 2);
+        
+        // Update the store with the formatted JSON
+        setJsonData(formattedJson);
+        
+        // Show success toast
+        successToast("JSON formatted successfully");
+      } else {
+        errorToast("No JSON to format");
+      }
+    } catch (e) {
+      errorToast("Cannot format invalid JSON");
+    }
+  };
+  
+  const handleMinimizeJson = () => {
+    try {
+      if (jsonData.trim()) {
+        const parsedJson = JSON.parse(jsonData);
+        const minimizedJson = JSON.stringify(parsedJson);
+        
+        // Update the store with the minimized JSON
+        setJsonData(minimizedJson);
+        
+        // Show success toast
+        successToast("JSON minimized successfully");
+      } else {
+        errorToast("No JSON to minimize");
+      }
+    } catch (e) {
+      errorToast("Cannot minimize invalid JSON");
+    }
+  };
+  
+  const handleCopyJson = () => {
+    try {
+      if (jsonData.trim()) {
+        navigator.clipboard.writeText(jsonData);
+        successToast("JSON copied to clipboard");
+      } else {
+        errorToast("No JSON to copy");
+      }
+    } catch (e) {
+      errorToast("Failed to copy JSON to clipboard");
+    }
+  };
 
-export default function EditMenu({ onFormat, onMinimize, onCopy }: EditMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,21 +84,21 @@ export default function EditMenu({ onFormat, onMinimize, onCopy }: EditMenuProps
         <DropdownMenuLabel>Edit Options</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={onFormat}
+          onClick={handleFormatJson}
           className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
         >
           <FileCode className="mr-2 h-4 w-4" />
           <span>Format JSON</span>
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={onMinimize}
+          onClick={handleMinimizeJson}
           className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
         >
           <Minimize className="mr-2 h-4 w-4" />
           <span>Minimize JSON</span>
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={onCopy}
+          onClick={handleCopyJson}
           className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
         >
           <Copy className="mr-2 h-4 w-4" />
@@ -57,3 +108,6 @@ export default function EditMenu({ onFormat, onMinimize, onCopy }: EditMenuProps
     </DropdownMenu>
   );
 }
+
+// Import toast functions
+import { successToast, errorToast } from "../../../lib/toast";

@@ -32,6 +32,7 @@ interface JsonState {
   setOcrProgress: (progress: number | undefined) => void;
   setIsLoading: (isLoading: boolean) => void;
   applyChangesToVisualization: () => void;
+  isPremiumUser: boolean;
 }
 
 export const useJsonStore = create<JsonState>((set, get) => ({
@@ -47,6 +48,7 @@ export const useJsonStore = create<JsonState>((set, get) => ({
   isOcrProcessing: false,
   ocrProgress: undefined,
   isLoading: false,
+  isPremiumUser: false,
   
   // Actions
   setJsonData: (data) => set({ jsonData: data }),
@@ -74,4 +76,7 @@ export const useJsonStore = create<JsonState>((set, get) => ({
       set({ visualizationJson: jsonData });
     }
   },
+  
+  // If you need to add a setter for this property:
+  setIsPremiumUser: (isPremium: boolean) => set({ isPremiumUser: isPremium }),
 }));
