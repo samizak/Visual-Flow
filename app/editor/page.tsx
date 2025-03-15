@@ -50,24 +50,27 @@ export default function Home() {
   } = useJsonOperations();
 
   // Load saved JSON data when component mounts
+  // In the useEffect for loading settings
   useEffect(() => {
-    const savedData = storageService.getSettings();
-
-    // Set edge style from saved settings
-    if (savedData.edgeStyle) {
-      setEdgeType(savedData.edgeStyle);
+    // Load all settings at once
+    const savedSettings = storageService.getSettings();
+    
+    // Apply settings
+    if (savedSettings.edgeStyle) {
+      setEdgeType(savedSettings.edgeStyle);
     }
-
-    // Set grid visibility from saved settings
-    if (savedData.showGrid !== undefined) {
-      setShowGrid(savedData.showGrid);
+    
+    if (savedSettings.showGrid !== undefined) {
+      setShowGrid(savedSettings.showGrid);
     }
-
+    
     // Load JSON content if auto-save is enabled
-    if (savedData.autoSaveEnabled) {
+    if (savedSettings.autoSaveEnabled) {
       const jsonContent = storageService.getJsonData();
       if (jsonContent && jsonContent.content) {
         setJsonData(jsonContent.content);
+        // Also set visualization JSON if needed
+        setVisualizationJson(jsonContent.content);
       }
     }
   }, [setJsonData]);

@@ -1,84 +1,78 @@
-/**
- * Storage service for persisting JSON data
- */
-const STORAGE_KEY = 'json_visualiser_data';
-const SETTINGS_KEY = 'json_visualiser_settings';
-
-export interface StoredJsonData {
+// Improved storage service with better typing and more concise methods
+interface JsonData {
   content: string;
-  timestamp: number;
-  name?: string;
+  lastModified: number;
 }
 
-export interface AppSettings {
-  autoSaveEnabled: boolean;
-  edgeStyle: string;
-  showGrid: boolean;
+interface AppSettings {
+  edgeStyle?: string;
+  showGrid?: boolean;
+  autoSaveEnabled?: boolean;
 }
 
-export const storageService = {
-  /**
-   * Save JSON data to localStorage
-   */
-  saveJsonData(jsonContent: string, name?: string): void {
-    try {
-      const data: StoredJsonData = {
-        content: jsonContent,
-        timestamp: Date.now(),
-        name
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (error) {
-      console.error('Error saving JSON data to localStorage:', error);
-    }
-  },
+// Default settings
+const DEFAULT_SETTINGS: AppSettings = {
+  edgeStyle: 'default',
+  showGrid: true,
+  autoSaveEnabled: true
+};
 
-  /**
-   * Retrieve JSON data from localStorage
-   */
-  getJsonData(): StoredJsonData | null {
-    try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      return data ? JSON.parse(data) : null;
-    } catch (error) {
-      console.error('Error retrieving JSON data from localStorage:', error);
-      return null;
-    }
-  },
+class StorageService {
+  private readonly JSON_DATA_KEY = 'json_visualizer_data';
+  private readonly SETTINGS_KEY = 'json_visualizer_settings';
 
-  /**
-   * Clear stored JSON data
-   */
-  clearJsonData(): void {
-    localStorage.removeItem(STORAGE_KEY);
-  },
-
-  /**
-   * Save application settings
-   */
-  saveSettings(settings: Partial<AppSettings>): void {
+  // Generic method to get data from localStorage with type safety
+  private getItem<T>(key: string, defaultValue: T): T {
+    if (typeof window === 'undefined') return defaultValue;
+    
     try {
-      // Get existing settings first
-      const existingSettings = this.getSettings();
-      const updatedSettings = { ...existingSettings, ...settings };
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(updatedSettings));
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultValue;
     } catch (error) {
-      console.error('Error saving settings to localStorage:', error);
-    }
-  },
-
-  /**
-   * Get application settings
-   */
-  getSettings(): AppSettings {
-    try {
-      const settings = localStorage.getItem(SETTINGS_KEY);
-      return settings 
-        ? JSON.parse(settings) 
-        : { autoSaveEnabled: true, edgeStyle: 'default', showGrid: true };
-    } catch (error) {
-      console.error('Error retrieving settings from localStorage:', error);
-      return { autoSaveEnabled: true, edgeStyle: 'default', showGrid: true };
+      console.error(`Error retrieving ${key} from localStorage:`, error);
+      return defaultValue;
     }
   }
-};
+
+  // Generic method to save data to localStorage
+  private setItem<T>(key: string, value: T): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Error saving ${key} to localStorage:`, error);
+    }
+  }
+
+  // JSON data methods
+  getJsonData(): JsonData {
+    return this.getItem<JsonData>(this.JSON_DATA_KEY, { content: '', lastModified: Date.now() });
+  }
+
+  saveJsonData(content: string): void {
+    this.setItem<JsonData>(this.JSON_DATA_KEY, {
+      content,
+      lastModified: Date.now()
+    });
+  }
+
+  // Settings methods
+  getSettings(): AppSettings {
+    return { ...DEFAULT_SETTINGS, ...this.getItem<AppSettings>(this.SETTINGS_KEY, {}) };
+  }
+
+  saveSettings(settings: Partial<AppSettings>): void {
+    const currentSettings = this.getSettings();
+    this.setItem<AppSettings>(this.SETTINGS_KEY, { ...currentSettings, ...settings });
+  }
+
+  // Clear all data
+  clearAll(): void {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(this.JSON_DATA_KEY);
+    localStorage.removeItem(this.SETTINGS_KEY);
+  }
+}
+
+export const storageService = new StorageService();

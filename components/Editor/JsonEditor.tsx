@@ -1,39 +1,37 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Editor from "@monaco-editor/react";
 import { storageService } from "../../utils/storageService";
+import { useAutoSave } from "../../hooks/useAutoSave";
 
 interface JsonEditorProps {
   value: string;
   onChange: (value: string) => void;
   options?: any;
+  autoSave?: boolean;
 }
 
-export default function JsonEditor({ value, onChange, options = {} }: JsonEditorProps) {
+export default function JsonEditor({ 
+  value, 
+  onChange, 
+  options = {},
+  autoSave = true
+}: JsonEditorProps) {
   // Use the passed value as the content
   const jsonContent = value;
   const setJsonContent = onChange;
 
   // Load saved JSON data when component mounts
   useEffect(() => {
-    const savedData = storageService.getJsonData();
-    if (savedData && savedData.content) {
-      // Set the editor content with saved data
-      setJsonContent(savedData.content);
-    }
-  }, [setJsonContent]);
-
-  // Add auto-save functionality
-  useEffect(() => {
-    // Save JSON data whenever content changes
-    // Add debounce to avoid excessive saves
-    const debounceTimer = setTimeout(() => {
-      if (jsonContent) {
-        storageService.saveJsonData(jsonContent);
+    if (autoSave) {
+      const savedData = storageService.getJsonData();
+      if (savedData && savedData.content) {
+        setJsonContent(savedData.content);
       }
-    }, 1000); // 1 second debounce
+    }
+  }, [setJsonContent, autoSave]);
 
-    return () => clearTimeout(debounceTimer);
-  }, [jsonContent]);
+  // Use our custom hook for auto-saving
+  useAutoSave(jsonContent, autoSave);
 
   return (
     <Editor
