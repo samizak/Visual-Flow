@@ -23,7 +23,6 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "../../ui/dropdown-menu";
-import PremiumFeatureWrapper from "../../PremiumFeatures/PremiumFeatureWrapper";
 
 // Update the FileMenu props interface to include export handlers
 interface FileMenuProps {
@@ -35,7 +34,7 @@ interface FileMenuProps {
   onExportJpg?: () => void;
   onExportSvg?: () => void;
   isPremiumUser?: boolean;
-  onUpgradeClick?: () => void;
+  onUpgradeClick?: (featureName: string) => void;
 }
 
 export default function FileMenu({
@@ -71,7 +70,7 @@ export default function FileMenu({
     if (isPremiumUser && onImportImage) {
       onImportImage();
     } else if (onUpgradeClick) {
-      onUpgradeClick();
+      onUpgradeClick("Image Import (OCR)");
     }
   };
 
@@ -80,7 +79,7 @@ export default function FileMenu({
     if (isPremiumUser && onExportPng) {
       onExportPng();
     } else if (onUpgradeClick) {
-      onUpgradeClick();
+      onUpgradeClick("PNG Export");
     }
   };
 
@@ -88,7 +87,7 @@ export default function FileMenu({
     if (isPremiumUser && onExportJpg) {
       onExportJpg();
     } else if (onUpgradeClick) {
-      onUpgradeClick();
+      onUpgradeClick("JPG Export");
     }
   };
 
@@ -96,7 +95,7 @@ export default function FileMenu({
     if (isPremiumUser && onExportSvg) {
       onExportSvg();
     } else if (onUpgradeClick) {
-      onUpgradeClick();
+      onUpgradeClick("SVG Export");
     }
   };
 
@@ -139,27 +138,15 @@ export default function FileMenu({
                 <span>JSON File</span>
               </DropdownMenuItem>
 
-              {/* Wrap Image import with premium feature wrapper */}
+              {/* Image import - premium feature */}
               <DropdownMenuItem
                 onClick={handleImportImageClick}
                 className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
               >
-                {isPremiumUser ? (
-                  <>
-                    <ImageIcon className="mr-2 h-4 w-4" />
-                    <span>Image (OCR)</span>
-                  </>
-                ) : (
-                  <PremiumFeatureWrapper
-                    isPremiumUser={isPremiumUser}
-                    featureName="Image (OCR)"
-                    onUpgradeClick={onUpgradeClick}
-                  >
-                    <div className="flex items-center">
-                      <ImageIcon className="mr-2 h-4 w-4" />
-                      <span>Image (OCR)</span>
-                    </div>
-                  </PremiumFeatureWrapper>
+                <ImageIcon className="mr-2 h-4 w-4" />
+                <span>Image (OCR)</span>
+                {!isPremiumUser && (
+                  <span className="ml-auto text-xs text-yellow-400">PRO</span>
                 )}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
@@ -173,51 +160,39 @@ export default function FileMenu({
             <span>Export</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="bg-[#1e1e1e] border border-gray-700 shadow-lg">
-            {/* JPG export - premium only */}
+            {/* PNG export - premium feature */}
+            <DropdownMenuItem
+              onClick={handleExportPngClick}
+              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+            >
+              <FileImage className="mr-2 h-4 w-4" />
+              <span>PNG Image</span>
+              {!isPremiumUser && (
+                <span className="ml-auto text-xs text-yellow-400">PRO</span>
+              )}
+            </DropdownMenuItem>
+
+            {/* JPG export - premium feature */}
             <DropdownMenuItem
               onClick={handleExportJpgClick}
               className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
             >
-              {isPremiumUser ? (
-                <>
-                  <FileImage className="mr-2 h-4 w-4" />
-                  <span>JPG Image</span>
-                </>
-              ) : (
-                <PremiumFeatureWrapper
-                  isPremiumUser={isPremiumUser}
-                  featureName="JPG Image"
-                  onUpgradeClick={onUpgradeClick}
-                >
-                  <div className="flex items-center">
-                    <FileImage className="mr-2 h-4 w-4" />
-                    <span>JPG Image</span>
-                  </div>
-                </PremiumFeatureWrapper>
+              <FileImage className="mr-2 h-4 w-4" />
+              <span>JPG Image</span>
+              {!isPremiumUser && (
+                <span className="ml-auto text-xs text-yellow-400">PRO</span>
               )}
             </DropdownMenuItem>
 
-            {/* SVG export - premium only */}
+            {/* SVG export - premium feature */}
             <DropdownMenuItem
               onClick={handleExportSvgClick}
               className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
             >
-              {isPremiumUser ? (
-                <>
-                  <FileText className="mr-2 h-4 w-4" />
-                  <span>SVG Vector</span>
-                </>
-              ) : (
-                <PremiumFeatureWrapper
-                  isPremiumUser={isPremiumUser}
-                  featureName="SVG Vector"
-                  onUpgradeClick={onUpgradeClick}
-                >
-                  <div className="flex items-center">
-                    <FileText className="mr-2 h-4 w-4" />
-                    <span>SVG Vector</span>
-                  </div>
-                </PremiumFeatureWrapper>
+              <FileText className="mr-2 h-4 w-4" />
+              <span>SVG Vector</span>
+              {!isPremiumUser && (
+                <span className="ml-auto text-xs text-yellow-400">PRO</span>
               )}
             </DropdownMenuItem>
           </DropdownMenuSubContent>

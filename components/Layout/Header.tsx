@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 import SettingsDialog from "./SettingsDialog";
-import PricingDialog from "./PricingDialog";
 
 import PanelToggle from "./HeaderComponents/PanelToggle";
 import FileMenu from "./HeaderComponents/FileMenu";
 import EditMenu from "./HeaderComponents/EditMenu";
 import ViewMenu from "./HeaderComponents/ViewMenu";
 import SettingsButton from "./HeaderComponents/SettingsButton";
-
-// Add these imports at the top of the file
-import {
-  exportAsPng,
-  exportAsJpeg,
-  exportAsSvg,
-} from "../../utils/exportHandlers";
+import UpgradeModal from "../PremiumFeatures/UpgradeModal";
 
 // Update the Header component props interface to include export handlers
 interface HeaderProps {
@@ -29,12 +22,11 @@ interface HeaderProps {
   onEdgeStyleChange: (style: string) => void;
   showGrid: boolean;
   onToggleGrid: (show: boolean) => void;
-  // Add these new props
   onExportPng?: () => void;
   onExportJpg?: () => void;
   onExportSvg?: () => void;
-  // Add missing prop
   onApplyChanges?: () => void;
+  isPremiumUser?: boolean;
 }
 
 export default function Header({
@@ -50,25 +42,33 @@ export default function Header({
   onEdgeStyleChange,
   showGrid,
   onToggleGrid,
-  // Add these new props with default implementations
   onExportPng,
   onExportJpg,
   onExportSvg,
-  // Add missing prop with default value
   onApplyChanges = () => {},
+  isPremiumUser = false,
 }: HeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [pricingOpen, setPricingOpen] = useState(false);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [currentFeature, setCurrentFeature] = useState<string | undefined>(
+    undefined
+  );
+
+  const handleUpgradeClick = (featureName?: string) => {
+    setCurrentFeature(featureName);
+    setUpgradeModalOpen(true);
+  };
+
+  const handleUpgrade = () => {
+    window.location.href = "/pricing";
+    setUpgradeModalOpen(false);
+  };
 
   return (
     <header className="bg-[#1e1e1e] border-b border-gray-700 py-1 px-2 relative">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <PanelToggle
-            onTogglePanel={onTogglePanel}
-            // Fix: Remove collapseLeftPanel prop or pass it correctly
-            // collapseLeftPanel={collapseLeftPanel}
-          />
+          <PanelToggle onTogglePanel={onTogglePanel} />
 
           <div className="h-5 w-px bg-gray-600 mx-0.5"></div>
 
@@ -81,6 +81,8 @@ export default function Header({
               onExportPng={onExportPng}
               onExportJpg={onExportJpg}
               onExportSvg={onExportSvg}
+              isPremiumUser={isPremiumUser}
+              onUpgradeClick={handleUpgradeClick}
             />
             <EditMenu
               onFormat={onFormat}
@@ -95,7 +97,10 @@ export default function Header({
           {/* Upgrade to Pro button */}
           <button
             className="flex items-center px-3 py-1 text-xs font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 cursor-pointer"
-            onClick={() => setPricingOpen(true)}
+            onClick={() => {
+              setCurrentFeature("");
+              setUpgradeModalOpen(true);
+            }}
           >
             <svg
               className="w-3.5 h-3.5 mr-1.5"
@@ -128,7 +133,13 @@ export default function Header({
         onToggleGrid={onToggleGrid}
       />
 
-      <PricingDialog open={pricingOpen} onOpenChange={setPricingOpen} />
+      {/* Add the upgrade modal */}
+      <UpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        onUpgrade={handleUpgrade}
+        featureName={currentFeature}
+      />
     </header>
   );
 }
