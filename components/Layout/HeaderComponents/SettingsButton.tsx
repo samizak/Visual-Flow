@@ -4,7 +4,6 @@ import { Button } from "../../ui/button";
 import { useJsonStore } from "../../../store/useJsonStore";
 
 export default function SettingsButton() {
-  // Use the Zustand store directly
   const { setIsSettingsOpen } = useJsonStore();
 
   return (

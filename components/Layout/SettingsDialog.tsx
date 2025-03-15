@@ -51,10 +51,9 @@ export default function SettingsDialog({
   onToggleGrid,
 }: SettingsDialogProps) {
   const [gridValue, setGridValue] = useState(showGrid ? "true" : "false");
-  // Load auto-save setting from storage
+
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(() => {
-    // Get settings from localStorage on component mount
-    return storageService.getSettings().autoSaveEnabled;
+    return storageService.getSettings().autoSaveEnabled !== false;
   });
 
   // Update local state when props change
@@ -84,6 +83,7 @@ export default function SettingsDialog({
   const handleAutoSaveChange = (enabled: boolean) => {
     setAutoSaveEnabled(enabled);
     storageService.saveSettings({ autoSaveEnabled: enabled });
+    window.dispatchEvent(new Event("settings-changed"));
     successToast(`Auto-save ${enabled ? "enabled" : "disabled"}`);
   };
 

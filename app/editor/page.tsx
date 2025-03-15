@@ -6,7 +6,6 @@ import Footer from "../../components/Layout/Footer";
 import RightPanel from "../../components/Panel/RightPanel";
 import Header from "../../components/Layout/Header";
 import DragOverlay from "../../components/DragOverlay";
-import { useJsonOperations } from "../../hooks/useJsonOperations";
 import { useFileOperations } from "../../hooks/useFileOperations";
 import { useDragAndDrop } from "../../hooks/useDragAndDrop";
 import { useMouseInteractions } from "../../hooks/useMouseInteractions";
@@ -21,6 +20,7 @@ export default function Home() {
     setJsonData,
     setVisualizationJson,
     isValidJson,
+    setIsValidJson,
     nodeCount,
     edgeType,
     setEdgeType,
@@ -34,6 +34,7 @@ export default function Home() {
 
   const lastParsedJsonRef = useRef<any>(null);
 
+  // Load saved settings and data
   useEffect(() => {
     const savedSettings = storageService.getSettings();
 
@@ -54,6 +55,25 @@ export default function Home() {
     }
   }, [setJsonData, setEdgeType, setShowGrid, setVisualizationJson]);
 
+  // Validate JSON whenever it changes
+  useEffect(() => {
+    // Handle empty or whitespace-only JSON
+    if (!jsonData || jsonData.trim() === "") {
+      setIsValidJson(true); // Consider empty JSON as valid
+      return;
+    }
+
+    try {
+      // Only try to parse if there's actual content
+      JSON.parse(jsonData);
+      setIsValidJson(true);
+    } catch (e) {
+      setIsValidJson(false);
+      // Don't throw or log the error to prevent SES exceptions
+    }
+  }, [jsonData, setIsValidJson]);
+
+  // Auto-save effect
   useEffect(() => {
     const settings = storageService.getSettings();
     if (settings.autoSaveEnabled && isValidJson && jsonData) {
@@ -65,8 +85,10 @@ export default function Home() {
     }
   }, [jsonData, isValidJson]);
 
+  // Update visualization when JSON is valid
   useEffect(() => {
-    if (isValidJson && jsonData.trim()) {
+    // Only attempt to process if we have non-empty JSON data
+    if (isValidJson && jsonData && jsonData.trim()) {
       try {
         const parsedJson = JSON.parse(jsonData);
 
@@ -79,7 +101,9 @@ export default function Home() {
           lastParsedJsonRef.current = parsedJson;
           setVisualizationJson(jsonData);
         }
-      } catch (e) {}
+      } catch (e) {
+        // Silently handle parsing errors
+      }
     }
   }, [isValidJson, jsonData, setVisualizationJson]);
 
@@ -145,7 +169,7 @@ export default function Home() {
         <LeftPanel />
         <RightPanel />
       </div>
-      <Footer isValidJson={isValidJson} nodeCount={nodeCount} />
+      <Footer />
     </main>
   );
 }
