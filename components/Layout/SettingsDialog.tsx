@@ -17,7 +17,9 @@ import {
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { successToast } from "../../lib/toast";
-import { Grid, LineChart } from "lucide-react";
+import { Grid, LineChart, Save } from "lucide-react";
+import { Switch } from "../ui/switch";
+import { storageService } from "../../utils/storageService";
 
 interface SettingsDialogProps {
   open: boolean;
@@ -26,6 +28,18 @@ interface SettingsDialogProps {
   onEdgeStyleChange: (style: string) => void;
   showGrid?: boolean;
   onToggleGrid?: (show: boolean) => void;
+}
+
+// Add this helper function before the component
+function getEdgeStyleDisplayName(style: string): string {
+  switch (style) {
+    case "smoothstep":
+      return "Stepline";
+    case "default":
+      return "Bezier";
+    default:
+      return style;
+  }
 }
 
 export default function SettingsDialog({
@@ -37,6 +51,11 @@ export default function SettingsDialog({
   onToggleGrid,
 }: SettingsDialogProps) {
   const [gridValue, setGridValue] = useState(showGrid ? "true" : "false");
+  // Load auto-save setting from storage
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(() => {
+    // Get settings from localStorage on component mount
+    return storageService.getSettings().autoSaveEnabled;
+  });
 
   // Update local state when props change
   useEffect(() => {
@@ -61,33 +80,32 @@ export default function SettingsDialog({
     }
   };
 
-  // Get display name for edge style
-  const getEdgeStyleDisplayName = (style: string) => {
-    switch (style) {
-      case "smoothstep":
-        return "Stepline";
-      case "default":
-        return "Bezier";
-      default:
-        return style;
-    }
+  // Add handler for auto-save toggle
+  const handleAutoSaveChange = (enabled: boolean) => {
+    setAutoSaveEnabled(enabled);
+    storageService.saveSettings({ autoSaveEnabled: enabled });
+    successToast(`Auto-save ${enabled ? "enabled" : "disabled"}`);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#1e1e1e] border border-gray-700 text-white">
+      <DialogContent className="sm:max-w-md bg-[#1e1e1e] border border-gray-700 text-white">
         <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
-          <DialogDescription className="" />
+          <DialogTitle className="text-xl font-semibold">Settings</DialogTitle>
+          <DialogDescription className="text-gray-400">
+            Customize your visualization settings
+          </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
-          {/* Edge Style Setting - No changes needed here */}
-          <div className="grid grid-cols-4 items-center gap-4">
+          {/* Edge Style Setting */}
+          <div className="grid grid-cols-4 items-center gap-8">
             <Label
               htmlFor="edge-style"
-              className="text-left flex items-center gap-2"
+              className="text-left flex items-center gap-2 whitespace-nowrap"
             >
-              <LineChart className="h-4 w-4" />
+              <div className="flex items-center justify-center w-6">
+                <LineChart className="h-4 w-4" strokeWidth={2} />
+              </div>
               Edge Style
             </Label>
             <div className="col-span-3">
@@ -121,13 +139,15 @@ export default function SettingsDialog({
             </div>
           </div>
 
-          {/* Grid Display Setting - Updated to use local state */}
-          <div className="grid grid-cols-4 items-center gap-4">
+          {/* Grid Display Setting */}
+          <div className="grid grid-cols-4 items-center gap-8">
             <Label
               htmlFor="grid-display"
-              className="text-left flex items-center gap-2"
+              className="text-left flex items-center gap-2 whitespace-nowrap"
             >
-              <Grid className="h-4 w-4" />
+              <div className="flex items-center justify-center w-6">
+                <Grid className="h-4 w-4" strokeWidth={2} />
+              </div>
               Display Grid
             </Label>
             <div className="col-span-3">
@@ -138,6 +158,53 @@ export default function SettingsDialog({
                 >
                   <SelectValue
                     placeholder={gridValue === "true" ? "Enabled" : "Disabled"}
+                  />
+                </SelectTrigger>
+                <SelectContent
+                  className="bg-[#2d2d2d] border-gray-700 text-white"
+                  position="popper"
+                >
+                  <SelectItem
+                    value="true"
+                    className="focus:bg-gray-700 focus:text-white"
+                  >
+                    Enabled
+                  </SelectItem>
+                  <SelectItem
+                    value="false"
+                    className="focus:bg-gray-700 focus:text-white"
+                  >
+                    Disabled
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Auto-save Setting - Updated to match other settings */}
+          <div className="grid grid-cols-4 items-center gap-8">
+            <Label
+              htmlFor="autosave"
+              className="text-left flex items-center gap-2 whitespace-nowrap"
+            >
+              <div className="flex items-center justify-center w-6">
+                <Save className="h-4 w-4" strokeWidth={2} />
+              </div>
+              Auto-save
+            </Label>
+            <div className="col-span-3">
+              <Select
+                value={autoSaveEnabled ? "true" : "false"}
+                onValueChange={(value) =>
+                  handleAutoSaveChange(value === "true")
+                }
+              >
+                <SelectTrigger
+                  className="w-full bg-[#2d2d2d] border-gray-700 text-white focus:ring-offset-0 focus:ring-gray-500"
+                  id="autosave"
+                >
+                  <SelectValue
+                    placeholder={autoSaveEnabled ? "Enabled" : "Disabled"}
                   />
                 </SelectTrigger>
                 <SelectContent

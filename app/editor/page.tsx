@@ -20,12 +20,18 @@ import {
   exportAsJpeg,
   exportAsSvg,
 } from "../../utils/exportHandlers";
+// Remove duplicate useEffect import
+import { storageService } from "../../utils/storageService";
+// Add SettingsDialog import
+import SettingsDialog from "../../components/Layout/SettingsDialog";
 
 export default function Home() {
   const [nodeCount, setNodeCount] = useState(0);
   const [collapseLeftPanel, setCollapseLeftPanel] = useState(false);
   const [edgeType, setEdgeType] = useState<string>("default");
   const [showGrid, setShowGrid] = useState(true);
+  // Add missing state for settings dialog
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
   const [ocrProgress, setOcrProgress] = useState<number | undefined>(undefined);
@@ -42,6 +48,50 @@ export default function Home() {
     copyJson,
     saveJson,
   } = useJsonOperations();
+
+  // Load saved JSON data when component mounts
+  useEffect(() => {
+    const savedData = storageService.getSettings();
+
+    // Set edge style from saved settings
+    if (savedData.edgeStyle) {
+      setEdgeType(savedData.edgeStyle);
+    }
+
+    // Set grid visibility from saved settings
+    if (savedData.showGrid !== undefined) {
+      setShowGrid(savedData.showGrid);
+    }
+
+    // Load JSON content if auto-save is enabled
+    if (savedData.autoSaveEnabled) {
+      const jsonContent = storageService.getJsonData();
+      if (jsonContent && jsonContent.content) {
+        setJsonData(jsonContent.content);
+      }
+    }
+  }, [setJsonData]);
+
+  // Save settings when they change
+  useEffect(() => {
+    storageService.saveSettings({
+      edgeStyle: edgeType, // Fix variable name
+      showGrid,
+    });
+  }, [edgeType, showGrid]); // Fix variable name in dependency array
+
+  // Auto-save JSON data when it changes
+  useEffect(() => {
+    const settings = storageService.getSettings();
+    if (settings.autoSaveEnabled && isValidJson && jsonData) {
+      // Add debounce to avoid excessive saves
+      const debounceTimer = setTimeout(() => {
+        storageService.saveJsonData(jsonData);
+      }, 1000); // 1 second debounce
+
+      return () => clearTimeout(debounceTimer);
+    }
+  }, [jsonData, isValidJson]);
 
   // Update visualization JSON only when JSON is valid and user explicitly applies changes
   const applyChangesToVisualization = () => {
@@ -94,10 +144,19 @@ export default function Home() {
 
   const { mainRef, handleMouseDown } = useMouseInteractions();
 
-  const handleToggleGrid = (show: boolean) => {
-    setShowGrid(show);
+  // Update your edge style handler
+  const handleEdgeStyleChange = (style: string) => {
+    setEdgeType(style);
+    storageService.saveSettings({ edgeStyle: style });
   };
 
+  // Update your grid toggle handler
+  const handleToggleGrid = (show: boolean) => {
+    setShowGrid(show);
+    storageService.saveSettings({ showGrid: show });
+  };
+
+  // Move the SettingsDialog component into the return statement
   return (
     <main
       ref={mainRef}
@@ -134,7 +193,19 @@ export default function Home() {
         onExportJpg={() => exportAsJpeg()}
         onExportSvg={() => exportAsSvg()}
         onApplyChanges={applyChangesToVisualization}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
+
+      {/* Add SettingsDialog component here */}
+      <SettingsDialog
+        open={isSettingsOpen}
+        onOpenChange={setIsSettingsOpen}
+        edgeStyle={edgeType}
+        onEdgeStyleChange={handleEdgeStyleChange}
+        showGrid={showGrid}
+        onToggleGrid={handleToggleGrid}
+      />
+
       {/* Add the OCR processing status component */}
       <OcrProcessingStatus
         isProcessing={isOcrProcessing}

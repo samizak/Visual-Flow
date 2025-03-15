@@ -22,11 +22,16 @@ interface HeaderProps {
   onEdgeStyleChange: (style: string) => void;
   showGrid: boolean;
   onToggleGrid: (show: boolean) => void;
+  // Add these new props
   onExportPng?: () => void;
   onExportJpg?: () => void;
   onExportSvg?: () => void;
+  // Add missing prop
   onApplyChanges?: () => void;
+  // Add isPremiumUser prop
   isPremiumUser?: boolean;
+  // Add onOpenSettings prop
+  onOpenSettings?: () => void;
 }
 
 export default function Header({
@@ -47,6 +52,7 @@ export default function Header({
   onExportSvg,
   onApplyChanges = () => {},
   isPremiumUser = false,
+  onOpenSettings, // Add this parameter
 }: HeaderProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
@@ -112,7 +118,11 @@ export default function Header({
             </svg>
             Upgrade to Pro
           </button>
-          <SettingsButton onClick={() => setSettingsOpen(true)} />
+          {/* Update the SettingsButton to use the new prop */}
+          <SettingsButton 
+            onClick={onOpenSettings || (() => setSettingsOpen(true))} 
+          />
+          
           <SettingsDialog
             open={settingsOpen}
             onOpenChange={setSettingsOpen}

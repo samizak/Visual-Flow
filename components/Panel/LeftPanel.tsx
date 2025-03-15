@@ -2,6 +2,7 @@ import Editor from "@monaco-editor/react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import JsonErrorMessage from "./JsonErrorMessage";
 import { Play } from "lucide-react";
+import { storageService } from "../../utils/storageService";
 
 export default function LeftPanel({
   jsonInput,
@@ -23,6 +24,9 @@ export default function LeftPanel({
   const startWidthRef = useRef(0);
   const panelRef = useRef<HTMLDivElement>(null);
   const placeholderRef = useRef<HTMLDivElement>(null);
+  
+  // Add a state to track if we should show the placeholder
+  const [showPlaceholder, setShowPlaceholder] = useState(true);
 
   // Editor options to disable minimap and customize other settings
   const editorOptions = {
@@ -34,6 +38,47 @@ export default function LeftPanel({
     renderIndentGuides: true,
     tabSize: 2,
     stickyScroll: { enabled: false },
+  };
+
+  // Helper function to update placeholder visibility
+  const updatePlaceholderVisibility = (content: string | undefined) => {
+    const shouldShow = !content || content.trim() === "";
+    setShowPlaceholder(shouldShow);
+  };
+
+  // Check for content on initial render and whenever jsonInput changes
+  useEffect(() => {
+    // Function to check if we have content
+    const checkForContent = () => {
+      // Check direct jsonInput prop
+      if (jsonInput && jsonInput.trim() !== "") {
+        setShowPlaceholder(false);
+        return;
+      }
+      
+      // If no direct jsonInput, check localStorage
+      const storedData = storageService.getJsonData();
+      if (storedData && storedData.content && storedData.content.trim() !== "") {
+        setShowPlaceholder(false);
+        return;
+      }
+      
+      // No content found, show placeholder
+      setShowPlaceholder(true);
+    };
+    
+    // Run the check
+    checkForContent();
+  }, [jsonInput]);
+
+  // Handle editor content change
+  const handleEditorChange = (value: string | undefined) => {
+    if (setJsonInput) {
+      setJsonInput(value || "");
+    }
+
+    // Update placeholder visibility based on content
+    updatePlaceholderVisibility(value);
   };
 
   // Handle editor load complete
@@ -58,24 +103,15 @@ export default function LeftPanel({
       model._bracketPairColorizer?.dispose();
     }
 
-    // Show placeholder if editor is empty
-    updatePlaceholderVisibility(jsonInput);
-  };
-
-  // Handle editor content change
-  const handleEditorChange = (value: string | undefined) => {
-    if (setJsonInput) {
-      setJsonInput(value || "");
-    }
-
-    // Show/hide placeholder based on content
-    updatePlaceholderVisibility(value);
-  };
-
-  // Helper function to update placeholder visibility
-  const updatePlaceholderVisibility = (content: string | undefined) => {
-    if (placeholderRef.current) {
-      placeholderRef.current.style.display = content ? "none" : "block";
+    // Check again for content when editor mounts
+    if (jsonInput && jsonInput.trim() !== "") {
+      setShowPlaceholder(false);
+    } else {
+      // Double-check localStorage directly
+      const storedData = storageService.getJsonData();
+      if (storedData && storedData.content && storedData.content.trim() !== "") {
+        setShowPlaceholder(false);
+      }
     }
   };
 
@@ -178,14 +214,15 @@ export default function LeftPanel({
             className="monaco-editor-container"
           />
 
-          <div
-            ref={placeholderRef}
-            className="absolute top-4 left-16 pointer-events-none z-10 text-gray-400"
-            style={{ display: "none" }}
-          >
-            <h3 className="text-md font-medium mb-2">Paste your JSON here</h3>
-            <pre className="opacity-70 font-mono">
-              {`{
+          {/* Conditionally render placeholder based on state */}
+          {showPlaceholder && (
+            <div
+              ref={placeholderRef}
+              className="absolute top-4 left-16 pointer-events-none z-10 text-gray-400"
+            >
+              <h3 className="text-md font-medium mb-2">Paste your JSON here</h3>
+              <pre className="opacity-70 font-mono">
+                {`{
   "example": "value",
   "numbers": 123,
   "boolean": true,
@@ -194,8 +231,9 @@ export default function LeftPanel({
     "key": "value"
   }
 }`}
-            </pre>
-          </div>
+              </pre>
+            </div>
+          )}
         </div>
 
         {/* Resize handle */}
