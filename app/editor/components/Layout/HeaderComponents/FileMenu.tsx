@@ -51,7 +51,7 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
   // Use the actual subscription status from the provider
   const isPremiumUser = isPro;
 
-  console.log("isPremiumUser", isPremiumUser);
+  // console.log("isPremiumUser", isPremiumUser);
 
   const handleSaveJson = () => {
     try {
@@ -102,7 +102,12 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
   // Handle Image import
   const handleImportImageClick = () => {
     if (isPremiumUser) {
-      handleImageImport(setJsonData, setOcrProcessing, setOcrProgress);
+      handleImageImport(
+        setJsonData,
+        setOcrProcessing,
+        setOcrProgress,
+        isPremiumUser
+      );
     } else if (onUpgradeClick) {
       onUpgradeClick("Image Import (OCR)");
     }

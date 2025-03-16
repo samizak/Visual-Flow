@@ -15,17 +15,17 @@ export default function SuccessPage() {
   const { user, refreshSubscription } = useSupabase();
 
   // Add this console log to check if the component is being rendered at all
-  console.log("Success page component rendered");
-  
+  // console.log("Success page component rendered");
+
   useEffect(() => {
-    console.log("useEffect in SuccessPage is running");
-    
+    // console.log("useEffect in SuccessPage is running");
+
     // Log all search params to see what's coming through
-    console.log("All search params:", Object.fromEntries([...searchParams.entries()]));
-    
+    // console.log("All search params:", Object.fromEntries([...searchParams.entries()]));
+
     const sessionId = searchParams.get("session_id");
-    console.log("Session ID from URL:", sessionId);
-    
+    // console.log("Session ID from URL:", sessionId);
+
     if (!sessionId) {
       console.error("No session ID found in URL");
       setError("Invalid session");
@@ -34,7 +34,7 @@ export default function SuccessPage() {
     }
 
     const verifyPayment = async () => {
-      console.log("Starting payment verification for session:", sessionId);
+      // console.log("Starting payment verification for session:", sessionId);
       try {
         const response = await fetch("/api/verify-payment", {
           method: "POST",
@@ -44,21 +44,21 @@ export default function SuccessPage() {
           body: JSON.stringify({ sessionId }),
         });
 
-        console.log("Verify payment response status:", response.status);
+        // console.log("Verify payment response status:", response.status);
         const data = await response.json();
-        console.log("Verify payment response data:", data);
+        // console.log("Verify payment response data:", data);
 
         if (!response.ok) {
           throw new Error(data.error || "Failed to verify payment");
         }
 
         // Payment verified successfully
-        console.log("Payment verified successfully, refreshing subscription");
-        
+        // console.log("Payment verified successfully, refreshing subscription");
+
         // Refresh the subscription status in the context
         if (refreshSubscription) {
           await refreshSubscription();
-          console.log("Subscription refreshed in context");
+          // console.log("Subscription refreshed in context");
         } else {
           console.error("refreshSubscription function is undefined");
         }

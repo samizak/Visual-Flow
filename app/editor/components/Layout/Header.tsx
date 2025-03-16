@@ -37,7 +37,7 @@ export default function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { user, isPro } = useSupabase();
 
-  console.log("isPro", isPro);
+  // console.log("isPro", isPro);
 
   // Remove this standalone JSX fragment - it's not connected to the return statement
   // {

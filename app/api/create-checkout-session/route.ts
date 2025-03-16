@@ -15,12 +15,12 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(
-      "Creating checkout session for user:",
-      userId,
-      "plan:",
-      planType
-    );
+    // console.log(
+    //   "Creating checkout session for user:",
+    //   userId,
+    //   "plan:",
+    //   planType
+    // );
 
     // Set up the price ID based on the plan type
     const priceId =
@@ -56,9 +56,9 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log(session);
+    // console.log(session);
 
-    console.log("Checkout session created:", session.id);
+    // console.log("Checkout session created:", session.id);
     return NextResponse.json({ sessionId: session.id });
   } catch (error) {
     console.error("Error creating checkout session:", error);

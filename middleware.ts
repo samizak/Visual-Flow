@@ -14,9 +14,10 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = !!authCookie;
 
   // Special case for Stripe redirect
-  const isStripeRedirect = pathname === "/protected/billing/success" && searchParams.has("session_id");
+  const isStripeRedirect =
+    pathname === "/protected/billing/success" && searchParams.has("session_id");
   if (isStripeRedirect) {
-    console.log("Allowing Stripe redirect with session_id:", searchParams.get("session_id"));
+    // console.log("Allowing Stripe redirect with session_id:", searchParams.get("session_id"));
     return response;
   }
 
@@ -28,7 +29,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect unauthenticated users from protected routes to login
   if (isProtectedRoute && !isAuthenticated) {
-    console.log("Redirecting unauthenticated user from protected route:", pathname);
+    // console.log("Redirecting unauthenticated user from protected route:", pathname);
     const redirectUrl = new URL("/auth/login", request.url);
     redirectUrl.searchParams.set("returnTo", pathname + request.nextUrl.search);
     return NextResponse.redirect(redirectUrl);

@@ -36,7 +36,7 @@ export function AuthForm() {
       } = supabase.auth.onAuthStateChange(
         (event: string, session: { user: { id: any } }) => {
           if (event === "SIGNED_IN" && session) {
-            console.log("User signed in:", session.user.id);
+            // console.log("User signed in:", session.user.id);
             router.push("/protected/billing");
           }
         }
@@ -48,7 +48,7 @@ export function AuthForm() {
           data: { session },
         } = await supabase.auth.getSession();
         if (session) {
-          console.log("User already logged in:", session.user.id);
+          // console.log("User already logged in:", session.user.id);
           router.push("/");
         }
       };
@@ -101,7 +101,13 @@ export function AuthForm() {
           // User is automatically signed in (email confirmation not required)
           setMessage("Account created successfully! Redirecting...");
           // Add a success class to style the message
-          document.getElementById('auth-message')?.classList.add('bg-green-100', 'text-green-800', 'border-green-300');
+          document
+            .getElementById("auth-message")
+            ?.classList.add(
+              "bg-green-100",
+              "text-green-800",
+              "border-green-300"
+            );
 
           // Redirect to the specified path
           router.push(returnTo);
@@ -111,7 +117,13 @@ export function AuthForm() {
             "Account created! Please check your email to confirm your account before signing in."
           );
           // Add a success class to style the message
-          document.getElementById('auth-message')?.classList.add('bg-green-100', 'text-green-800', 'border-green-300');
+          document
+            .getElementById("auth-message")
+            ?.classList.add(
+              "bg-green-100",
+              "text-green-800",
+              "border-green-300"
+            );
         }
       }
     } catch (err) {

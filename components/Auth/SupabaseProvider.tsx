@@ -75,36 +75,36 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   // Extract the subscription check to a separate function
   const checkSubscriptionStatus = async () => {
     if (user) {
-      console.log("checkSubscriptionStatus() called for user:", user.id); // Added log
+      // console.log("checkSubscriptionStatus() called for user:", user.id); // Added log
       try {
-        console.log("Checking subscription for user:", user.id);
+        // console.log("Checking subscription for user:", user.id);
 
         // Get the user's profile with subscription information
-        console.log("Fetching profile from Supabase for user:", user.id); // Added log
+        // console.log("Fetching profile from Supabase for user:", user.id); // Added log
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
           .select("id, is_subscribed, subscription_type")
           .eq("id", user.id)
           .single();
 
-        console.log("Profile data received:", profileData); // Added log
+        // console.log("Profile data received:", profileData); // Added log
         if (profileError) {
           console.error("Error fetching profile:", profileError.message);
           setIsPro(false);
           return;
         }
 
-        console.log("Profile data:", profileData);
+        // console.log("Profile data:", profileData);
 
         // Check if the user is subscribed
         if (profileData && profileData.is_subscribed === true) {
-          console.log("User is subscribed! Setting isPro to true");
+          // console.log("User is subscribed! Setting isPro to true");
           setIsPro(true);
-          console.log("isPro set to true"); // Added log
+          // console.log("isPro set to true"); // Added log
         } else {
-          console.log("User is not subscribed");
+          // console.log("User is not subscribed");
           setIsPro(false);
-          console.log("isPro set to false"); // Added log
+          // console.log("isPro set to false"); // Added log
         }
       } catch (err) {
         console.error("Error checking subscription status:", err);
@@ -118,7 +118,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
 
   // Add this useEffect to check subscription status
   useEffect(() => {
-    console.log("useEffect in SupabaseProvider triggered, user:", user?.id); // Added log
+    // console.log("useEffect in SupabaseProvider triggered, user:", user?.id); // Added log
     if (user) {
       checkSubscriptionStatus();
     } else {
@@ -129,7 +129,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   // Add a function to manually refresh the subscription status
   // Keep the refreshSubscription function
   const refreshSubscription = async () => {
-    console.log("Manually refreshing subscription status");
+    // console.log("Manually refreshing subscription status");
     return checkSubscriptionStatus();
   };
 
