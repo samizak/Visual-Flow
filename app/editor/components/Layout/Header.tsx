@@ -132,18 +132,18 @@ export default function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="w-56 bg-slate-800 border border-slate-700 text-white"
+                className="w-56 bg-[#1e1e1e] border border-gray-700 shadow-lg z-50"
               >
-                <div className="px-4 py-3 bg-slate-800">
+                <div className="px-4 py-3 bg-[#1e1e1e]">
                   <p className="text-sm font-medium text-white">{user.email}</p>
                   <p className="text-xs text-gray-400">
                     {user.user_metadata?.name || "User"}
                   </p>
                 </div>
-                <DropdownMenuSeparator className="bg-slate-700" />
+                <DropdownMenuSeparator className="bg-[#333333]" />
                 <DropdownMenuItem
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="hover:bg-slate-700 focus:bg-slate-700 cursor-pointer"
+                  className="hover:bg-[#2a2a2a] focus:bg-[#2a2a2a] cursor-pointer bg-[#1e1e1e]"
                 >
                   {theme === "dark" ? (
                     <>
@@ -159,22 +159,22 @@ export default function Header() {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setIsSettingsOpen(true)}
-                  className="hover:bg-slate-700 focus:bg-slate-700 cursor-pointer"
+                  className="hover:bg-[#2a2a2a] focus:bg-[#2a2a2a] cursor-pointer"
                 >
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => router.push("/protected/billing")}
-                  className="hover:bg-slate-700 focus:bg-slate-700 cursor-pointer"
+                  className="hover:bg-[#2a2a2a] focus:bg-[#2a2a2a] cursor-pointer"
                 >
                   <CreditCard className="mr-2 h-4 w-4" />
                   <span>Billing</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-slate-700" />
+                <DropdownMenuSeparator className="bg-[#333333]" />
                 <DropdownMenuItem
                   onClick={handleSignOut}
-                  className="hover:bg-slate-700 focus:bg-slate-700 cursor-pointer"
+                  className="hover:bg-[#2a2a2a] focus:bg-[#2a2a2a] cursor-pointer"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sign out</span>
