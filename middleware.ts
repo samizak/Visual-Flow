@@ -7,13 +7,20 @@ export async function middleware(request: NextRequest) {
   const response = await updateSession(request);
 
   // Get the pathname
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
 
   // Check if the user is authenticated
   const authCookie = request.cookies.get("sb-auth-token");
   const isAuthenticated = !!authCookie;
 
-  // Protected routes - remove '/editor' from this array
+  // Special case for Stripe redirect
+  const isStripeRedirect = pathname === "/protected/billing/success" && searchParams.has("session_id");
+  if (isStripeRedirect) {
+    console.log("Allowing Stripe redirect with session_id:", searchParams.get("session_id"));
+    return response;
+  }
+
+  // Protected routes
   const protectedRoutes = ["/protected"];
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
@@ -21,7 +28,9 @@ export async function middleware(request: NextRequest) {
 
   // Redirect unauthenticated users from protected routes to login
   if (isProtectedRoute && !isAuthenticated) {
+    console.log("Redirecting unauthenticated user from protected route:", pathname);
     const redirectUrl = new URL("/auth/login", request.url);
+    redirectUrl.searchParams.set("returnTo", pathname + request.nextUrl.search);
     return NextResponse.redirect(redirectUrl);
   }
 

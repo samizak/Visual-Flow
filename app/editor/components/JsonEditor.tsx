@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { storageService } from "../../utils/storageService";
-import { useAutoSave } from "../../hooks/useAutoSave";
+import { storageService } from "../../../utils/storageService";
+import { useAutoSave } from "../../../hooks/useAutoSave";
 
 interface JsonEditorProps {
   value: string;
@@ -10,11 +10,11 @@ interface JsonEditorProps {
   autoSave?: boolean;
 }
 
-export default function JsonEditor({ 
-  value, 
-  onChange, 
+export default function JsonEditor({
+  value,
+  onChange,
   options = {},
-  autoSave = true
+  autoSave = true,
 }: JsonEditorProps) {
   // Use the passed value as the content
   const jsonContent = value;
@@ -47,7 +47,7 @@ export default function JsonEditor({
         lineNumbers: "on",
         renderIndentGuides: true,
         tabSize: 2,
-        ...options
+        ...options,
       }}
     />
   );

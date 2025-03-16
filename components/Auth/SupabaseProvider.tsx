@@ -2,14 +2,16 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { createClient } from "../../utils/superbase/client";
-import { User, Session } from "@supabase/supabase-js";
+import { User, Session, RealtimeChannel } from "@supabase/supabase-js";
 
+// Define the type only once and include refreshSubscription
 type SupabaseContextType = {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
   signOut: () => Promise<void>;
-  isPro: boolean; // Add this
+  isPro: boolean;
+  refreshSubscription: () => Promise<void>; // Add this function to the type
 };
 
 const SupabaseContext = createContext<SupabaseContextType>({
@@ -17,7 +19,8 @@ const SupabaseContext = createContext<SupabaseContextType>({
   session: null,
   isLoading: true,
   signOut: async () => {},
-  isPro: false, // Add this
+  isPro: false,
+  refreshSubscription: async () => {}, // Add default implementation
 });
 
 export function SupabaseProvider({ children }: { children: React.ReactNode }) {
@@ -69,96 +72,82 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut();
   };
 
-  // Add this useEffect to check subscription status
-  useEffect(() => {
-    const checkSubscriptionStatus = async () => {
-      if (user) {
-        try {
-          console.log("Checking subscription for user:", user.id);
-          
-          // First, let's check what columns actually exist in the profiles table
-          try {
-            // Try to get the user's profile with minimal fields
-            const { data: profileData, error: profileError } = await supabase
-              .from("profiles")
-              .select("id, email")
-              .eq("id", user.id)
-              .single();
-            
-            if (profileError) {
-              // If profile doesn't exist, create it with minimal fields
-              if (profileError.code === "PGRST116" || profileError.message.includes("no rows")) {
-                console.log("Profile not found, creating new profile");
-                
-                // Create a minimal profile with only essential fields that we know exist
-                const newProfile = {
-                  id: user.id,
-                  email: user.email || ''
-                  // Don't include is_subscribed since it doesn't exist
-                };
-                
-                console.log("Attempting to create profile with:", JSON.stringify(newProfile));
-                
-                const { error: insertError } = await supabase
-                  .from("profiles")
-                  .insert([newProfile]);
-                
-                if (insertError) {
-                  console.error("Error creating profile details:", insertError.message);
-                  console.error("Error code:", insertError.code);
-                  setIsPro(false);
-                  return;
-                }
-                
-                console.log("Profile created successfully");
-              } else {
-                // Some other error occurred
-                console.error("Error checking profile:", profileError.message);
-                setIsPro(false);
-                return;
-              }
-            } else {
-              console.log("Profile found:", profileData);
-              // For now, assume user is not pro since we can't check
-              setIsPro(false);
-              return;
-            }
-          } catch (err: any) {
-            console.error("Exception in profile check:", err.message || err);
-            setIsPro(false);
-            return;
-          }
-          
-          // If we get here, we've created a new profile
-          // For now, assume user is not pro
+  // Extract the subscription check to a separate function
+  const checkSubscriptionStatus = async () => {
+    if (user) {
+      console.log("checkSubscriptionStatus() called for user:", user.id); // Added log
+      try {
+        console.log("Checking subscription for user:", user.id);
+
+        // Get the user's profile with subscription information
+        console.log("Fetching profile from Supabase for user:", user.id); // Added log
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("id, is_subscribed, subscription_type")
+          .eq("id", user.id)
+          .single();
+
+        console.log("Profile data received:", profileData); // Added log
+        if (profileError) {
+          console.error("Error fetching profile:", profileError.message);
           setIsPro(false);
-          
-        } catch (error: any) {
-          console.error("Error in subscription check:", error.message || error);
-          setIsPro(false);
+          return;
         }
-      } else {
+
+        console.log("Profile data:", profileData);
+
+        // Check if the user is subscribed
+        if (profileData && profileData.is_subscribed === true) {
+          console.log("User is subscribed! Setting isPro to true");
+          setIsPro(true);
+          console.log("isPro set to true"); // Added log
+        } else {
+          console.log("User is not subscribed");
+          setIsPro(false);
+          console.log("isPro set to false"); // Added log
+        }
+      } catch (err) {
+        console.error("Error checking subscription status:", err);
         setIsPro(false);
       }
-    };
+    } else {
+      // No user, so definitely not pro
+      setIsPro(false);
+    }
+  };
 
-    checkSubscriptionStatus();
-  }, [user, supabase]);
+  // Add this useEffect to check subscription status
+  useEffect(() => {
+    console.log("useEffect in SupabaseProvider triggered, user:", user?.id); // Added log
+    if (user) {
+      checkSubscriptionStatus();
+    } else {
+      setIsPro(false);
+    }
+  }, [user]);
 
-  // Update the value object to include isPro
-  const value = {
-    user,
-    session,
-    isLoading,
-    signOut,
-    isPro, // Add this
+  // Add a function to manually refresh the subscription status
+  // Keep the refreshSubscription function
+  const refreshSubscription = async () => {
+    console.log("Manually refreshing subscription status");
+    return checkSubscriptionStatus();
   };
 
   return (
-    <SupabaseContext.Provider value={value}>
+    <SupabaseContext.Provider
+      value={{
+        user,
+        session,
+        isLoading,
+        isPro,
+        signOut,
+        refreshSubscription, // This is now properly typed
+      }}
+    >
       {children}
     </SupabaseContext.Provider>
   );
 }
 
+// Remove the duplicate type declaration here
 export const useSupabase = () => useContext(SupabaseContext);

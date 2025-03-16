@@ -128,14 +128,18 @@ export function SignInForm({
           </div>
         </div>
 
+        // In the SignInForm component, add an id to the message element and conditional styling
         {message && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="text-sm text-red-500 p-3 bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/20"
+          <div 
+            id="auth-message"
+            className={`p-3 rounded mb-4 border ${
+              message.includes("successfully") 
+                ? "bg-green-100 text-green-800 border-green-300" 
+                : "bg-red-100 text-red-800 border-red-300"
+            }`}
           >
             {message}
-          </motion.div>
+          </div>
         )}
 
         <div className="pt-2">

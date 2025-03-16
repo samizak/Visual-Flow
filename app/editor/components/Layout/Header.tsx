@@ -1,11 +1,7 @@
 import React, { useState } from "react";
-import { useSupabase } from "../../../../components/Auth/SupabaseProvider";
+import { useSupabase } from "@/components/Auth/SupabaseProvider";
 import { useRouter } from "next/navigation";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../../../components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
 import {
   DropdownMenu,
@@ -13,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../../../components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
   User,
   LogOut,
@@ -23,15 +19,15 @@ import {
   Sun,
   Star,
 } from "lucide-react";
-import { createClient } from "../../../../utils/superbase/client";
+import { createClient } from "@/utils/superbase/client";
 import SettingsDialog from "./SettingsDialog";
-import { useJsonStore } from "../../../../store/useJsonStore";
+import { useJsonStore } from "@/store/useJsonStore";
 
 import PanelToggle from "./HeaderComponents/PanelToggle";
 import FileMenu from "./HeaderComponents/FileMenu";
 import EditMenu from "./HeaderComponents/EditMenu";
 import ViewMenu from "./HeaderComponents/ViewMenu";
-import UpgradeModal from "../../../../components/PremiumFeatures/UpgradeModal";
+import UpgradeModal from "@/components/PremiumFeatures/UpgradeModal";
 
 export default function Header() {
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
@@ -39,27 +35,26 @@ export default function Header() {
     undefined
   );
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  // In your Header component
   const { user, isPro } = useSupabase();
 
-  // Then in your JSX
-  {
-    /* Show Upgrade button if user is not authenticated or not a pro user */
-  }
-  {
-    (!user || (user && !isPro)) && (
-      <button
-        className="flex items-center space-x-1.5 px-3 py-2 text-xs font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 cursor-pointer"
-        onClick={() => {
-          setCurrentFeature("");
-          setUpgradeModalOpen(true);
-        }}
-      >
-        <Star size={14} />
-        <span>Upgrade to Pro</span>
-      </button>
-    );
-  }
+  console.log("isPro", isPro);
+
+  // Remove this standalone JSX fragment - it's not connected to the return statement
+  // {
+  //   (!user || (user && !isPro)) && (
+  //     <button
+  //       className="flex items-center space-x-1.5 px-3 py-2 text-xs font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 cursor-pointer"
+  //       onClick={() => {
+  //         setCurrentFeature("");
+  //         setUpgradeModalOpen(true);
+  //       }}
+  //     >
+  //       <Star size={14} />
+  //       <span>Upgrade to Pro</span>
+  //     </button>
+  //   );
+  // }
+
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const { edgeType, setEdgeType, showGrid, setShowGrid } = useJsonStore();
@@ -104,8 +99,8 @@ export default function Header() {
         </div>
 
         <div className="flex items-center space-x-2">
-          {/* Only show Upgrade button if user is not authenticated */}
-          {!user && (
+          {/* Show Upgrade button if user is not pro (regardless of auth state) */}
+          {(!user || (user && !isPro)) && (
             <button
               className="flex items-center space-x-1.5 px-3 py-2 text-xs font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 cursor-pointer"
               onClick={() => {
@@ -125,7 +120,7 @@ export default function Header() {
                 <button className="rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer">
                   <Avatar>
                     <AvatarImage src={user?.user_metadata?.avatar_url || ""} />
-                    <AvatarFallback className="bg-indigo-600 text-white">
+                    <AvatarFallback className="bg-indigo-600 text-white text-sm">
                       {user?.email ? (
                         user.email.substring(0, 2).toUpperCase()
                       ) : (

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { createClient } from "../../../utils/superbase/client";
 
-const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: Request) {
   try {
@@ -16,11 +15,26 @@ export async function POST(request: Request) {
       );
     }
 
+    console.log(
+      "Creating checkout session for user:",
+      userId,
+      "plan:",
+      planType
+    );
+
     // Set up the price ID based on the plan type
     const priceId =
       planType === "yearly"
-        ? process.env.YEARLY_PRICE_ID // You'll need to add this to your .env
-        : process.env.MONTHLY_PRICE_ID; // You'll need to add this to your .env
+        ? process.env.YEARLY_PRICE_ID
+        : process.env.MONTHLY_PRICE_ID;
+
+    if (!priceId) {
+      console.error("Missing price ID for plan type:", planType);
+      return NextResponse.json(
+        { error: "Invalid plan configuration" },
+        { status: 500 }
+      );
+    }
 
     // Create a checkout session
     const session = await stripe.checkout.sessions.create({
@@ -42,6 +56,9 @@ export async function POST(request: Request) {
       },
     });
 
+    console.log(session);
+
+    console.log("Checkout session created:", session.id);
     return NextResponse.json({ sessionId: session.id });
   } catch (error) {
     console.error("Error creating checkout session:", error);

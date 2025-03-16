@@ -11,7 +11,7 @@ import {
   FileText,
   File as FilePdf,
 } from "lucide-react";
-import { Button } from "../../../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,19 +22,13 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "../../../../../components/ui/dropdown-menu";
-import { useJsonStore } from "../../../../../store/useJsonStore";
-import { useFileOperations } from "../../../../../hooks/useFileOperations";
-import {
-  handleJsonImport,
-  handleImageImport,
-} from "../../../../../utils/importHandlers";
-import {
-  exportAsPng,
-  exportAsJpeg,
-  exportAsSvg,
-} from "../../../../../utils/exportHandlers";
-import { successToast, errorToast } from "../../../../../lib/toast";
+} from "@/components/ui/dropdown-menu";
+import { useJsonStore } from "@/store/useJsonStore";
+import { useFileOperations } from "@/hooks/useFileOperations";
+import { handleJsonImport, handleImageImport } from "@/utils/importHandlers";
+import { exportAsPng, exportAsJpeg, exportAsSvg } from "@/utils/exportHandlers";
+import { successToast, errorToast } from "@/lib/toast";
+import { useSupabase } from "@/components/Auth/SupabaseProvider";
 
 interface FileMenuProps {
   onUpgradeClick?: (featureName: string) => void;
@@ -51,10 +45,14 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
     setVisualizationJson,
   } = useJsonStore();
 
-  // Use a local variable for isPremiumUser until we update the store
-  const isPremiumUser = false;
+  // Get user subscription status from Supabase context
+  const { user, isPro } = useSupabase();
 
-  // Fix the save functionality
+  // Use the actual subscription status from the provider
+  const isPremiumUser = isPro;
+
+  console.log("isPremiumUser", isPremiumUser);
+
   const handleSaveJson = () => {
     try {
       if (jsonData && jsonData.trim()) {
@@ -92,8 +90,7 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
     },
   });
 
-  // Handle JSON import
-  // Handle JSON import from URL - now a premium feature
+  // Handle JSON import from URL
   const handleImportJsonClick = () => {
     if (isPremiumUser) {
       handleJsonImport(setJsonData, setIsLoading, isPremiumUser);

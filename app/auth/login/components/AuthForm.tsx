@@ -65,48 +65,33 @@ export function AuthForm() {
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!supabase) return;
-  
+
     setLoading(true);
     setMessage(null);
-  
+
     try {
       // Get returnTo from URL parameters
       const params = new URLSearchParams(window.location.search);
-      const returnTo = params.get('returnTo') || '/editor'; // Default to editor
-      
-      // First check if the user already exists
-      const { data: existingUser, error: checkError } = await supabase.auth.signInWithPassword({
-        email,
-        password: "dummy-password-for-check", // Use a dummy password
-      });
-      
-      // If we get a specific error about invalid credentials, the email exists
-      if (checkError && checkError.message.includes("Invalid login credentials")) {
-        setMessage("This email is already registered. Please sign in instead.");
-        setLoading(false);
-        return;
-      }
-      
-      // If we somehow got a valid user back, the email exists and password was correct
-      if (existingUser && existingUser.user) {
-        setMessage("This email is already registered. Please sign in instead.");
-        setLoading(false);
-        return;
-      }
-      
-      // Proceed with signup if email doesn't exist
+      const returnTo = params.get("returnTo") || "/editor"; // Default to editor
+
+      // Instead of trying to check if the user exists with a dummy password,
+      // we'll directly attempt to sign up and handle any "already registered" errors
       const { data: signUpData, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(returnTo)}`,
+          emailRedirectTo: `${
+            window.location.origin
+          }/auth/callback?returnTo=${encodeURIComponent(returnTo)}`,
         },
       });
-  
+
       if (error) {
         // Handle specific error for existing user
         if (error.message.includes("already registered")) {
-          setMessage("This email is already registered. Please sign in instead.");
+          setMessage(
+            "This email is already registered. Please sign in instead."
+          );
         } else {
           setMessage(error.message);
         }
@@ -115,16 +100,22 @@ export function AuthForm() {
         if (signUpData.session) {
           // User is automatically signed in (email confirmation not required)
           setMessage("Account created successfully! Redirecting...");
-          
+          // Add a success class to style the message
+          document.getElementById('auth-message')?.classList.add('bg-green-100', 'text-green-800', 'border-green-300');
+
           // Redirect to the specified path
           router.push(returnTo);
         } else {
           // Email confirmation is required
-          setMessage("Account created! Please check your email to confirm your account before signing in.");
+          setMessage(
+            "Account created! Please check your email to confirm your account before signing in."
+          );
+          // Add a success class to style the message
+          document.getElementById('auth-message')?.classList.add('bg-green-100', 'text-green-800', 'border-green-300');
         }
       }
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'An error occurred');
+      setMessage(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -133,56 +124,58 @@ export function AuthForm() {
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!supabase) return;
-  
+
     setLoading(true);
     setMessage(null);
-  
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-  
+
       if (error) {
         setMessage(error.message);
       } else if (data.user) {
         // Get returnTo from URL parameters
         const params = new URLSearchParams(window.location.search);
-        const returnTo = params.get('returnTo') || '/editor'; // Default to editor
-        
+        const returnTo = params.get("returnTo") || "/editor"; // Default to editor
+
         // Redirect to the specified path
         router.push(returnTo);
       }
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'An error occurred');
+      setMessage(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
   };
-  
+
   const handleGoogleSignIn = async () => {
     if (!supabase) return;
-  
+
     setLoading(true);
     setMessage(null);
-  
+
     try {
       // Get returnTo from URL parameters
       const params = new URLSearchParams(window.location.search);
-      const returnTo = params.get('returnTo') || '/editor'; // Default to editor
-      
+      const returnTo = params.get("returnTo") || "/editor"; // Default to editor
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(returnTo)}`,
+          redirectTo: `${
+            window.location.origin
+          }/auth/callback?returnTo=${encodeURIComponent(returnTo)}`,
         },
       });
-  
+
       if (error) {
         setMessage(error.message);
       }
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : 'An error occurred');
+      setMessage(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }

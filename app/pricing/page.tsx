@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSupabase } from "../../components/Auth/SupabaseProvider";
 import Image from "next/image";
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe } from "@stripe/stripe-js";
 
 export default function PricingPage() {
   const [isYearly, setIsYearly] = useState(false);
@@ -20,23 +20,27 @@ export default function PricingPage() {
   const yearlyPrice = Math.round(monthlyPrice * 12 * 0.8); // 20% discount
 
   // Initialize Stripe
-  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+  const stripePromise = loadStripe(
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  );
 
-  const handleCheckout = async (planType: 'monthly' | 'yearly') => {
+  const handleCheckout = async (planType: "monthly" | "yearly") => {
     setIsLoading(true);
-    
+
     if (!user) {
       // Redirect to login if not logged in
-      router.push(`/auth/login?returnTo=${encodeURIComponent("/protected/billing")}`);
+      router.push(
+        `/auth/login?returnTo=${encodeURIComponent("/protected/billing")}`
+      );
       return;
     }
-    
+
     try {
       // Create a checkout session on your server
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId: user.id,
@@ -44,18 +48,23 @@ export default function PricingPage() {
           email: user.email,
         }),
       });
-      
-      const { sessionId } = await response.json();
-      
+
+      const { sessionId, checkoutError } = await response.json();
+      if (checkoutError) {
+        console.error("Failed to create session", checkoutError);
+        setIsLoading(false);
+        return;
+      }
+
       // Redirect to Stripe Checkout
       const stripe = await stripePromise;
       const { error } = await stripe!.redirectToCheckout({ sessionId });
-      
+
       if (error) {
-        console.error('Error redirecting to checkout:', error);
+        console.error("Error redirecting to checkout:", error);
       }
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      console.error("Error creating checkout session:", error);
     } finally {
       setIsLoading(false);
     }
@@ -103,7 +112,7 @@ export default function PricingPage() {
       ctaAction: () => {
         if (user) {
           // Handle subscription process with Stripe
-          handleCheckout(isYearly ? 'yearly' : 'monthly');
+          handleCheckout(isYearly ? "yearly" : "monthly");
         } else {
           // Redirect to sign up with return URL
           router.push(
