@@ -117,7 +117,7 @@ export default function Header() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer">
+                <button className="rounded-full overflow-hidden focus:outline-none focus:ring-0 cursor-pointer">
                   <Avatar>
                     <AvatarImage src={user?.user_metadata?.avatar_url || ""} />
                     <AvatarFallback className="bg-indigo-600 text-white text-sm">

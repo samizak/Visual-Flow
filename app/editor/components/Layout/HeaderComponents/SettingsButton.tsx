@@ -12,7 +12,7 @@ export default function SettingsButton() {
       size="icon"
       onClick={() => setIsSettingsOpen(true)}
       title="Settings"
-      className="text-gray-300 hover:text-white hover:bg-gray-800"
+      className="text-gray-300 hover:text-white hover:bg-gray-800 focus:ring-0 focus:outline-none"
     >
       <Settings size={18} />
     </Button>

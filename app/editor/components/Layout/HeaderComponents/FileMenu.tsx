@@ -156,7 +156,7 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors select-none"
+          className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer transition-colors select-none focus:ring-0 focus:outline-none"
         >
           <FileIcon className="mr-1 h-4 w-4" />
           File

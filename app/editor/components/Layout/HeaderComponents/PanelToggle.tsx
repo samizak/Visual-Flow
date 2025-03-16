@@ -12,7 +12,7 @@ export default function PanelToggle() {
       size="icon"
       onClick={toggleLeftPanel}
       title="Toggle Panel"
-      className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer"
+      className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer focus:ring-0 focus:outline-none"
     >
       <PanelLeft size={18} />
     </Button>
