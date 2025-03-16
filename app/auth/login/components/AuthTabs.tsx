@@ -1,8 +1,9 @@
 "use client";
 
+// Update the AuthTabsProps interface to match the actual type
 interface AuthTabsProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  activeTab: "signin" | "signup";
+  setActiveTab: (tab: "signin" | "signup") => void;
 }
 
 export function AuthTabs({ activeTab, setActiveTab }: AuthTabsProps) {

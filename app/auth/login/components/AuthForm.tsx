@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/utils/superbase/client";
 import { AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
-import { SignInForm } from "./SignInForm";
-import { SignUpForm } from "./SignUpForm";
+import { AuthFormContent } from "./AuthFormContent";
 import { AuthTabs } from "./AuthTabs";
 import { VisualSide } from "./VisualSide";
 import { useRouter } from "next/navigation";
@@ -17,8 +16,7 @@ export function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState("signin");
-  const { theme } = useTheme();
+  const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
   const [supabase, setSupabase] = useState<any>(null);
   const router = useRouter();
 
@@ -56,6 +54,15 @@ export function AuthForm() {
     }
   }, [supabase, router]);
 
+  // Add this function to get the return path from URL parameters
+  const getReturnToPath = () => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("returnTo") || "/editor"; // Default to editor
+    }
+    return "/editor";
+  };
+
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!supabase) return;
@@ -64,16 +71,18 @@ export function AuthForm() {
     setMessage(null);
 
     try {
-      const params = new URLSearchParams(window.location.search);
-      const returnTo = params.get("returnTo") || "/editor"; // Default to editor
+      const returnTo = getReturnToPath();
+
+      // Use environment variable with fallback to window.location.origin
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
 
       const { data: signUpData, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${
-            window.location.origin
-          }/auth/callback?returnTo=${encodeURIComponent(returnTo)}`,
+          emailRedirectTo: `${appUrl}/auth/callback?returnTo=${encodeURIComponent(
+            returnTo
+          )}`,
         },
       });
 
@@ -88,29 +97,12 @@ export function AuthForm() {
       } else if (signUpData.user) {
         if (signUpData.session) {
           setMessage("Account created successfully! Redirecting...");
-          document
-            .getElementById("auth-message")
-            ?.classList.add(
-              "bg-green-100",
-              "text-green-800",
-              "border-green-300"
-            );
-
-          // Redirect to the specified path
           router.push(returnTo);
         } else {
           // Email confirmation is required
           setMessage(
             "Account created! Please check your email to confirm your account before signing in."
           );
-          // Add a success class to style the message
-          document
-            .getElementById("auth-message")
-            ?.classList.add(
-              "bg-green-100",
-              "text-green-800",
-              "border-green-300"
-            );
         }
       }
     } catch (err) {
@@ -136,11 +128,7 @@ export function AuthForm() {
       if (error) {
         setMessage(error.message);
       } else if (data.user) {
-        // Get returnTo from URL parameters
-        const params = new URLSearchParams(window.location.search);
-        const returnTo = params.get("returnTo") || "/editor"; // Default to editor
-
-        // Redirect to the specified path
+        const returnTo = getReturnToPath();
         router.push(returnTo);
       }
     } catch (err) {
@@ -150,16 +138,14 @@ export function AuthForm() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleAuth = async () => {
     if (!supabase) return;
 
     setLoading(true);
     setMessage(null);
 
     try {
-      // Get returnTo from URL parameters
-      const params = new URLSearchParams(window.location.search);
-      const returnTo = params.get("returnTo") || "/editor"; // Default to editor
+      const returnTo = getReturnToPath();
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -209,33 +195,21 @@ export function AuthForm() {
           <AuthTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
           <AnimatePresence mode="wait">
-            {activeTab === "signin" ? (
-              <SignInForm
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                showPassword={showPassword}
-                togglePasswordVisibility={togglePasswordVisibility}
-                handleSignIn={handleSignIn}
-                handleGoogleSignIn={handleGoogleSignIn}
-                loading={loading}
-                message={message}
-              />
-            ) : (
-              <SignUpForm
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                showPassword={showPassword}
-                togglePasswordVisibility={togglePasswordVisibility}
-                handleSignUp={handleSignUp}
-                handleGoogleSignIn={handleGoogleSignIn}
-                loading={loading}
-                message={message}
-              />
-            )}
+            <AuthFormContent
+              formType={activeTab}
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              showPassword={showPassword}
+              togglePasswordVisibility={togglePasswordVisibility}
+              handleSubmit={
+                activeTab === "signin" ? handleSignIn : handleSignUp
+              }
+              handleGoogleAuth={handleGoogleAuth}
+              loading={loading}
+              message={message}
+            />
           </AnimatePresence>
         </div>
       </div>

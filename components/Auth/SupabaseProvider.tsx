@@ -82,11 +82,11 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   const checkSubscriptionStatus = useCallback(async () => {
     if (user) {
       try {
+        // First check if the profile exists
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
           .select("id, is_subscribed, subscription_type")
-          .eq("id", user.id)
-          .single();
+          .eq("id", user.id);
 
         if (profileError) {
           console.error("Error fetching profile:", profileError.message);
@@ -94,9 +94,16 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        if (profileData && profileData.is_subscribed === true) {
-          setIsPro(true);
+        // Check if we have any profile data
+        if (profileData && profileData.length > 0) {
+          const profile = profileData[0]; // Get the first profile
+          if (profile.is_subscribed === true) {
+            setIsPro(true);
+          } else {
+            setIsPro(false);
+          }
         } else {
+          // console.log("No profile found for user:", user.id);
           setIsPro(false);
         }
       } catch (err) {

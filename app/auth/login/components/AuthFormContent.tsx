@@ -3,52 +3,56 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 
-interface SignUpFormProps {
+interface AuthFormContentProps {
+  formType: "signin" | "signup";
   email: string;
   setEmail: (email: string) => void;
   password: string;
   setPassword: (password: string) => void;
   showPassword: boolean;
   togglePasswordVisibility: () => void;
-  handleSignUp: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  handleGoogleSignIn: () => Promise<void>;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  handleGoogleAuth: () => Promise<void>;
   loading: boolean;
   message: string | null;
 }
 
-export function SignUpForm({
+export function AuthFormContent({
+  formType,
   email,
   setEmail,
   password,
   setPassword,
   showPassword,
   togglePasswordVisibility,
-  handleSignUp,
-  handleGoogleSignIn,
+  handleSubmit,
+  handleGoogleAuth,
   loading,
   message,
-}: SignUpFormProps) {
+}: AuthFormContentProps) {
+  const isSignIn = formType === "signin";
+  
   return (
     <motion.div
-      key="signup"
+      key={formType}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2 }}
     >
-      <form onSubmit={handleSignUp} className="space-y-5">
-        {/* Google Sign Up Button */}
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Google Auth Button */}
         <Button
           type="button"
-          onClick={handleGoogleSignIn}
+          onClick={handleGoogleAuth}
           className="w-full h-11 font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 cursor-pointer"
           disabled={loading}
         >
           <FcGoogle className="h-5 w-5" />
-          <span>Sign up with Google</span>
+          <span>Sign {isSignIn ? "in" : "up"} with Google</span>
         </Button>
 
         <div className="relative flex items-center justify-center my-4">
@@ -63,7 +67,7 @@ export function SignUpForm({
         {/* Email field */}
         <div className="space-y-2">
           <label
-            htmlFor="signup-email"
+            htmlFor={`${formType}-email`}
             className="block text-sm font-medium text-slate-700 dark:text-slate-300"
           >
             Email
@@ -71,7 +75,7 @@ export function SignUpForm({
           <div className="relative">
             <Mail className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
             <Input
-              id="signup-email"
+              id={`${formType}-email`}
               type="email"
               placeholder="name@example.com"
               value={email}
@@ -86,16 +90,33 @@ export function SignUpForm({
 
         {/* Password field */}
         <div className="space-y-2">
-          <label
-            htmlFor="signup-password"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300"
-          >
-            Password
-          </label>
+          {isSignIn ? (
+            <div className="flex justify-between">
+              <label
+                htmlFor={`${formType}-password`}
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+              >
+                Password
+              </label>
+              <a
+                href="#"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Forgot password?
+              </a>
+            </div>
+          ) : (
+            <label
+              htmlFor={`${formType}-password`}
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300"
+            >
+              Password
+            </label>
+          )}
           <div className="relative">
             <Lock className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
             <Input
-              id="signup-password"
+              id={`${formType}-password`}
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
@@ -117,9 +138,11 @@ export function SignUpForm({
               )}
             </button>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Password must be at least 8 characters
-          </p>
+          {!isSignIn && (
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Password must be at least 8 characters
+            </p>
+          )}
         </div>
 
         {message && (
@@ -142,31 +165,9 @@ export function SignUpForm({
             >
               {message.includes("successfully") ||
               message.includes("check your email") ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <CheckCircle className="h-5 w-5" />
               ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <AlertCircle className="h-5 w-5" />
               )}
             </div>
             <span className="text-sm font-medium">{message}</span>
@@ -176,16 +177,16 @@ export function SignUpForm({
         <div className="pt-2">
           <Button
             type="submit"
-            className="w-full h-12 font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-500 dark:to-purple-500 dark:hover:from-blue-600 dark:hover:to-purple-600 rounded-xl transition-all duration-200 shadow-md cursor-pointer"
+            className="w-full h-11 font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-500 dark:to-purple-500 dark:hover:from-blue-600 dark:hover:to-purple-600 rounded-xl transition-all duration-200 shadow-md cursor-pointer"
             disabled={loading}
           >
             {loading ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="h-4 w-4 rounded-full border-2 border-t-transparent border-white animate-spin"></div>
-                <span>Creating account...</span>
+                <span>{isSignIn ? "Signing in..." : "Creating account..."}</span>
               </div>
             ) : (
-              "Create Account"
+              isSignIn ? "Sign in" : "Create Account"
             )}
           </Button>
         </div>

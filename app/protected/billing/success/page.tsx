@@ -18,6 +18,9 @@ function SuccessContent() {
   useEffect(() => {
     const sessionId = searchParams.get("session_id");
 
+    // Add a flag to track if we've already shown the toast
+    let toastShown = false;
+
     if (!sessionId) {
       console.error("No session ID found in URL");
       setError("Invalid session");
@@ -26,6 +29,9 @@ function SuccessContent() {
     }
 
     const verifyPayment = async () => {
+      // If we're already loading or have shown the toast, don't proceed
+      if (!isLoading || toastShown) return;
+
       try {
         const response = await fetch("/api/verify-payment", {
           method: "POST",
@@ -48,8 +54,11 @@ function SuccessContent() {
           console.error("refreshSubscription function is undefined");
         }
 
-        // Show success toast
-        successToast("Your subscription has been activated successfully!");
+        // Only show toast once
+        if (!toastShown) {
+          successToast("Your subscription has been activated successfully!");
+          toastShown = true;
+        }
 
         setIsLoading(false);
       } catch (error) {
@@ -60,7 +69,12 @@ function SuccessContent() {
     };
 
     verifyPayment();
-  }, [searchParams, refreshSubscription]);
+
+    // Cleanup function to prevent multiple verifications
+    return () => {
+      toastShown = true; // Prevent toast if component unmounts and remounts
+    };
+  }, [searchParams, refreshSubscription, isLoading]);
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -90,7 +104,7 @@ function SuccessContent() {
             </p>
             <Button
               onClick={() => router.push("/editor")}
-              className="bg-gradient-to-r from-indigo-500 to-purple-500"
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 cursor-pointer"
             >
               Start Using Pro Features
             </Button>
