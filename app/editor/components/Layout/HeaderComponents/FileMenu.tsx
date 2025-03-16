@@ -7,9 +7,7 @@ import {
   Image as ImageIcon,
   Download,
   FileImage,
-  FileSpreadsheet,
   FileText,
-  File as FilePdf,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,9 +23,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useJsonStore } from "@/store/useJsonStore";
 import { useFileOperations } from "@/hooks/useFileOperations";
-import { handleJsonImport, handleImageImport } from "@/utils/importHandlers";
+import { handleImageImport } from "@/utils/importHandlers";
 import { exportAsPng, exportAsJpeg, exportAsSvg } from "@/utils/exportHandlers";
-import { successToast, errorToast } from "@/lib/toast";
+import { errorToast, infoToast } from "@/lib/toast";
 import { useSupabase } from "@/components/Auth/SupabaseProvider";
 
 interface FileMenuProps {
@@ -60,13 +58,17 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
         a.href = url;
         a.download = "data.json";
 
+        infoToast("Starting download...", { duration: 2000 });
+
+        a.addEventListener("click", () => {
+          setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }, 100);
+        });
+
         document.body.appendChild(a);
         a.click();
-
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-
-        successToast("JSON saved successfully");
       } else {
         errorToast("Cannot save empty JSON");
       }
@@ -82,15 +84,6 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
       setVisualizationJson(content);
     },
   });
-
-  // Handle JSON import from URL
-  const handleImportJsonClick = () => {
-    if (isPremiumUser) {
-      handleJsonImport(setJsonData, setIsLoading, isPremiumUser);
-    } else if (onUpgradeClick) {
-      onUpgradeClick("JSON from URL");
-    }
-  };
 
   // Handle Image import
   const handleImportImageClick = () => {
@@ -179,17 +172,6 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
             >
               <FileJson className="mr-2 h-4 w-4" />
               <span>JSON File</span>
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              onClick={handleImportJsonClick}
-              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white focus:ring-0 focus:outline-none"
-            >
-              <FileJson className="mr-2 h-4 w-4" />
-              <span>JSON from URL</span>
-              {!isPremiumUser && (
-                <span className="ml-auto text-xs text-yellow-400">PRO</span>
-              )}
             </DropdownMenuItem>
 
             {/* Image import - premium feature */}
