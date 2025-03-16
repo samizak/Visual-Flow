@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { FileJson } from "lucide-react";
 import { SiGithub } from "@icons-pack/react-simple-icons";
-import { Button } from "../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export default function Header() {
   const scrollToSection = (
@@ -30,7 +30,10 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-[999999] backdrop-blur-md bg-black/50 border-b border-white/10">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={scrollToTop}>
+        <div
+          className="flex items-center gap-2 cursor-pointer"
+          onClick={scrollToTop}
+        >
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full blur opacity-70"></div>
             <div className="relative bg-black p-2 rounded-full">

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { storageService } from "../../../utils/storageService";
-import { useAutoSave } from "../../../hooks/useAutoSave";
+import { storageService } from "@/utils/storageService";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 interface JsonEditorProps {
   value: string;
@@ -16,11 +16,9 @@ export default function JsonEditor({
   options = {},
   autoSave = true,
 }: JsonEditorProps) {
-  // Use the passed value as the content
   const jsonContent = value;
   const setJsonContent = onChange;
 
-  // Load saved JSON data when component mounts
   useEffect(() => {
     if (autoSave) {
       const savedData = storageService.getJsonData();
@@ -30,7 +28,6 @@ export default function JsonEditor({
     }
   }, [setJsonContent, autoSave]);
 
-  // Use our custom hook for auto-saving
   useAutoSave(jsonContent, autoSave);
 
   return (

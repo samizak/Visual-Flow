@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import { Button } from "../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useSupabase } from "../../../components/Auth/SupabaseProvider";
+import { useSupabase } from "@/components/Auth/SupabaseProvider";
 
 export default function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
@@ -59,9 +59,7 @@ export default function PricingSection() {
           router.push("/protected/billing");
         } else {
           // Redirect to sign up with return URL
-          router.push(
-            `/auth/login?returnTo=${encodeURIComponent("/")}`
-          );
+          router.push(`/auth/login?returnTo=${encodeURIComponent("/")}`);
         }
       },
       popular: true,
@@ -172,9 +170,7 @@ export default function PricingSection() {
                         <div className="mr-3 mt-1">
                           <Check
                             className={`h-5 w-5 ${
-                              plan.popular
-                                ? "text-indigo-400"
-                                : "text-white/70"
+                              plan.popular ? "text-indigo-400" : "text-white/70"
                             }`}
                           />
                         </div>
@@ -191,9 +187,7 @@ export default function PricingSection() {
                       <ul className="space-y-3">
                         {plan.limitations.map((limitation, i) => (
                           <li key={i} className="flex items-start">
-                            <span className="text-white/60">
-                              {limitation}
-                            </span>
+                            <span className="text-white/60">{limitation}</span>
                           </li>
                         ))}
                       </ul>

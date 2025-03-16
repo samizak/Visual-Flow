@@ -65,19 +65,14 @@ export async function parseJsonFromText(text: string): Promise<any> {
     const cleaned_text = text.replace(/^```json\s*/, "").replace(/\s*```$/, "");
     const jsonObject = JSON.parse(cleaned_text);
 
-    // Check if we have the expected structure
     if (!jsonObject.hasOwnProperty("extracted_json")) {
-      // This is an expected error condition - don't log to console
       throw new Error(
         "Invalid response format: missing 'extracted_json' property"
       );
     }
 
-    // console.log(jsonObject);
-
     // Check if there's an error reported from the OCR service
     if (jsonObject.hasOwnProperty("error")) {
-      // These are expected errors from the OCR process - don't log to console
       if (jsonObject.error === "no text found") {
         throw new Error(
           "OCR service error: Unable to detect any text in the provided image. Please ensure the image contains clear, readable text."

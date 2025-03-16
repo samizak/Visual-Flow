@@ -2,16 +2,14 @@ import Editor from "@monaco-editor/react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import JsonErrorMessage from "./JsonErrorMessage";
 import { Play } from "lucide-react";
-import { storageService } from "../../../../utils/storageService";
-import { useJsonStore } from "../../../../store/useJsonStore";
+import { storageService } from "@/utils/storageService";
+import { useJsonStore } from "@/store/useJsonStore";
 
-// First, add the import for validateJsonAgainstFreeLimits and useSupabase
-import { validateJsonAgainstFreeLimits } from "../../../../constants/limits";
-import { errorToast } from "../../../../lib/toast";
-import { useSupabase } from "../../../../components/Auth/SupabaseProvider";
+import { validateJsonAgainstFreeLimits } from "@/constants/limits";
+import { errorToast } from "@/lib/toast";
+import { useSupabase } from "@/components/Auth/SupabaseProvider";
 
 export default function LeftPanel() {
-  // Use the Zustand store instead of props
   const {
     jsonData,
     setJsonData,
@@ -84,14 +82,14 @@ export default function LeftPanel() {
   // Handle editor content change
   const handleEditorChange = (value: string | undefined) => {
     const newValue = value || "";
-    
+
     // Check if the content exceeds free limits for non-pro users
     if (newValue.trim() && !isPro) {
       try {
         // Only validate if it's valid JSON
         const parsedJson = JSON.parse(newValue);
         const validation = validateJsonAgainstFreeLimits(newValue, isPro);
-        
+
         if (!validation.isValid) {
           // Show error toast but still allow editing
           errorToast(`${validation.message}. Upgrade for more!`);
@@ -100,7 +98,7 @@ export default function LeftPanel() {
         // Invalid JSON, no need to validate limits
       }
     }
-    
+
     // Update the JSON data regardless of validation
     setJsonData(newValue);
 

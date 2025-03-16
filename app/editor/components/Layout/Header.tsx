@@ -37,24 +37,6 @@ export default function Header() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { user, isPro } = useSupabase();
 
-  // console.log("isPro", isPro);
-
-  // Remove this standalone JSX fragment - it's not connected to the return statement
-  // {
-  //   (!user || (user && !isPro)) && (
-  //     <button
-  //       className="flex items-center space-x-1.5 px-3 py-2 text-xs font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 cursor-pointer"
-  //       onClick={() => {
-  //         setCurrentFeature("");
-  //         setUpgradeModalOpen(true);
-  //       }}
-  //     >
-  //       <Star size={14} />
-  //       <span>Upgrade to Pro</span>
-  //     </button>
-  //   );
-  // }
-
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const { edgeType, setEdgeType, showGrid, setShowGrid } = useJsonStore();
@@ -113,7 +95,7 @@ export default function Header() {
             </button>
           )}
 
-          {/* Profile dropdown - different behavior based on auth state */}
+          {/* Profile dropdown */}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

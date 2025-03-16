@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { TabsContent } from "../../../../components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
 import VisualizeTab from "./VisualizeTab";
 import AnalyzeTab from "./AnalyzeTab";
 import ShareTab from "./ShareTab";

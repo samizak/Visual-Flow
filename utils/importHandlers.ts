@@ -1,9 +1,6 @@
-import {
-  extractTextFromImage,
-  parseJsonFromText,
-} from "../services/ocrService";
-import { successToast, errorToast, infoToast } from "../lib/toast";
-import { validateJsonAgainstFreeLimits } from "../constants/limits";
+import { extractTextFromImage, parseJsonFromText } from "@/services/ocrService";
+import { successToast, errorToast, infoToast } from "@/lib/toast";
+import { validateJsonAgainstFreeLimits } from "@/constants/limits";
 
 // Handler for importing JSON files
 export const handleJsonImport = (
@@ -11,8 +8,6 @@ export const handleJsonImport = (
   setIsLoading?: (loading: boolean) => void,
   isPremiumUser: boolean = false
 ) => {
-  // console.log("handleJsonImport called with isPremiumUser:", isPremiumUser);
-
   const input = document.createElement("input");
   input.type = "file";
   input.accept = ".json";
@@ -25,16 +20,14 @@ export const handleJsonImport = (
 
     try {
       const text = await file.text();
-      
-      // Add explicit logging and strict equality check
+
       if (isPremiumUser === true) {
-        console.log("handleJsonImport: Premium user detected, bypassing all checks");
         setJsonContent(text);
         successToast("Your JSON file has been successfully imported.");
         if (setIsLoading) setIsLoading(false);
         return;
       }
-      
+
       // Validation for free users
       if (!isPremiumUser) {
         const validation = validateJsonAgainstFreeLimits(text, isPremiumUser);
@@ -71,8 +64,6 @@ export const handleImageImport = (
   setOcrProgress?: (progress: number | undefined) => void,
   isPremiumUser: boolean = false
 ) => {
-  // console.log("handleImageImport called with isPremiumUser:", isPremiumUser);
-
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
@@ -84,14 +75,11 @@ export const handleImageImport = (
     setIsLoading(true);
     if (setOcrProgress) setOcrProgress(0);
 
-    // Declare progressInterval here so it's in scope for the finally block
     let progressInterval: NodeJS.Timeout | undefined;
 
     try {
-      // Use our new infoToast function
       infoToast("Extracting text from image...");
 
-      // Simulate progress updates
       if (setOcrProgress) {
         let progress = 0;
         progressInterval = setInterval(() => {
@@ -101,26 +89,19 @@ export const handleImageImport = (
         }, 500);
       }
 
-      // Extract text from image
       const extractedText = await extractTextFromImage(file);
 
-      // console.log(extractedText);
-
-      // Update progress
       if (setOcrProgress) setOcrProgress(95);
 
       try {
-        // Try to parse JSON from the extracted text
         const jsonData = await parseJsonFromText(extractedText);
 
-        // For free users, check against limits
         if (!isPremiumUser) {
           const validation = validateJsonAgainstFreeLimits(
             jsonData,
             isPremiumUser
           );
           if (!validation.isValid) {
-            // Only add "Upgrade for more!" if it's not a format error
             const errorMessage = validation.isFormatError
               ? validation.message
               : `${validation.message}. Upgrade for more!`;

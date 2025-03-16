@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import "../styles/main.css";
-import { Toaster } from "../components/ui/sonner";
-import { SupabaseProvider } from "../components/Auth/SupabaseProvider";
+import "@/styles/main.css";
+import { Toaster } from "@/components/ui/sonner";
+import { SupabaseProvider } from "@/components/Auth/SupabaseProvider";
 
 export const metadata: Metadata = {
   title: "Visual Flow - Data Visualizer",

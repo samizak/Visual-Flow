@@ -5,15 +5,15 @@ import LeftPanel from "./components/Panel/LeftPanel";
 import Footer from "./components/Layout/Footer";
 import RightPanel from "./components/Panel/RightPanel";
 import Header from "./components/Layout/Header";
-import DragOverlay from "../../components/DragOverlay";
-import { useFileOperations } from "../../hooks/useFileOperations";
-import { useDragAndDrop } from "../../hooks/useDragAndDrop";
-import { useMouseInteractions } from "../../hooks/useMouseInteractions";
-import OcrProcessingStatus from "../../components/OCR/OcrProcessingStatus";
-import { storageService } from "../../utils/storageService";
+import DragOverlay from "@/components/DragOverlay";
+import { useFileOperations } from "@/hooks/useFileOperations";
+import { useDragAndDrop } from "@/hooks/useDragAndDrop";
+import { useMouseInteractions } from "@/hooks/useMouseInteractions";
+import OcrProcessingStatus from "@/components/OCR/OcrProcessingStatus";
+import { storageService } from "@/utils/storageService";
 import SettingsDialog from "./components/Layout/SettingsDialog";
-import { useJsonStore } from "../../store/useJsonStore";
-import { useSupabase } from "../../components/Auth/SupabaseProvider";
+import { useJsonStore } from "@/store/useJsonStore";
+import { useSupabase } from "@/components/Auth/SupabaseProvider";
 
 export default function Home() {
   const {
@@ -32,7 +32,7 @@ export default function Home() {
     isOcrProcessing,
     ocrProgress,
   } = useJsonStore();
-  
+
   // Add the useSupabase hook to get isPro
   const { isPro } = useSupabase();
 
@@ -119,11 +119,17 @@ export default function Home() {
   });
 
   // Fix the function reference - use handleFiles instead of handleFileDrop
-  const { isFileDragging, dragError, handleDragOver, handleDragEnter, handleDragLeave, handleDrop } = 
-    useDragAndDrop({
-      onFilesDrop: handleFiles,
-      isPremiumUser: isPro,
-    });
+  const {
+    isFileDragging,
+    dragError,
+    handleDragOver,
+    handleDragEnter,
+    handleDragLeave,
+    handleDrop,
+  } = useDragAndDrop({
+    onFilesDrop: handleFiles,
+    isPremiumUser: isPro,
+  });
 
   const { mainRef, handleMouseDown } = useMouseInteractions();
 

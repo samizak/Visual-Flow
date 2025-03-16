@@ -45,18 +45,13 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
     setVisualizationJson,
   } = useJsonStore();
 
-  // Get user subscription status from Supabase context
   const { user, isPro } = useSupabase();
 
-  // Use the actual subscription status from the provider
   const isPremiumUser = isPro;
-
-  // console.log("isPremiumUser", isPremiumUser);
 
   const handleSaveJson = () => {
     try {
       if (jsonData && jsonData.trim()) {
-        // Create a Blob with the JSON content
         const blob = new Blob([jsonData], { type: "application/json" });
 
         // Create a download link
@@ -65,11 +60,9 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
         a.href = url;
         a.download = "data.json";
 
-        // Trigger the download
         document.body.appendChild(a);
         a.click();
 
-        // Clean up
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 

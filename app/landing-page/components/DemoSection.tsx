@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "motion/react";
-import { Tabs, TabsList, TabsTrigger } from "../../../components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ImagePopup from "./ImagePopup";
 import TabContent from "./demo-section/TabContent";
 import { BarChart2, Share2, LineChart } from "lucide-react";

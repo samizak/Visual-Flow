@@ -1,8 +1,14 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { createClient } from "../../utils/superbase/client";
-import { User, Session, RealtimeChannel } from "@supabase/supabase-js";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+import { createClient } from "@/utils/superbase/client";
+import { User, Session } from "@supabase/supabase-js";
 
 // Define the type only once and include refreshSubscription
 type SupabaseContextType = {
@@ -98,12 +104,10 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
         setIsPro(false);
       }
     } else {
-      // No user, so definitely not pro
       setIsPro(false);
     }
-  }, [user, supabase]); // Add dependencies that the function uses
+  }, [user, supabase]);
 
-  // Add this useEffect to check subscription status
   useEffect(() => {
     if (user) {
       checkSubscriptionStatus();
@@ -112,10 +116,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, checkSubscriptionStatus]);
 
-  // Add a function to manually refresh the subscription status
-  // Keep the refreshSubscription function
   const refreshSubscription = async () => {
-    // console.log("Manually refreshing subscription status");
     return checkSubscriptionStatus();
   };
 
@@ -127,7 +128,7 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         isPro,
         signOut,
-        refreshSubscription, // This is now properly typed
+        refreshSubscription,
       }}
     >
       {children}

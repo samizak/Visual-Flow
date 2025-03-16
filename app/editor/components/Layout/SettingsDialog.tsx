@@ -6,20 +6,19 @@ import {
   DialogTitle,
   DialogFooter,
   DialogDescription,
-} from "../../../../components/ui/dialog";
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../components/ui/select";
-import { Label } from "../../../../components/ui/label";
-import { Button } from "../../../../components/ui/button";
-import { successToast } from "../../../../lib/toast";
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { successToast } from "@/lib/toast";
 import { Grid, LineChart, Save } from "lucide-react";
-// import { Switch } from "../ui/switch";
-import { storageService } from "../../../../utils/storageService";
+import { storageService } from "@/utils/storageService";
 
 interface SettingsDialogProps {
   open: boolean;

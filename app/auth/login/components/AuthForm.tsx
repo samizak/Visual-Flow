@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "../../../../utils/superbase/client";
+import { createClient } from "@/utils/superbase/client";
 import { AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import { SignInForm } from "./SignInForm";
@@ -27,35 +27,29 @@ export function AuthForm() {
     setSupabase(createClient());
   }, []);
 
-  // Add this useEffect to check authentication state
   useEffect(() => {
     if (supabase) {
-      // Set up auth state listener
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange(
         (event: string, session: { user: { id: any } }) => {
           if (event === "SIGNED_IN" && session) {
-            // console.log("User signed in:", session.user.id);
             router.push("/protected/billing");
           }
         }
       );
 
-      // Check if user is already logged in
       const checkUser = async () => {
         const {
           data: { session },
         } = await supabase.auth.getSession();
         if (session) {
-          // console.log("User already logged in:", session.user.id);
           router.push("/");
         }
       };
 
       checkUser();
 
-      // Cleanup subscription on unmount
       return () => {
         subscription.unsubscribe();
       };
@@ -70,12 +64,9 @@ export function AuthForm() {
     setMessage(null);
 
     try {
-      // Get returnTo from URL parameters
       const params = new URLSearchParams(window.location.search);
       const returnTo = params.get("returnTo") || "/editor"; // Default to editor
 
-      // Instead of trying to check if the user exists with a dummy password,
-      // we'll directly attempt to sign up and handle any "already registered" errors
       const { data: signUpData, error } = await supabase.auth.signUp({
         email,
         password,
@@ -87,7 +78,6 @@ export function AuthForm() {
       });
 
       if (error) {
-        // Handle specific error for existing user
         if (error.message.includes("already registered")) {
           setMessage(
             "This email is already registered. Please sign in instead."
@@ -96,11 +86,8 @@ export function AuthForm() {
           setMessage(error.message);
         }
       } else if (signUpData.user) {
-        // Check if email confirmation is required
         if (signUpData.session) {
-          // User is automatically signed in (email confirmation not required)
           setMessage("Account created successfully! Redirecting...");
-          // Add a success class to style the message
           document
             .getElementById("auth-message")
             ?.classList.add(

@@ -7,7 +7,6 @@ export async function POST(request: Request) {
   try {
     const { userId, planType, email } = await request.json();
 
-    // Validate the request
     if (!userId || !planType || !email) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -15,14 +14,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // console.log(
-    //   "Creating checkout session for user:",
-    //   userId,
-    //   "plan:",
-    //   planType
-    // );
-
-    // Set up the price ID based on the plan type
     const priceId =
       planType === "yearly"
         ? process.env.YEARLY_PRICE_ID
@@ -56,9 +47,6 @@ export async function POST(request: Request) {
       },
     });
 
-    // console.log(session);
-
-    // console.log("Checkout session created:", session.id);
     return NextResponse.json({ sessionId: session.id });
   } catch (error) {
     console.error("Error creating checkout session:", error);

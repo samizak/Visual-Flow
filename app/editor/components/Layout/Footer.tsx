@@ -1,7 +1,7 @@
 import { Check, X, Save, BarChart2, AlertCircle } from "lucide-react";
-import { storageService } from "../../../../utils/storageService";
+import { storageService } from "@/utils/storageService";
 import { useEffect, useState } from "react";
-import { useJsonStore } from "../../../../store/useJsonStore";
+import { useJsonStore } from "@/store/useJsonStore";
 
 export default function Footer() {
   // Get isValidJson and nodeCount from the store

@@ -21,22 +21,34 @@ const FlowChartLegend: React.FC<FlowChartLegendProps> = ({ nodeTypes }) => {
         <div className="grid grid-cols-1 gap-2">
           <div className="flex items-center">
             <Box className="mr-2 text-white" size={16} />
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: rootColor }}></div>
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: rootColor }}
+            ></div>
             <span className="text-xs text-gray-300 ml-2">Root</span>
           </div>
           <div className="flex items-center">
             <Braces className="mr-2 text-white" size={16} />
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: objectColor }}></div>
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: objectColor }}
+            ></div>
             <span className="text-xs text-gray-300 ml-2">Objects</span>
           </div>
           <div className="flex items-center">
             <Brackets className="mr-2 text-white" size={16} />
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: arrayColor }}></div>
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: arrayColor }}
+            ></div>
             <span className="text-xs text-gray-300 ml-2">Arrays</span>
           </div>
           <div className="flex items-center">
             <Type className="mr-2 text-white" size={16} />
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: primitiveColor }}></div>
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: primitiveColor }}
+            ></div>
             <span className="text-xs text-gray-300 ml-2">Primitives</span>
           </div>
         </div>

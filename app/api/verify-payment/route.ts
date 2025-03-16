@@ -15,8 +15,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // console.log("Verifying payment for session:", sessionId);
-
     // Retrieve the session from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
       expand: ["subscription", "customer"],
@@ -30,7 +28,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get user ID from the client_reference_id
     const userId = session.client_reference_id;
 
     if (!userId) {
@@ -38,26 +35,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User ID not found" }, { status: 400 });
     }
 
-    // Determine plan type from the subscription
     const planType = session.subscription
       ? (session.subscription as Stripe.Subscription).items.data[0].plan
           .interval
       : "monthly";
 
-    // console.log("Payment verified for user:", userId, "Plan:", planType);
-
-    // Update user's subscription status in Supabase
-    // Make sure to await the createClient call
     const supabase = await createClient();
-
-    // Log the update we're about to make
-    // console.log("Updating subscription status for user:", userId, {
-    //   is_subscribed: true,
-    //   subscription_type: planType,
-    //   subscription_id: session.subscription
-    //     ? (session.subscription as Stripe.Subscription).id
-    //     : null,
-    // });
 
     const { data, error } = await supabase
       .from("profiles")
@@ -79,8 +62,6 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
-
-    // console.log("Successfully updated subscription status:", data);
 
     return NextResponse.json({
       success: true,

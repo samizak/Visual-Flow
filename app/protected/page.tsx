@@ -1,4 +1,4 @@
-import { createClient } from "../../utils/superbase/server";
+import { createClient } from "@/utils/superbase/server";
 import { redirect } from "next/navigation";
 
 export default async function ProtectedPage() {
@@ -9,7 +9,6 @@ export default async function ProtectedPage() {
   } = await supabase.auth.getSession();
 
   if (!session) {
-    // Redirect to login if not authenticated
     redirect("/auth/login");
   }
 

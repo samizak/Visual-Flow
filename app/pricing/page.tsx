@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check, ArrowLeft, FileJson } from "lucide-react";
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSupabase } from "../../components/Auth/SupabaseProvider";
-import Image from "next/image";
+import { useSupabase } from "@/components/Auth/SupabaseProvider";
 import { loadStripe } from "@stripe/stripe-js";
 
 export default function PricingPage() {

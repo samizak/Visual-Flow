@@ -1,7 +1,7 @@
 import React from "react";
 import { PanelLeft } from "lucide-react";
-import { Button } from "../../../../../components/ui/button";
-import { useJsonStore } from "../../../../../store/useJsonStore";
+import { Button } from "@/components/ui/button";
+import { useJsonStore } from "@/store/useJsonStore";
 
 export default function PanelToggle() {
   const { toggleLeftPanel } = useJsonStore();

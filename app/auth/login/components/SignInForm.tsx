@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "../../../../components/ui/button";
-import { Input } from "../../../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";

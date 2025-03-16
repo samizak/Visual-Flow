@@ -4,9 +4,8 @@ import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import Link from "next/link";
 import { ArrowRight, Lock, ChevronDown } from "lucide-react";
-import { Button } from "../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 
-// Sample JSON for the interactive demo
 const sampleJson = `{
   "app": "Visual Flow",
   "version": "2.0",
@@ -114,7 +113,8 @@ export default function HeroSection({ LocalScene }: HeroSectionProps) {
             >
               <Lock className="h-4 w-4" />
               <span>
-                Start for free, no account required. Sign up to unlock premium features.
+                Start for free, no account required. Sign up to unlock premium
+                features.
               </span>
             </motion.div>
           </div>
