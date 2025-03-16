@@ -335,8 +335,8 @@ export default function PricingPage() {
                 </h4>
                 <p className="text-white/70">
                   Yes, you can cancel your subscription at any time. If you
-                  cancel, you'll continue to have access to Pro features until
-                  the end of your billing period.
+                  cancel, you&apos;ll continue to have access to Pro features
+                  until the end of your billing period.
                 </p>
               </div>
               <div>

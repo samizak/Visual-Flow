@@ -67,7 +67,7 @@ export function VisualSide() {
     }, 20);
 
     return () => clearInterval(animationCycle);
-  }, [typing, jsonIndex, currentJson.length]);
+  }, [typing, jsonIndex, currentJson.length, jsonSamples.length]);
 
   // Display only the characters that should be visible
   const visibleJson = currentJson.substring(0, visibleChars);

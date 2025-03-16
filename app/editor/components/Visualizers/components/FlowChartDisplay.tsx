@@ -70,68 +70,75 @@ const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
   }, [nodes]);
 
   // Highlight nodes that match the search term
-  const highlightMatchingNodes = useCallback((term: string) => {
-    const lowerTerm = term.toLowerCase();
+  const highlightMatchingNodes = useCallback(
+    (term: string) => {
+      const lowerTerm = term.toLowerCase();
 
-    // Add a class to the flow container for styling
-    document.querySelector(".react-flow")?.classList.add("dimmed");
+      // Add a class to the flow container for styling
+      document.querySelector(".react-flow")?.classList.add("dimmed");
 
-    // Reset all previous highlighting first
-    document.querySelectorAll(".search-match-property").forEach((element) => {
-      element.classList.remove("search-match-property");
-    });
-
-    // Find and highlight matching nodes and their specific properties
-    nodes.forEach((node: any) => {
-      const nodeElement = document.querySelector(`[data-id="${node.id}"]`);
-      const nodeData = node.data;
-      const nodeLabel = nodeData.label?.toLowerCase() || "";
-      const nodeProperties = nodeData.properties || [];
-
-      let hasMatch = nodeLabel.includes(lowerTerm);
-
-      // Find all property elements in this node
-      const propertyElements = nodeElement?.querySelectorAll(".grouped-node-property");
-
-      // Check each property for matches
-      nodeProperties.forEach((prop: any, index: number) => {
-        const propKey = prop.key?.toLowerCase() || "";
-        const propValue = String(prop.value).toLowerCase();
-
-        if (propKey.includes(lowerTerm) || propValue.includes(lowerTerm)) {
-          hasMatch = true;
-
-          // If we found property elements, highlight the matching one
-          propertyElements?.[index]?.classList.add("search-match-property");
-        }
+      // Reset all previous highlighting first
+      document.querySelectorAll(".search-match-property").forEach((element) => {
+        element.classList.remove("search-match-property");
       });
 
-      // Add highlight class to the node if any match was found
-      if (hasMatch) {
-        nodeElement?.classList.add("highlight", "search-match");
-      } else {
-        nodeElement?.classList.remove("highlight", "search-match");
-      }
-    });
-  }, [nodes]);
+      // Find and highlight matching nodes and their specific properties
+      nodes.forEach((node: any) => {
+        const nodeElement = document.querySelector(`[data-id="${node.id}"]`);
+        const nodeData = node.data;
+        const nodeLabel = nodeData.label?.toLowerCase() || "";
+        const nodeProperties = nodeData.properties || [];
+
+        let hasMatch = nodeLabel.includes(lowerTerm);
+
+        // Find all property elements in this node
+        const propertyElements = nodeElement?.querySelectorAll(
+          ".grouped-node-property"
+        );
+
+        // Check each property for matches
+        nodeProperties.forEach((prop: any, index: number) => {
+          const propKey = prop.key?.toLowerCase() || "";
+          const propValue = String(prop.value).toLowerCase();
+
+          if (propKey.includes(lowerTerm) || propValue.includes(lowerTerm)) {
+            hasMatch = true;
+
+            // If we found property elements, highlight the matching one
+            propertyElements?.[index]?.classList.add("search-match-property");
+          }
+        });
+
+        // Add highlight class to the node if any match was found
+        if (hasMatch) {
+          nodeElement?.classList.add("highlight", "search-match");
+        } else {
+          nodeElement?.classList.remove("highlight", "search-match");
+        }
+      });
+    },
+    [nodes]
+  );
 
   // Handle search input change
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setSearchTerm(value);
+      if (value.trim()) highlightMatchingNodes(value);
+      else resetHighlighting();
+    },
+    [highlightMatchingNodes, resetHighlighting]
+  );
 
-    value.trim() ? highlightMatchingNodes(value) : resetHighlighting();
-  }, [highlightMatchingNodes, resetHighlighting]);
-
-  // Handle search close
   const handleSearchClose = useCallback(() => {
     setIsSearchOpen(false);
     setSearchTerm("");
     resetHighlighting();
   }, [resetHighlighting]);
 
-  // Search panel component
-  const SearchPanel = (
+  // Create a function to render the search panel
+  const renderSearchPanel = () => (
     <Panel position="top-right" className="search-panel">
       {isSearchOpen ? (
         <div className="flex items-center bg-[#1e1e1e] border border-gray-700 rounded-md overflow-hidden shadow-lg">
@@ -183,7 +190,7 @@ const FlowChartDisplay: React.FC<FlowChartDisplayProps> = ({
         />
       )}
       <Controls style={controlsStyle} />
-      {SearchPanel}
+      {renderSearchPanel()}
       <FlowChartLegend nodeTypes={nodeTypeColors} />
     </ReactFlow>
   );

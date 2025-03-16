@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 import { Node } from "@xyflow/react";
 import { useReactFlow } from "@xyflow/react";
 
@@ -8,27 +8,32 @@ interface UseNodeClickHandlerProps {
   getEdges?: () => any[];
 }
 
-export function useNodeClickHandler({ 
+export function useNodeClickHandler({
   jsonData,
   getNodes: externalGetNodes,
-  getEdges: externalGetEdges
+  getEdges: externalGetEdges,
 }: UseNodeClickHandlerProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedNodeData, setSelectedNodeData] = useState<Record<string, any>>({});
+  const [selectedNodeData, setSelectedNodeData] = useState<Record<string, any>>(
+    {}
+  );
   const [selectedNodeLabel, setSelectedNodeLabel] = useState("");
-  const [nodePath, setNodePath] = useState<Array<{ id: string; label: string; data: any }>>([]);
+  const [nodePath, setNodePath] = useState<
+    Array<{ id: string; label: string; data: any }>
+  >([]);
 
-  // Try to use the React Flow context if available, otherwise use the provided functions
-  let reactFlowInstance: { getNodes: () => Node[]; getEdges: () => any[] } | null = null;
-  
-  try {
-    reactFlowInstance = useReactFlow();
-  } catch (error) {
-    // If useReactFlow fails, we'll use the external functions
-  }
+  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
 
-  const getNodesFunc = reactFlowInstance?.getNodes || externalGetNodes || (() => []);
-  const getEdgesFunc = reactFlowInstance?.getEdges || externalGetEdges || (() => []);
+  const instance = useReactFlow();
+  setReactFlowInstance(instance);
+
+  const getNodesFunc = useMemo(() => {
+    return reactFlowInstance?.getNodes || externalGetNodes || (() => []);
+  }, [reactFlowInstance, externalGetNodes]);
+
+  const getEdgesFunc = useMemo(() => {
+    return reactFlowInstance?.getEdges || externalGetEdges || (() => []);
+  }, [reactFlowInstance, externalGetEdges]);
 
   const findNodeValue = useCallback((obj: any, key: string): any => {
     // Direct property match

@@ -1,30 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSupabase } from "@/components/Auth/SupabaseProvider";
 import { successToast } from "@/lib/toast";
 
-export default function SuccessPage() {
+// Create a separate component that uses useSearchParams
+function SuccessContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, refreshSubscription } = useSupabase();
 
-  // Add this console log to check if the component is being rendered at all
-  // console.log("Success page component rendered");
-
   useEffect(() => {
-    // console.log("useEffect in SuccessPage is running");
-
-    // Log all search params to see what's coming through
-    // console.log("All search params:", Object.fromEntries([...searchParams.entries()]));
-
     const sessionId = searchParams.get("session_id");
-    // console.log("Session ID from URL:", sessionId);
 
     if (!sessionId) {
       console.error("No session ID found in URL");
@@ -34,7 +26,6 @@ export default function SuccessPage() {
     }
 
     const verifyPayment = async () => {
-      // console.log("Starting payment verification for session:", sessionId);
       try {
         const response = await fetch("/api/verify-payment", {
           method: "POST",
@@ -44,21 +35,15 @@ export default function SuccessPage() {
           body: JSON.stringify({ sessionId }),
         });
 
-        // console.log("Verify payment response status:", response.status);
         const data = await response.json();
-        // console.log("Verify payment response data:", data);
 
         if (!response.ok) {
           throw new Error(data.error || "Failed to verify payment");
         }
 
         // Payment verified successfully
-        // console.log("Payment verified successfully, refreshing subscription");
-
-        // Refresh the subscription status in the context
         if (refreshSubscription) {
           await refreshSubscription();
-          // console.log("Subscription refreshed in context");
         } else {
           console.error("refreshSubscription function is undefined");
         }
@@ -75,7 +60,7 @@ export default function SuccessPage() {
     };
 
     verifyPayment();
-  }, [searchParams, refreshSubscription]); // Remove user from dependencies if not needed
+  }, [searchParams, refreshSubscription]);
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -113,5 +98,28 @@ export default function SuccessPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Loading fallback component
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="max-w-md w-full p-8 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-white/10">
+        <div className="text-center">
+          <div className="h-12 w-12 rounded-full border-4 border-t-transparent border-indigo-500 animate-spin mx-auto mb-4"></div>
+          <h2 className="text-xl font-bold mb-2">Loading...</h2>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <SuccessContent />
+    </Suspense>
   );
 }
