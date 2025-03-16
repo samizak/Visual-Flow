@@ -128,13 +128,12 @@ export function SignInForm({
           </div>
         </div>
 
-        // In the SignInForm component, add an id to the message element and conditional styling
         {message && (
-          <div 
+          <div
             id="auth-message"
             className={`p-3 rounded mb-4 border ${
-              message.includes("successfully") 
-                ? "bg-green-100 text-green-800 border-green-300" 
+              message.includes("successfully")
+                ? "bg-green-100 text-green-800 border-green-300"
                 : "bg-red-100 text-red-800 border-red-300"
             }`}
           >

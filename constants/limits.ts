@@ -69,46 +69,45 @@ export const getJsonDepth = (obj: any): number => {
 
 // Shared validation function to check JSON against free user limits
 export const validateJsonAgainstFreeLimits = (
-  jsonContent: string,
+  jsonContent: string, 
   isPremiumUser: boolean = false
-): {
-  isValid: boolean;
-  message?: string;
+): { 
+  isValid: boolean; 
+  message?: string; 
   details?: { lines: number; nodes: number; depth: number; size: number };
   isFormatError?: boolean;
 } => {
-  // Add debug logging
-  // console.log("Validating JSON with premium status:", isPremiumUser);
-
-  // Premium users bypass all checks
-  if (isPremiumUser) {
-    // console.log("Premium user detected, bypassing limits check");
+  // Premium users bypass all checks - ensure this is the first check
+  // Add explicit logging and strict equality check
+  if (isPremiumUser === true) {
+    console.log("validateJsonAgainstFreeLimits: Premium user detected, bypassing all checks");
     return { isValid: true };
   }
-
+  
+  console.log("validateJsonAgainstFreeLimits: Free user detected, applying limits");
+  
   try {
     // Parse the JSON to validate it
     const parsedJson = JSON.parse(jsonContent);
-
+    
     // Calculate all metrics at once
     const lines = countJsonLines(jsonContent);
     const nodes = countJsonNodes(parsedJson);
     const depth = getJsonDepth(parsedJson);
     const sizeKB = new Blob([jsonContent]).size / 1024;
-
+    
     const details = { lines, nodes, depth, size: sizeKB };
-
+    console.log("JSON metrics:", details);
+    
     // Check against each limit
     if (sizeKB > FREE_LIMITS.MAX_SIZE_KB) {
-      return {
-        isValid: false,
-        message: `File size (${sizeKB.toFixed(1)}KB) exceeds free limit (${
-          FREE_LIMITS.MAX_SIZE_KB
-        }KB)`,
-        details,
+      return { 
+        isValid: false, 
+        message: `File size (${sizeKB.toFixed(1)}KB) exceeds free limit (${FREE_LIMITS.MAX_SIZE_KB}KB)`,
+        details
       };
     }
-
+    
     if (lines > FREE_LIMITS.MAX_LINES) {
       return {
         isValid: false,

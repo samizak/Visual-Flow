@@ -167,7 +167,7 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleSaveJson}
-          className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+          className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white focus:ring-0 focus:outline-none"
         >
           <Save className="h-4 w-4" />
           <span>Save</span>
@@ -175,14 +175,14 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
 
         {/* Import submenu with JSON and Image options */}
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
+          <DropdownMenuSubTrigger className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white focus:ring-0 focus:outline-none">
             <Upload className="mr-2 h-4 w-4" />
             <span>Import</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="bg-[#1e1e1e] border border-gray-700 shadow-lg">
             <DropdownMenuItem
               onClick={importFile}
-              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white focus:ring-0 focus:outline-none"
             >
               <FileJson className="mr-2 h-4 w-4" />
               <span>JSON File</span>
@@ -190,7 +190,7 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
 
             <DropdownMenuItem
               onClick={handleImportJsonClick}
-              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white focus:ring-0 focus:outline-none"
             >
               <FileJson className="mr-2 h-4 w-4" />
               <span>JSON from URL</span>
@@ -202,7 +202,7 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
             {/* Image import - premium feature */}
             <DropdownMenuItem
               onClick={handleImportImageClick}
-              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white focus:ring-0 focus:outline-none"
             >
               <ImageIcon className="mr-2 h-4 w-4" />
               <span>Image (OCR)</span>
@@ -215,7 +215,7 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
 
         {/* Export submenu with image format options */}
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white">
+          <DropdownMenuSubTrigger className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white focus:ring-0 focus:outline-none">
             <Download className="mr-2 h-4 w-4" />
             <span>Export</span>
           </DropdownMenuSubTrigger>
@@ -223,7 +223,7 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
             {/* PNG export - premium feature */}
             <DropdownMenuItem
               onClick={handleExportPngClick}
-              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white focus:ring-0 focus:outline-none"
             >
               <FileImage className="mr-2 h-4 w-4" />
               <span>PNG Image</span>
@@ -235,7 +235,7 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
             {/* JPG export - premium feature */}
             <DropdownMenuItem
               onClick={handleExportJpgClick}
-              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white focus:ring-0 focus:outline-none"
             >
               <FileImage className="mr-2 h-4 w-4" />
               <span>JPG Image</span>
@@ -247,7 +247,7 @@ export default function FileMenu({ onUpgradeClick }: FileMenuProps) {
             {/* SVG export - premium feature */}
             <DropdownMenuItem
               onClick={handleExportSvgClick}
-              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white"
+              className="cursor-pointer hover:bg-gray-800 hover:text-white transition-colors focus:bg-gray-700 focus:text-white focus:ring-0 focus:outline-none"
             >
               <FileText className="mr-2 h-4 w-4" />
               <span>SVG Vector</span>

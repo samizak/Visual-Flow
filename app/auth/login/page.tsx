@@ -1,5 +1,5 @@
 import { AuthForm } from "./components/AuthForm";
-import { createClient } from "../../../utils/superbase/server";
+import { createClient } from "@/utils/superbase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";

@@ -5,6 +5,11 @@ import { Play } from "lucide-react";
 import { storageService } from "../../../../utils/storageService";
 import { useJsonStore } from "../../../../store/useJsonStore";
 
+// First, add the import for validateJsonAgainstFreeLimits and useSupabase
+import { validateJsonAgainstFreeLimits } from "../../../../constants/limits";
+import { errorToast } from "../../../../lib/toast";
+import { useSupabase } from "../../../../components/Auth/SupabaseProvider";
+
 export default function LeftPanel() {
   // Use the Zustand store instead of props
   const {
@@ -14,6 +19,9 @@ export default function LeftPanel() {
     isValidJson,
     applyChangesToVisualization,
   } = useJsonStore();
+
+  // Get user subscription status
+  const { isPro } = useSupabase();
 
   const [width, setWidth] = useState(20);
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
@@ -75,10 +83,29 @@ export default function LeftPanel() {
 
   // Handle editor content change
   const handleEditorChange = (value: string | undefined) => {
-    setJsonData(value || "");
+    const newValue = value || "";
+    
+    // Check if the content exceeds free limits for non-pro users
+    if (newValue.trim() && !isPro) {
+      try {
+        // Only validate if it's valid JSON
+        const parsedJson = JSON.parse(newValue);
+        const validation = validateJsonAgainstFreeLimits(newValue, isPro);
+        
+        if (!validation.isValid) {
+          // Show error toast but still allow editing
+          errorToast(`${validation.message}. Upgrade for more!`);
+        }
+      } catch (e) {
+        // Invalid JSON, no need to validate limits
+      }
+    }
+    
+    // Update the JSON data regardless of validation
+    setJsonData(newValue);
 
     // Update placeholder visibility based on content
-    updatePlaceholderVisibility(value);
+    updatePlaceholderVisibility(newValue);
   };
 
   // Handle editor load complete

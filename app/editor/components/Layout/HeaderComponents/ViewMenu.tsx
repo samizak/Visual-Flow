@@ -1,5 +1,5 @@
 import React from "react";
-import { Eye, Play, LayoutGrid, Layers } from "lucide-react";
+import { Eye, Play, LayoutGrid, Layers, GitBranch } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import {
   DropdownMenu,
@@ -45,6 +45,7 @@ export default function ViewMenu({ onApplyChanges }: ViewMenuProps) {
           <span className="ml-2 text-xs text-gray-500">(Coming soon)</span>
         </DropdownMenuItem>
         <DropdownMenuItem className="opacity-50 cursor-not-allowed inline-flex whitespace-nowrap text-xs">
+          <GitBranch className="mr-2 h-4 w-4" />
           <span>Tree View</span>
           <span className="ml-2 text-xs text-gray-500">(Coming soon)</span>
         </DropdownMenuItem>

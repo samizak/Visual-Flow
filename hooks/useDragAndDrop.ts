@@ -54,8 +54,9 @@ export function useDragAndDrop({ onFilesDrop, isPremiumUser = false }: UseDragAn
 
   // Check if the JSON content exceeds free user limits
   const checkFreeLimits = useCallback(async (file: File): Promise<{ isValid: boolean; message?: string }> => {
-    // Premium users bypass all checks
-    if (isPremiumUser) {
+    // Premium users bypass all checks - make this explicit
+    if (isPremiumUser === true) {
+      console.log("Premium user detected, bypassing all checks");
       return { isValid: true };
     }
     
@@ -63,7 +64,7 @@ export function useDragAndDrop({ onFilesDrop, isPremiumUser = false }: UseDragAn
       // Read the file content
       const content = await file.text();
       
-      // Use the shared validation function
+      // Use the shared validation function - explicitly pass isPremiumUser
       const validation = validateJsonAgainstFreeLimits(content, isPremiumUser);
       
       return {
@@ -88,33 +89,38 @@ export function useDragAndDrop({ onFilesDrop, isPremiumUser = false }: UseDragAn
       if (files && files.length > 0) {
         // Check if it's a JSON file
         if (files[0].type === "application/json" || files[0].name.endsWith('.json')) {
+          // Premium users bypass all checks - make this explicit and add logging
+          if (isPremiumUser === true) {
+            console.log("Premium user detected in handleDrop, bypassing all checks");
+            // Directly process the file for premium users
+            onFilesDrop(files);
+            return;
+          }
+          
           // For free users, check file against limits
-          if (!isPremiumUser) {
-            const { isValid, message } = await checkFreeLimits(files[0]);
+          const { isValid, message } = await checkFreeLimits(files[0]);
+          
+          if (!isValid) {
+            setDragError(message || "Error processing file");
             
-            if (!isValid) {
-              setDragError(message || "Error processing file");
+            try {
+              // Try to parse the file to check if it's valid JSON
+              const content = await files[0].text();
+              JSON.parse(content); // This will throw if invalid
               
-              try {
-                // Try to parse the file to check if it's valid JSON
-                const content = await files[0].text();
-                JSON.parse(content); // This will throw if invalid
-                
-                // If we get here, it's valid JSON but exceeds limits
-                // Change from infoToast to errorToast for limit exceeded messages
-                errorToast(`${message}. Upgrade for more!`);
-              } catch (e) {
-                // It's an invalid JSON format error
-                errorToast(message || "Invalid JSON format");
-              }
-              
-              // Auto-hide the error after 3 seconds
-              setTimeout(() => {
-                setDragError(null);
-              }, 3000);
-              
-              return;
+              // If we get here, it's valid JSON but exceeds limits
+              errorToast(`${message}. Upgrade for more!`);
+            } catch (e) {
+              // It's an invalid JSON format error
+              errorToast(message || "Invalid JSON format");
             }
+            
+            // Auto-hide the error after 3 seconds
+            setTimeout(() => {
+              setDragError(null);
+            }, 3000);
+            
+            return;
           }
           
           // If we get here, the file is valid for the user's plan

@@ -25,8 +25,17 @@ export const handleJsonImport = (
 
     try {
       const text = await file.text();
-
-      // For free users, check against limits using the shared validation function
+      
+      // Add explicit logging and strict equality check
+      if (isPremiumUser === true) {
+        console.log("handleJsonImport: Premium user detected, bypassing all checks");
+        setJsonContent(text);
+        successToast("Your JSON file has been successfully imported.");
+        if (setIsLoading) setIsLoading(false);
+        return;
+      }
+      
+      // Validation for free users
       if (!isPremiumUser) {
         const validation = validateJsonAgainstFreeLimits(text, isPremiumUser);
         if (!validation.isValid) {

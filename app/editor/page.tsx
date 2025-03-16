@@ -13,6 +13,7 @@ import OcrProcessingStatus from "../../components/OCR/OcrProcessingStatus";
 import { storageService } from "../../utils/storageService";
 import SettingsDialog from "./components/Layout/SettingsDialog";
 import { useJsonStore } from "../../store/useJsonStore";
+import { useSupabase } from "../../components/Auth/SupabaseProvider";
 
 export default function Home() {
   const {
@@ -31,6 +32,9 @@ export default function Home() {
     isOcrProcessing,
     ocrProgress,
   } = useJsonStore();
+  
+  // Add the useSupabase hook to get isPro
+  const { isPro } = useSupabase();
 
   const lastParsedJsonRef = useRef<any>(null);
 
@@ -114,14 +118,12 @@ export default function Home() {
     },
   });
 
-  const {
-    isFileDragging,
-    dragError,
-    handleDragOver,
-    handleDragEnter,
-    handleDragLeave,
-    handleDrop,
-  } = useDragAndDrop({ onFilesDrop: handleFiles });
+  // Fix the function reference - use handleFiles instead of handleFileDrop
+  const { isFileDragging, dragError, handleDragOver, handleDragEnter, handleDragLeave, handleDrop } = 
+    useDragAndDrop({
+      onFilesDrop: handleFiles,
+      isPremiumUser: isPro,
+    });
 
   const { mainRef, handleMouseDown } = useMouseInteractions();
 
