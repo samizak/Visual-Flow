@@ -1,4 +1,4 @@
-import { Node, Edge } from "reactflow";
+import { Node, Edge } from "@xyflow/react";
 
 // Add this to your existing types
 export interface JsonFlowChartProps {

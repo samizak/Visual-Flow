@@ -1,11 +1,10 @@
-import { useCallback, useState, useMemo, useEffect } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { Node } from "@xyflow/react";
-import { useReactFlow } from "@xyflow/react";
 
 interface UseNodeClickHandlerProps {
   jsonData: string;
-  getNodes?: () => Node[];
-  getEdges?: () => any[];
+  getNodes: () => Node[];
+  getEdges: () => any[];
 }
 
 export function useNodeClickHandler({
@@ -22,18 +21,14 @@ export function useNodeClickHandler({
     Array<{ id: string; label: string; data: any }>
   >([]);
 
-  const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
-
-  const instance = useReactFlow();
-  setReactFlowInstance(instance);
-
+  // Use the external functions directly
   const getNodesFunc = useMemo(() => {
-    return reactFlowInstance?.getNodes || externalGetNodes || (() => []);
-  }, [reactFlowInstance, externalGetNodes]);
+    return externalGetNodes || (() => []);
+  }, [externalGetNodes]);
 
   const getEdgesFunc = useMemo(() => {
-    return reactFlowInstance?.getEdges || externalGetEdges || (() => []);
-  }, [reactFlowInstance, externalGetEdges]);
+    return externalGetEdges || (() => []);
+  }, [externalGetEdges]);
 
   const findNodeValue = useCallback((obj: any, key: string): any => {
     // Direct property match

@@ -8,7 +8,7 @@ import FlowChartDisplay from "./components/FlowChartDisplay";
 import LoadingSpinner from "./components/LoadingSpinner";
 import { useJsonFlowData } from "./hooks/useJsonFlowData";
 import { useNodeClickHandler } from "./hooks/useNodeClickHandler";
-import { ReactFlowInstance } from "reactflow";
+import { ReactFlowInstance } from "@xyflow/react";
 
 const nodeTypes = {
   grouped: GroupedNode,
