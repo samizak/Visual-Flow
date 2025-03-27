@@ -76,7 +76,7 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           <Link
-            href="https://github.com/yourusername/visual-flowr"
+            href="https://github.com/samizak/Visual-Flow"
             target="_blank"
           >
             <Button
