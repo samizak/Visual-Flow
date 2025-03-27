@@ -47,7 +47,6 @@
     "stripe": "^17.7.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
-    "tesseract.js": "^6.0.0",
     "three": "^0.174.0",
     "vaul": "^1.1.2",
     "zustand": "^5.0.3"

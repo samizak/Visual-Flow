@@ -16,14 +16,18 @@ Visit the live application at [visualflowapp.vercel.app](https://visualflowapp.v
 
 ## ✨ Features
 
-- **Interactive Visualizations**: Transform JSON into intuitive, interactive flowcharts.
+- **Interactive Visualizations**: Transform JSON into intuitive, interactive flowcharts with automatic layout.
 - **Real-time Parsing**: Instant validation and error detection as you type.
-- **Schema Detection**: Automatically identify and highlight data structures.
-- **Node Highlighting**: Easily identify relationships between data elements.
+- **Schema Detection**: Automatically identify and highlight data structures with color-coded nodes.
+- **Node Highlighting**: Easily identify relationships between data elements with interactive highlighting.
 - **Search Functionality**: Quickly find specific values or keys in complex structures.
-- **Export Options**: Save visualizations as images for documentation or presentations.
+- **Export Options**: Save visualizations as SVG, PNG, or JPEG for documentation or presentations.
+- **AI-Powered OCR**: Extract JSON from images using Google Gemini's advanced image recognition.
+- **Local Storage**: Automatically save your work with configurable auto-save functionality.
 - **Sharing Capabilities**: Share your visualizations with team members.
 - **Dark Mode**: Optimized for comfortable viewing in any environment.
+- **Premium Features**: Access advanced visualization options with subscription plans.
+- **Monaco Editor Integration**: Professional code editing experience with syntax highlighting.
 
 ---
 
@@ -99,7 +103,6 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
   - [Sonner 2.0](https://sonner.emilkowal.ski/) for toast notifications
   - [Vaul 1.1](https://vaul.emilkowal.ski/) for drawers
 - **Image Processing**:
-  - [Tesseract.js 6.0](https://github.com/naptha/tesseract.js) for OCR
   - [html-to-image 1.11](https://github.com/bubkoo/html-to-image)
   - [file-saver 2.0](https://github.com/eligrey/FileSaver.js)
 - **AI Integration**:
@@ -128,7 +131,7 @@ npm run test:coverage
 
 To run this project, you'll need to set up the following environment variables in a `.env.local` file at the root of your project:
 
-- `NEXT_GEMINI_API_KEY`: Google AI API key for Gemini integration
+- `NEXT_GEMINI_API_KEY`: Google Gemini AI API key for Gemini integration
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: Stripe publishable key for payments
 - `STRIPE_SECRET_KEY`: Stripe secret key for payments
 - `NEXT_PUBLIC_STRIPE_BUY_BUTTON_ID`: Stripe buy button ID for payments
