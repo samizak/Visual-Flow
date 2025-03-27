@@ -71,25 +71,56 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 ## 🛠️ Technologies Used
 
 - **Frontend**:
-  - [Next.js 15](https://nextjs.org)
+  - [Next.js 15.2](https://nextjs.org)
   - [React 19](https://reactjs.org)
-  - [TailwindCSS](https://tailwindcss.com)
+  - [TailwindCSS 4](https://tailwindcss.com)
 - **Visualization**:
-  - [React Flow](https://reactflow.dev) (@xyflow/react)
+  - [React Flow 12.4](https://reactflow.dev) (@xyflow/react)
+  - [Dagre 1.1.4](https://github.com/dagrejs/dagre) for graph layouts
 - **Code Editing**:
-  - [Monaco Editor](https://microsoft.github.io/monaco-editor/)
+  - [Monaco Editor 4.7](https://microsoft.github.io/monaco-editor/)
 - **3D Effects**:
-  - [Three.js](https://threejs.org) with [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction)
+  - [Three.js 0.174](https://threejs.org)
+  - [React Three Fiber 9.1](https://docs.pmnd.rs/react-three-fiber)
+  - [Drei 10.0](https://github.com/pmndrs/drei)
 - **Animation**:
-  - [Motion/React](https://www.framer.com/motion/) (Framer Motion)
-- **Authentication**:
-  - [Supabase Auth](https://supabase.com/auth)
+  - [Framer Motion 12.5](https://www.framer.com/motion/)
+- **Authentication & Backend**:
+  - [Supabase JS 2.49](https://supabase.com)
+  - [Supabase SSR 0.5](https://supabase.com)
+- **Payment Processing**:
+  - [Stripe 17.7](https://stripe.com)
+  - [Stripe JS 6.0](https://stripe.com)
 - **State Management**:
-  - Custom stores
-- **Styling**:
-  - TailwindCSS with custom effects
-- **Icons**:
-  - [Lucide React](https://lucide.dev)
+  - [Zustand 5.0](https://github.com/pmndrs/zustand)
+- **UI Components**:
+  - [Radix UI](https://www.radix-ui.com/) (various components)
+  - [Lucide React 0.479](https://lucide.dev)
+  - [Sonner 2.0](https://sonner.emilkowal.ski/) for toast notifications
+  - [Vaul 1.1](https://vaul.emilkowal.ski/) for drawers
+- **Image Processing**:
+  - [Tesseract.js 6.0](https://github.com/naptha/tesseract.js) for OCR
+  - [html-to-image 1.11](https://github.com/bubkoo/html-to-image)
+  - [file-saver 2.0](https://github.com/eligrey/FileSaver.js)
+- **AI Integration**:
+  - [Google Generative AI 0.24](https://ai.google.dev/)
+
+---
+
+## 🧪 Testing
+
+The project uses Jest and React Testing Library for testing:
+
+```bash
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate test coverage report
+npm run test:coverage
+```
 
 ---
 
@@ -97,12 +128,15 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 To run this project, you'll need to set up the following environment variables in a `.env.local` file at the root of your project:
 
-### Required Variables:
-
-- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous key for client-side authentication
-- `STRIPE_SECRET_KEY`: For premium subscription features
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: For client-side Stripe integration
+- `NEXT_GEMINI_API_KEY`: Google AI API key for Gemini integration
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: Stripe publishable key for payments
+- `STRIPE_SECRET_KEY`: Stripe secret key for payments
+- `NEXT_PUBLIC_STRIPE_BUY_BUTTON_ID`: Stripe buy button ID for payments
+- `MONTHLY_PRICE_ID`: Stripe price ID for monthly subscriptions
+- `YEARLY_PRICE_ID`: Stripe price ID for yearly subscriptions
+- `NEXT_PUBLIC_APP_URL`: Application URL
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase URL for authentication and database
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anonymous key for authentication and database
 
 To obtain these keys:
 
@@ -126,6 +160,8 @@ json-visualiser/
 │   └── protected/      # Premium features
 ├── components/         # Global UI components
 │   ├── Auth/           # Authentication components
+│   ├── OCR/            # Optical Character Recognition
+│   ├── PremiumFeatures/# Premium subscription features
 │   ├── ui/             # UI components
 │   └── Visualizers/    # Visualization components
 ├── constants/          # Application constants
@@ -133,7 +169,7 @@ json-visualiser/
 ├── lib/                # Utility functions
 ├── public/             # Static assets
 ├── services/           # API service functions
-├── store/              # State management
+├── store/              # State management with Zustand
 ├── styles/             # CSS styles
 │   ├── base/           # Base styles
 │   ├── components/     # Component styles
