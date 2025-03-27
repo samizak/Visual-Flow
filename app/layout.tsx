@@ -6,6 +6,11 @@ import { SupabaseProvider } from "@/components/Auth/SupabaseProvider";
 export const metadata: Metadata = {
   title: "Visual Flow - Data Visualizer",
   description: "A modern data visualization tool",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
