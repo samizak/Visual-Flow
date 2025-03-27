@@ -127,21 +127,19 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
     return checkSubscriptionStatus();
   };
 
+  const value = {
+    user,
+    session,
+    isLoading,
+    isPro,
+    signOut,
+    refreshSubscription,
+  };
   return (
-    <SupabaseContext.Provider
-      value={{
-        user,
-        session,
-        isLoading,
-        isPro,
-        signOut,
-        refreshSubscription,
-      }}
-    >
+    <SupabaseContext.Provider value={value}>
       {children}
     </SupabaseContext.Provider>
   );
 }
 
-// Remove the duplicate type declaration here
 export const useSupabase = () => useContext(SupabaseContext);
